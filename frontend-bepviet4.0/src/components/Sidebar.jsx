@@ -1,51 +1,70 @@
-import { Newspaper, BookOpen, Flame, MapPin} from "lucide-react";
+import { Newspaper, BookOpen, Flame, MapPin, X } from "lucide-react";
 import { useState } from "react";
 
-export default function Sidebar() {
+// biên isOpen: để xác định sidebar có đang mở hay không (dùng cho mobile)
+// biến onClose: hàm để đóng sidebar (dùng cho mobile)
+export default function Sidebar({ isOpen, onClose }) {
 
+  // biến activeItem: để xác định mục nào đang được chọn trong sidebar
   const [activeItem, setActiveItem] = useState("Bảng tin (News Feed)");
 
   const handleItemClick = (label) => {
-    setActiveItem(label);
+    setActiveItem(label); // Cập nhật mục đang active
     console.log(`Bạn đã chuyển sang: ${label}`);
     // Tại đây bạn có thể dùng thêm useNavigate() của react-router-dom để chuyển trang
   };
-
   return (
-    <aside className="w-64 h-screen sticky top-0 bg-gray-50 p-4 border-r border-gray-200 ">
-      
-      {/* USER INFO */}
-      <div className="flex items-center gap-3 mb-6">
-        <img
-          src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
-          alt="avatar"
-          className="w-10 h-10 rounded-full"
-        />
-        <span className="font-semibold text-gray-800">
-          Nguyễn Văn A
-        </span>
-      </div>
+    <>
+      {/* thẻ div này dùng để tạo lớp phủ khi sidebar mở trên mobile làm mờ phần nội dung khi hiện menu */}
+      <div
+        className={`fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[60] md:hidden transition-all ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
+        onClick={onClose} // Đóng sidebar khi click vào lớp phủ
+      />
+      <aside className={`
+        /* MẶC ĐỊNH (MOBILE): Là cửa sổ nổi bên phải như bạn muốn */
+        fixed top-16 right-4 z-[70] w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 
+        transform transition-all duration-300 ease-out p-4
+        ${isOpen ? "translate-y-0 opacity-100 scale-100" : "-translate-y-4 opacity-0 scale-95 pointer-events-none"}
+        // điều kiện isOpen để xác định sidebar đang mở hay đóng trên mobile 
+        /* TRÊN DESKTOP (md:): Trở về làm Sidebar cố định bên trái */
+        md:static md:translate-y-0 md:opacity-100 md:scale-100 md:pointer-events-auto
+        md:w-64 md:h-[calc(100vh-64px)] md:rounded-none md:border-r md:shadow-none md:bg-white
+      `}>
 
-      {/* MENU */}
-      <nav className="space-y-2">
-        <SidebarItem icon={<Newspaper />} label="Bảng tin (News Feed)" active={activeItem === "Bảng tin (News Feed)"} onClick={() => handleItemClick("Bảng tin (News Feed)")} />
-        <SidebarItem icon={<BookOpen />} label="Bộ sưu tập của tôi" active={activeItem === "Bộ sưu tập của tôi"} onClick={() => handleItemClick("Bộ sưu tập của tôi")}/>
-        <SidebarItem icon={<Flame />} label="Món ngon Trending" active={activeItem === "Món ngon Trending"} onClick={() => handleItemClick("Món ngon Trending")} />
-      </nav>
+        {/* USER INFO */}
+        <div className="flex items-center gap-3 mb-6">
+          <img
+            src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
+            alt="avatar"
+            className="w-10 h-10 rounded-full"
+          />
+          <span className="font-semibold text-gray-800">
+            Nguyễn Văn A
+          </span>
+        </div>
 
-      <hr className="my-4" />
+        {/* MENU */}
+        <nav className="space-y-2">
+          <SidebarItem icon={<Newspaper />} label="Bảng tin (News Feed)" active={activeItem === "Bảng tin (News Feed)"} onClick={() => handleItemClick("Bảng tin (News Feed)")} />
+          <SidebarItem icon={<BookOpen />} label="Bộ sưu tập của tôi" active={activeItem === "Bộ sưu tập của tôi"} onClick={() => handleItemClick("Bộ sưu tập của tôi")} />
+          <SidebarItem icon={<Flame />} label="Món ngon Trending" active={activeItem === "Món ngon Trending"} onClick={() => handleItemClick("Món ngon Trending")} />
+        </nav>
 
-      {/* REGION */}
-      <div>
-        <p className="text-sm font-semibold text-gray-500 mb-2">
-          Khám phá vùng miền
-        </p>
+        <hr className="my-4" />
 
-        <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Bắc" active={activeItem === "Ẩm thực Miền Bắc"} onClick={() => handleItemClick("Ẩm thực Miền Bắc")}/>
-        <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Trung" active={activeItem === "Ẩm thực Miền Trung"} onClick={() => handleItemClick("Ẩm thực Miền Trung")}/>
-        <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Nam" active={activeItem === "Ẩm thực Miền Nam"} onClick={() => handleItemClick("Ẩm thực Miền Nam")} />
-      </div>
-    </aside>
+        {/* REGION */}
+        <div>
+          <p className="text-sm font-semibold text-gray-500 mb-2">
+            Khám phá vùng miền
+          </p>
+
+          <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Bắc" active={activeItem === "Ẩm thực Miền Bắc"} onClick={() => handleItemClick("Ẩm thực Miền Bắc")} />
+          <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Trung" active={activeItem === "Ẩm thực Miền Trung"} onClick={() => handleItemClick("Ẩm thực Miền Trung")} />
+          <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Nam" active={activeItem === "Ẩm thực Miền Nam"} onClick={() => handleItemClick("Ẩm thực Miền Nam")} />
+        </div>
+      </aside>
+    </>
   );
 };
 
@@ -53,7 +72,7 @@ export default function Sidebar() {
 icon: icon hiển thị
 label: nhãn của mục
 active: để xác định mục có đang được chọn hay không
-onClick: hàm xử lý khi mục được click
+onClick: hàm xử lý khi mục được click(hàm này sẽ cập nhật lại label đang active trong Sidebar)
 sau khi click sẽ gọi hàm onClick truyền từ cha để cập nhật trạng thái active sau đó cập nhật biến activeItem trong Sidebar
 activeItem sẽ quyết định mục nào được tô màu khác để người dùng biết mục nào đang được chọn
 */
@@ -61,11 +80,10 @@ activeItem sẽ quyết định mục nào được tô màu khác để ngườ
 const SidebarItem = ({ icon, label, active, onClick }) => {
   return (
     <div onClick={onClick} className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer
-        ${
-          active
-            ? "bg-orange-100 text-yellow-400 font-semibold"
-            : "text-gray-700 hover:bg-gray-100"
-        }`}>
+        ${active
+        ? "bg-orange-100 text-yellow-400 font-semibold"
+        : "text-gray-700 hover:bg-gray-100"
+      }`}>
       <span className="w-5 h-5">{icon}</span>
       <span className="text-sm">{label}</span>
     </div>
