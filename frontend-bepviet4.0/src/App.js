@@ -65,6 +65,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path='/' element={<Home />}></Route>
             <Route path='/create-blog' element={<CreateBlog />}></Route>
+            <Route path='/create-recipe' element={<CreateRecipe />}></Route>
             <Route path='/login' element={<Login />}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
