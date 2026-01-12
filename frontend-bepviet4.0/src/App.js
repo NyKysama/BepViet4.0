@@ -10,6 +10,7 @@ import Register from './view/pages/user/Register';
 import NotFound from './view/pages/user/NotFound';
 import Home from './view/pages/user/Home';
 import RecipeDetail from './view/pages/user/RecipeDetail';
+import UserProfile from "./view/pages/user/UserProfile"
 
 const recipeData ={
   "post": {
@@ -70,6 +71,7 @@ function App() {
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
             <Route path='/recipe' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>
+            <Route path='/user-profile' element={<UserProfile></UserProfile>}></Route>
           </Route>
           <Route path='/ad' element={<LayoutAdmin />}> </Route>
         </Routes>
