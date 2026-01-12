@@ -23,11 +23,18 @@ export default function CreateRecipe() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Tên món ăn</label>
+                <label className="text-xs font-bold text-gray-400 uppercase">Tên món ăn</label>
                 <input type="text" className="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ví dụ: Cá kho tộ miền Tây" />
               </div>
+              <div>
+                <label className="text-xs font-bold text-gray-400 uppercase">Ảnh bìa công thức</label>
+                <div className="w-full h-40 border-2 border-dashed border-slate-200 rounded-[24px] flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 cursor-pointer transition-all">
+                  <ImagePlus size={24} />
+                  <span className="mt-2 font-medium">Click để chọn ảnh</span>
+                </div>
+              </div>
               <div>            
-                <label className="text-sm font-medium text-gray-700">Mô tả ngắn</label>
+                <label className="text-xs font-bold text-gray-400 uppercase">Mô tả ngắn</label>
                 <textarea className="w-full mt-1 p-3 bg-gray-50 border border-gray-200 rounded-xl h-24 outline-none" placeholder="Viết vài dòng giới thiệu về món ăn này..." />
               </div>
             </div>
