@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {X, Plus, Edit, EyeOff, Eye, Trash2, FolderTree, Search } from 'lucide-react';
 
 export default function CategoryTable() {
-    const mockCategories = [
+  const mockCategories = [
   { category_id: "CAT_001", name: "Món ngon Trending", status: "Visible" },
   { category_id: "CAT_002", name: "Ẩm thực Miền Bắc", status: "Visible" },
   { category_id: "CAT_003", name: "Ẩm thực Miền Trung", status: "Visible" },
@@ -34,7 +34,7 @@ export default function CategoryTable() {
 
       <div className="overflow-x-auto">
 
-         {/* Search Bar */}
+        {/* Search Bar */}
         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />

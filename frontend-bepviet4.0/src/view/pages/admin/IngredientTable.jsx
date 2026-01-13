@@ -1,5 +1,6 @@
-import React from 'react';
-import { Plus, Edit, EyeOff, Eye, Trash2, Soup, Search, Tag } from 'lucide-react';
+import {React, useState} from 'react';
+import {X, Plus, Edit, EyeOff, Eye, Trash2, Soup, Search, Tag } from 'lucide-react';
+
 
 export default function IngredientTable() {
     const mockIngredients = [
@@ -9,6 +10,12 @@ export default function IngredientTable() {
   { ingredient_id: "ING_004", name: "Cà cuống", unit: "con", category: "Đặc sản", status: "Hidden" }, // Đang ẩn
   { ingredient_id: "ING_005", name: "Hành tím", unit: "gram", category: "Rau củ", status: "Visible" }
 ];
+
+ const [searchTerm, setSearchTerm] = useState('');
+ const filteredIngredients = mockIngredients.filter(cat =>
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cat.ingredient_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   return (
     <div className="p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl">
       {/* Header với chức năng Thêm */}
@@ -24,6 +31,33 @@ export default function IngredientTable() {
         </button>
       </div>
 
+       {/* Search Bar */}
+        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm nguyên liệu theo tên hoặc ID..."
+              className="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:outline-none transition text-slate-700"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-slate-200 rounded-full transition"
+              >
+                <X size={18} className="text-slate-400" />
+              </button>
+            )}
+          </div>
+          {searchTerm && (
+            <p className="text-xs text-slate-500 mt-2 ml-1">
+              Tìm thấy <span className="font-bold text-emerald-600">{filteredIngredients.length}</span> kết quả
+            </p>
+          )}
+        </div>
+
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
@@ -35,7 +69,7 @@ export default function IngredientTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {mockIngredients.map((ing) => (
+            {filteredIngredients.map((ing) => (
               <tr key={ing.ingredient_id} className={`hover:bg-slate-50/50 transition-all ${ing.status === 'Hidden' ? 'bg-slate-50/30' : ''}`}>
                 <td className="py-5 px-4 text-xs font-mono font-bold text-slate-400">
                   {ing.ingredient_id}
