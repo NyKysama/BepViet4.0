@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus, Edit, EyeOff, Eye, Trash2, FolderTree, Search } from 'lucide-react';
+import {useState} from 'react';
+import {X, Plus, Edit, EyeOff, Eye, Trash2, FolderTree, Search } from 'lucide-react';
 
 export default function CategoryTable() {
     const mockCategories = [
@@ -9,6 +9,13 @@ export default function CategoryTable() {
   { category_id: "CAT_004", name: "Ẩm thực Miền Nam", status: "Visible" },
   { category_id: "CAT_005", name: "Món Chay", status: "Hidden" } // Admin đang ẩn danh mục này
 ];
+
+ const [searchTerm, setSearchTerm] = useState('');
+ const filteredCategories = mockCategories.filter(cat =>
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cat.category_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl">
       {/* Header với chức năng Thêm */}
@@ -19,12 +26,41 @@ export default function CategoryTable() {
           </h2>
           <p className="text-slate-500 text-sm">Quản lý các nhóm món ăn và vùng miền trên hệ thống</p>
         </div>
+        
         <button className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100">
           <Plus size={20} /> Thêm Danh mục
         </button>
       </div>
 
       <div className="overflow-x-auto">
+
+         {/* Search Bar */}
+        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm danh mục theo tên hoặc ID..."
+              className="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:outline-none transition text-slate-700"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-slate-200 rounded-full transition"
+              >
+                <X size={18} className="text-slate-400" />
+              </button>
+            )}
+          </div>
+          {searchTerm && (
+            <p className="text-xs text-slate-500 mt-2 ml-1">
+              Tìm thấy <span className="font-bold text-emerald-600">{filteredCategories.length}</span> kết quả
+            </p>
+          )}
+        </div>
+
         <table className="w-full text-left">
           <thead>
             <tr className="text-slate-400 text-xs uppercase tracking-widest border-b border-slate-50">
@@ -35,7 +71,7 @@ export default function CategoryTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {mockCategories.map((cat) => (
+            {filteredCategories.map((cat) => (
               <tr key={cat.category_id} className={`hover:bg-slate-50/50 transition-all ${cat.status === 'Hidden' ? 'bg-slate-50/30' : ''}`}>
                 <td className="py-5 px-4">
                   <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">

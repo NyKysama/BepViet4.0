@@ -84,7 +84,7 @@ export default function UserTable() {
   };
 
   return (
-    <div className="min-h-screen bg-sky-800 mt-2">
+    <div className="min-h-screen bg-gray-100 mt-2">
       {/* Profile summary section oke */}
       <ProfileSumary user={user}></ProfileSumary>
 

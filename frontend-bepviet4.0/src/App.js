@@ -90,8 +90,8 @@ function App() {
 
           </Route>
           <Route element={<LayoutAdmin />}>
-            <Route path='/admin' element={<Dashboad />}></Route>
-            <Route path='/admin/dashboad' element={<Dashboad />}></Route>
+            <Route path='/admin' element={<Dashboad/>}></Route>
+            <Route path='/admin/dashboard' element={<Dashboad/>}></Route>
             <Route path='/admin/post' element={<PostTable />}></Route>
             <Route path='/admin/user' element={<UserTable />}></Route>
             <Route path='/admin/comment' element={<CommentTable />}></Route>
