@@ -5,9 +5,9 @@ import Layout from './view/layout/Layout';
 import LayoutAdmin from './view/layout/LayoutAdmin';
 import CreateRecipe from './view/pages/user/CreateRecipe';
 import CreateBlog from './view/pages/user/CreateBlog';
-import Login from './view/pages/user/Login';
-import Register from './view/pages/user/Register';
-import NotFound from './view/pages/user/NotFound';
+import Login from './view/pages/shares_pages/Login';
+import Register from './view/pages/shares_pages/Register';
+import NotFound from './view/pages/shares_pages/NotFound';
 import Home from './view/pages/user/Home';
 import RecipeDetail from './view/pages/user/RecipeDetail';
 import UserProfile from "./view/pages/user/UserProfile"
@@ -75,8 +75,7 @@ function App() {
             <Route path='/not-found' element={<NotFound />}></Route>
             <Route path='/recipe' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>
             <Route path='/user-profile' element={<UserProfile></UserProfile>}></Route>
-            <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
-         
+            <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>        
 
           </Route>
           <Route path='/ad' element={<LayoutAdmin />}> </Route>

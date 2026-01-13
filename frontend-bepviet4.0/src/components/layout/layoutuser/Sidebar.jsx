@@ -1,6 +1,6 @@
-import { Newspaper, BookOpen, Flame, MapPin } from "lucide-react";
+import { Newspaper, BookOpen, Flame, MapPin, PlusCircle, ChefHat } from "lucide-react";
 import { useState } from "react";
-
+import {Link} from "react-router-dom";
 // biên isOpen: để xác định sidebar có đang mở hay không (dùng cho mobile)
 // biến onClose: hàm để đóng sidebar (dùng cho mobile)
 export default function Sidebar({ isOpen, onClose }) {
@@ -49,21 +49,19 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* MENU */}
         <nav className="space-y-2">
           <SidebarItem icon={<Newspaper />} label="Bảng tin (News Feed)" active={activeItem === "Bảng tin (News Feed)"} onClick={() => handleItemClick("Bảng tin (News Feed)")} />
-          <SidebarItem icon={<BookOpen />} label="Bộ sưu tập của tôi" active={activeItem === "Bộ sưu tập của tôi"} onClick={() => handleItemClick("Bộ sưu tập của tôi")} />
+          <SidebarItem icon={<BookOpen />} label="Cookbook của tôi" active={activeItem === "Cookbook của tôi"} onClick={() => handleItemClick("Cookbook của tôi")} />
           <SidebarItem icon={<Flame />} label="Món ngon Trending" active={activeItem === "Món ngon Trending"} onClick={() => handleItemClick("Món ngon Trending")} />
         </nav>
 
         <hr className="my-4" />
-
         {/* REGION */}
         <div>
           <p className="text-sm font-semibold text-gray-500 mb-2">
-            Khám phá vùng miền
+            Chia sẻ bài viết của bạn
           </p>
 
-          <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Bắc" active={activeItem === "Ẩm thực Miền Bắc"} onClick={() => handleItemClick("Ẩm thực Miền Bắc")} />
-          <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Trung" active={activeItem === "Ẩm thực Miền Trung"} onClick={() => handleItemClick("Ẩm thực Miền Trung")} />
-          <SidebarItem icon={<MapPin />} label="Ẩm thực Miền Nam" active={activeItem === "Ẩm thực Miền Nam"} onClick={() => handleItemClick("Ẩm thực Miền Nam")} />
+          <SidebarItem icon={<PlusCircle />} label="Đăng bài viết mới" active={activeItem === "Đăng bài viết mới"} onClick={() => handleItemClick("Đăng bài viết mới")} />
+          <SidebarItem icon={<ChefHat />} label="Chia sẻ công thức mới" active={activeItem === "Chia sẻ công thức mới"} onClick={() => handleItemClick("Chia sẻ công thức mới")} />
         </div>
       </aside>
     </>

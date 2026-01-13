@@ -1,4 +1,4 @@
-import PostCard from "../../../components/users/PostCard";
+import PostCard from "../../../components/users/card/PostCard";
 
 export default function Home() {
     // Giả định danh sách bài viết từ database (MySQL)

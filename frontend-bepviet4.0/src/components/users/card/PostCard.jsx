@@ -1,5 +1,5 @@
 import { MoreHorizontal, Globe, MessageSquareQuote, UtensilsCrossed, BookOpenText } from 'lucide-react';
-import CommentSection from './CommentSection';
+import CommentSection from '../CommentSection';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PostOptions from './PostOptions';

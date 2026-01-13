@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { X,Plus, Camera, Edit2, UserPlus, Users } from 'lucide-react';
 //import component
 import ProfileSumary from '../../../components/users/ProfileSummary';
-import CardCookbook from '../../../components/users/CardCookbook';
-import PostCard from '../../../components/users/PostCard';
+import CardCookbook from '../../../components/users/card/CardCookbook';
+import PostCard from '../../../components/users/card/PostCard';
 
 export default function UserProfile() {
   const [user, setUser] = useState({//lay tu api/context
