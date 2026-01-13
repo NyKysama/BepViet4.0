@@ -19,7 +19,7 @@ export default function Header({ onOpenMenu }) {
         </span>
       </div>
 
-      {/* RIGHT - ICONS */}
+      {/* RIGHT - ICONS
       <div className="flex items-center gap-4">
         <img
           src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
@@ -33,7 +33,7 @@ export default function Header({ onOpenMenu }) {
         >
           <Menu size={24} className="text-gray-800" />
         </button>
-      </div>
+      </div> */}
     </nav>
   );
 };

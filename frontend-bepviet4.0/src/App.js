@@ -10,6 +10,7 @@ import Register from './view/pages/shares_pages/Register';
 import NotFound from './view/pages/shares_pages/NotFound';
 import Home from './view/pages/user/Home';
 import RecipeDetail from './view/pages/user/RecipeDetail';
+import BlogDetail from './view/pages/user/BlogDetail';  
 import UserProfile from "./view/pages/user/UserProfile"
 import CookbookDetail from "./view/pages/user/CookbookDetail"
 //import context 
@@ -73,9 +74,10 @@ function App() {
             <Route path='/login' element={<Login />}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
-            <Route path='/recipe' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>
+            <Route path='/recipe-detail' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>
+            <Route path='/blog-detail' element={<BlogDetail post={recipeData.post} />}></Route>
             <Route path='/user-profile' element={<UserProfile></UserProfile>}></Route>
-            <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>        
+            <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
 
           </Route>
           <Route path='/ad' element={<LayoutAdmin />}> </Route>

@@ -63,7 +63,7 @@ export default function PostCard({ postType = "recipe", post }) {
       {/* 3. Media: Hình ảnh/Video (Tràn viền nhẹ) */}
       {/* 3. Media: Hình ảnh/Video */}
       <div className="relative bg-slate-100 w-full overflow-hidden group">
-        <Link to={postType === "recipe" ? "/recipe" : "/blog-detail"}>
+        <Link to={postType === "recipe" ? "/recipe-detail" : "/blog-detail"}>
           <img
             src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80"
             className="w-full h-auto max-h-[320px] object-cover transition-transform duration-700 group-hover:scale-105"
