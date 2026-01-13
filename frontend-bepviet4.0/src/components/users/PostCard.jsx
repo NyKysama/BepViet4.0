@@ -2,9 +2,16 @@ import { MoreHorizontal, Globe, MessageSquareQuote, UtensilsCrossed, BookOpenTex
 import CommentSection from './CommentSection';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PostOptions from './PostOptions';
 
-export default function PostCard({ postType = "recipe" }) {
+
+export default function PostCard({ postType = "recipe", post }) {
   const [showComments, setShowComments] = useState(false);
+  const currentUser = {
+    id: 1,
+    name: "hora_hora",
+    avatar: "https://i.pravatar.cc/150?u=1"
+  };
   return (
     <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 mb-6 w-full max-w-[680px] mx-auto">
       {/* 1. Header: Thông tin tác giả */}
@@ -12,13 +19,13 @@ export default function PostCard({ postType = "recipe" }) {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full border-2 border-emerald-500 p-0.5">
             <img
-              src="https://ui-avatars.com/api/?name=Admin&background=random"
+              src={currentUser.avatar}
               className="w-full h-full rounded-full object-cover"
               alt="avatar"
             />
           </div>
           <div>
-            <h4 className="font-bold text-slate-800 text-sm hover:underline cursor-pointer">Admin Bếp Việt</h4>
+            <h4 className="font-bold text-slate-800 text-sm hover:underline cursor-pointer">{currentUser.name}</h4>
             <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium">
               <span>12 giờ trước</span>
               <span>•</span>
@@ -26,9 +33,12 @@ export default function PostCard({ postType = "recipe" }) {
             </div>
           </div>
         </div>
-        <button className="p-2 hover:bg-slate-50 rounded-full transition-colors">
-          <MoreHorizontal size={20} className="text-slate-400" />
-        </button>
+        {/* Options menu */}
+        <PostOptions
+          post={post}
+          isOwner={post?.user_id === currentUser.id}
+          onAction={(type) => console.log("Hành động:", type)}
+        />
       </div>
 
       {/* 2. Content: Nội dung chữ */}
