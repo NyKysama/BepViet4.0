@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LayoutDashboard, Users, ShoppingCart, BarChart3, Settings, LogOut, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, FileText, List, Settings, LogOut, ChevronRight } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose }) {
   const [activeItem, setActiveItem] = useState("Tổng quan");
@@ -46,16 +46,16 @@ export default function Sidebar({ isOpen, onClose }) {
             onClick={() => handleItemClick("Người dùng")} 
           />
           <NavItem 
-            icon={<ShoppingCart size={20} />} 
-            label="Đơn hàng" 
-            active={activeItem === "Đơn hàng"} 
-            onClick={() => handleItemClick("Đơn hàng")} 
+            icon={<FileText size={20} />} 
+            label="Bài viết" 
+            active={activeItem === "Bài viết"} 
+            onClick={() => handleItemClick("Bài viết")} 
           />
           <NavItem 
-            icon={<BarChart3 size={20} />} 
-            label="Báo cáo" 
-            active={activeItem === "Báo cáo"} 
-            onClick={() => handleItemClick("Báo cáo")} 
+            icon={<List size={20} />} 
+            label="Danh mục" 
+            active={activeItem === "Danh mục"} 
+            onClick={() => handleItemClick("Danh mục")} 
           />
 
           <div className="pt-4 pb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
