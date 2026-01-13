@@ -10,14 +10,11 @@ export default function Header({ onOpenMenu }) {
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">
-                <img src="./logo_BepViet.png" alt="logo" className="w-9 h-9 rounded-full cursor-pointer"></img>
-            </span>
-          </div>
-          <span className="text-xl text-green-600 font-bold hidden md:block tracking-tight">
-            Bếp Việt 4.0
-          </span>
+          <span className="flex items-center gap-2 text-green-600 text-lg font-bold whitespace-nowrap">
+          <img src="/logo_BepViet.png"
+          alt="logo"
+          className="w-9 h-9 rounded-full cursor-pointer"></img>Bếp Việt 4.0
+        </span>
         </div>
       </div>
 

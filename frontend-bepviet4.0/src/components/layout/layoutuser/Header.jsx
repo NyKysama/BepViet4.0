@@ -13,7 +13,7 @@ export default function Header({ onOpenMenu }) {
       {/* LEFT - LOGO */}
       <div className="flex items-center gap-2">
         <span className="flex items-center gap-2 text-green-600 text-lg font-bold whitespace-nowrap">
-          <img src="./logo_BepViet.png"
+          <img src="/logo_BepViet.png"
           alt="logo"
           className="w-9 h-9 rounded-full cursor-pointer"></img>Bếp Việt 4.0
         </span>
