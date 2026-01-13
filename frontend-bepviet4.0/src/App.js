@@ -15,6 +15,7 @@ import UserProfile from "./view/pages/user/UserProfile"
 import CookbookDetail from "./view/pages/user/CookbookDetail"
 //admin pages
 import PostTable from './view/pages/admin/PostTable';
+import Dashboad from './view/pages/admin/Dashboad';
 import UserTable from './view/pages/admin/UserTable';
 import CommentTable from './view/pages/admin/CommentTable';
 import CategoryTable from './view/pages/admin/CategoryTable';
@@ -89,6 +90,8 @@ function App() {
 
           </Route>
           <Route element={<LayoutAdmin />}>
+            <Route path='/admin' element={<Dashboad />}></Route>
+            <Route path='/admin/dashboad' element={<Dashboad />}></Route>
             <Route path='/admin/post' element={<PostTable />}></Route>
             <Route path='/admin/user' element={<UserTable />}></Route>
             <Route path='/admin/comment' element={<CommentTable />}></Route>
