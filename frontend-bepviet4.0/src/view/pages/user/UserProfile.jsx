@@ -5,7 +5,7 @@ import ProfileSumary from '../../../components/users/ProfileSummary';
 import CardCookbook from '../../../components/users/card/CardCookbook';
 import PostCard from '../../../components/users/card/PostCard';
 
-export default function UserProfile() {
+export default function UserTable() {
   const [user, setUser] = useState({//lay tu api/context
     username: "nguyenvana",
     caption: "Yêu thích nấu ăn và chia sẻ công thức với mọi người 👨‍🍳",

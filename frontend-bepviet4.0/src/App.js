@@ -13,6 +13,14 @@ import RecipeDetail from './view/pages/user/RecipeDetail';
 import BlogDetail from './view/pages/user/BlogDetail';  
 import UserProfile from "./view/pages/user/UserProfile"
 import CookbookDetail from "./view/pages/user/CookbookDetail"
+//admin pages
+import PostTable from './view/pages/admin/PostTable';
+import UserTable from './view/pages/admin/UserTable';
+import CommentTable from './view/pages/admin/CommentTable';
+import CategoryTable from './view/pages/admin/CategoryTable';
+import IngredientTable from './view/pages/admin/IngredientTable';
+import UserDetail from './view/pages/admin/UserDetail';
+
 //import context 
 // import {CookbookInfoProvider} from "./contexts/user/CookbookInfoContext"
 
@@ -80,8 +88,15 @@ function App() {
             <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
 
           </Route>
-          <Route path='/ad' element={<LayoutAdmin />}> </Route>
-       
+          <Route element={<LayoutAdmin />}>
+            <Route path='/admin/post' element={<PostTable />}></Route>
+            <Route path='/admin/user' element={<UserTable />}></Route>
+            <Route path='/admin/comment' element={<CommentTable />}></Route>
+            <Route path='/admin/category' element={<CategoryTable />}></Route>
+            <Route path='/admin/ingredient' element={<IngredientTable />}></Route>
+            <Route path='/admin/user-detail/:id' element={<UserDetail />}></Route>
+          </Route>
+          
          
         </Routes>
       </BrowserRouter>
