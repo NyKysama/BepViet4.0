@@ -51,7 +51,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
-            'password' => Hash::make($request->password), // Phải mã hóa mật khẩu
+            'password' => Hash::make($request->password), // Mã hóa mật khẩu
             'gmail' => $request->gmail,
             'phone' => $request->phone,
             'birthday' => $request->birthday,
@@ -73,16 +73,17 @@ class UserController extends Controller
         }
         // 2. Xử lý Upload Ảnh
         $avatarName = 'default-avatar.png'; // Tên mặc định nếu user không upload
-
+        $pathForDB = null;
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
             $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-            // Lưu file vào thư mục: storage/app/public/avatars
-            $file->storeAs('public/avatars', $avatarName);
+            // 2. Di chuyển file thẳng vào thư mục public/images của dự án
+            $file->move(public_path('images'), $avatarName);
+            $pathForDB = 'images/' . $avatarName;
         }
 
-        $user = $this->CreateUser($request, $avatarName);
+        $user = $this->CreateUser($request, $pathForDB);
 
         return response()->json([
             'status' => 'success',

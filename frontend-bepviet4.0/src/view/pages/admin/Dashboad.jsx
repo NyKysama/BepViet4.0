@@ -20,7 +20,7 @@ export default function AdminMainContent() {
   // Xử lý hành động duyệt hoặc từ chối bài đăng
   const handleAction = async (postId, action) => {
     setProcessingId(postId); // Đang xử lý bài này nè
-  // gọi api update trạng thái bài đăng
+    // gọi api update trạng thái bài đăng
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/admin/posts/${postId}/status`, {
         method: 'POST',
@@ -145,48 +145,52 @@ export default function AdminMainContent() {
               Công thức chờ duyệt
             </h3>
             {/* khi click vào xem tất cả thì hiện ra danh sách công thức chờ duyệt */}
-            <button onClick={() => setListstatus(true)}
-              className="text-sm text-emerald-600 font-bold hover:underline">Xem tất cả</button>
+            <button onClick={() => setListstatus(!liststatus)}
+              className="text-sm text-emerald-600 font-bold hover:underline">{liststatus ? 'Thu gọn' : 'Xem tất cả'}</button>
           </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="text-xs text-gray-400 uppercase border-b border-gray-100">
-                  <th className="py-3 font-semibold">Tên món ăn</th>
-                  <th className="py-3 font-semibold">Đầu bếp</th>
-                  <th className="py-3 font-semibold">Thời gian</th>
-                  <th className="py-3 font-semibold text-right">Hành động</th>
-                </tr>
-              </thead>
-              {/* Bảng Duyệt Bài: khi click vào xem tất cả thì hiện ra danh sách công thức chờ duyệt nếu ko thì form sẻ cố định */}
-              <tbody className={`text-sm ${liststatus ? 'overflow-y-auto max-h-[400px]' : 'overflow-y-hidden no-scrollbar'} `}>
-                {pendingRecipes.map((item) => (
-                  <tr key={item.id} className="group hover:bg-gray-50 transition">
-                    <td className="py-4 font-bold text-gray-800">
-                      {item.name}
-                      <span className="block text-xs text-gray-400 font-normal mt-0.5">{item.category}</span>
-                    </td>
-                    <td className="py-4 text-gray-600">{item.chef}</td>
-                    <td className="py-4 text-gray-500">
-                      <div className="flex items-center gap-1"><Clock size={14} /> {item.time}</div>
-                    </td>
-                    <td className="py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleAction(item.id, 'update')} disabled={processingId === item.id}
-                          className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition">
-                          <CheckCircle size={18} />
-                        </button>
-                        <button onClick={() => handleAction(item.id, 'reject')} disabled={processingId === item.id}
-                          className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition">
-                          <XCircle size={18} />
-                        </button>
-                      </div>
-                    </td>
+          <div className="w-full border border-gray-100 rounded-xl overflow-hidden bg-white">
+            <div className="h-[450px] overflow-y-auto no-scrollbar">
+              <table className="w-full text-left border-collapse table-fixed min-w-[600px]">
+                <thead>
+                  <tr className="text-xs text-gray-400 uppercase border-b border-gray-100 sticky top-0 bg-white z-10">
+                    <th className="py-3 px-4 font-semibold w-[35%]">Tên món ăn</th>
+                    <th className="py-3 px-4 font-semibold w-[25%]">Đầu bếp</th>
+                    <th className="py-3 px-4 font-semibold w-[20%]">Thời gian</th>
+                    <th className="py-3 px-4 font-semibold w-[20%] text-right">Hành động</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody className="text-sm">
+                  {/* 2. Logic: Nếu false thì slice lấy 5, nếu true thì lấy hết */}
+                  {(liststatus ? pendingRecipes : pendingRecipes.slice(0, 5)).map((item) => (
+                    <tr key={item.id} className="group hover:bg-gray-50 transition border-b border-gray-50 last:border-0">
+                      <td className="py-4 px-4 font-bold text-gray-800 truncate">{item.name}</td>
+                      <td className="py-4 px-4 text-gray-600 truncate">{item.chef}</td>
+                      <td className="py-4 px-4 text-gray-500">{item.time}</td>
+                      <td className="py-4 px-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition">
+                            <CheckCircle size={18} />
+                          </button>
+                          <button className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition">
+                            <XCircle size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {/* 3. Nếu danh sách trống hiển thị thông báo */}
+                  {pendingRecipes.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="py-40 text-center text-gray-400 italic">
+                        Hiện không có công thức nào chờ duyệt
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
