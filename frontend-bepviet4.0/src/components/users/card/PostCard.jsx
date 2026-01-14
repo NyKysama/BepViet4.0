@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PostOptions from './PostOptions';
 
-
 export default function PostCard({ postType = "recipe", post }) {
   const [showComments, setShowComments] = useState(false);
   const currentUser = {
