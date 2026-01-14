@@ -91,7 +91,7 @@ export default function CardCookbook({ cookbook }) {
                 )}
                 <div className="p-3">
                     <h3 className="font-semibold text-gray-800 text-sm md:text-base mb-1 line-clamp-2 group-hover:text-green-500 transition">
-                        {cookbook.title}
+                        {cookbook.name}
                     </h3>
                     <p className="text-xs text-gray-500"><span className="text-yellow-400">{cookbook.count}</span> công thức</p> 
                 </div>

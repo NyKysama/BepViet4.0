@@ -10,11 +10,10 @@ export default function Login() {
     "password":"",
   });
   const {myAccount,setMyAccount}=useMyAccount()
-  const {isLogin,setIsLogin}=useMyAccount()
   const [showPopup,setShowPopup]=useState(false)
   const navigate=useNavigate();
   function closePopup(){
-    if(isLogin){
+    if(myAccount.username){
       setShowPopup(false)
       navigate("/")
     }
@@ -28,8 +27,8 @@ export default function Login() {
     async function handleLogin(e) {
     e.preventDefault();
     e.preventDefault();
-  // Reset lại trạng thái trước khi bắt đầu
-  setIsLogin(false); 
+  // // Reset lại trạng thái trước khi bắt đầu
+  // setIsLogin(false); 
 
   try {
     const res = await fetch("http://localhost:8000/api/login-user", {
@@ -52,13 +51,16 @@ export default function Login() {
     }
 
     // Nếu ok thì mới gán thành công
-    setMyAccount(data);
-    setIsLogin(true);
+    setMyAccount(data.user);
+    // BẮT BUỘC: Chuyển Object thành String bằng JSON.stringify
+    localStorage.setItem('user_data', JSON.stringify(data.user));
+    // setIsLogin(true);
+    // localStorage.setItem('isLogin',"true")
     console.log("Thành công:", data);
 
   } catch (error) {
     // Luồng code sẽ nhảy vào đây nếu ném Error ở trên hoặc lỗi mạng
-    setIsLogin(false);
+    // setIsLogin(false);
     console.log("Lỗi đăng nhập:", error.message);
   } finally {
     // Dù thành công hay lỗi đều hiện Popup
@@ -70,7 +72,7 @@ export default function Login() {
       <div className="w-full max-w-md bg-white rounded-[32px] p-10 shadow-xl shadow-slate-200/50">
 
         {/*LoginSuccessPopup*/}
-        {showPopup && <LoginSuccessPopup onClose={closePopup} success={isLogin}></LoginSuccessPopup>}
+        {showPopup && <LoginSuccessPopup onClose={closePopup} success={myAccount.username}></LoginSuccessPopup>}
 
         {/* Logo & Header */}
         <div className="text-center mb-10">

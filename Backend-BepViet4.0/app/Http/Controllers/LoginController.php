@@ -34,6 +34,13 @@ class LoginController extends Controller
         if(! $user || ! Hash::check($data["password"], $user->password)){
              return response()->json(['message' => 'Sai ten tai khoan hoac mat khau',"success"=>false,], 401);
         }
+        $user->posts;
+        $user->cookbooks;
+        $user->followers;
+        $user->followings;
+        $url=$user->avatar;
+        $user->avatar_url="http://127.0.0.1:8000/storage/".$user->avatar;
+
 
         //jwt
         // $token = JWTAuth::fromUser($user);

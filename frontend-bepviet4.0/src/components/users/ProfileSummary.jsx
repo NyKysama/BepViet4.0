@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Camera, Edit2, UserPlus, Users } from 'lucide-react';
+
 export default function ProfileSumary({user}){
-    const [userProfile,setUserProfile]=useState(// thong tin tu component cha
-        user
-    )
-    const [newCap,setNewCap]=useState(userProfile.caption)
+    const user_info=user
+    const [newCap,setNewCap]=useState("chua co caption")
     const [isFollowing, setIsFollowing] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     return (
@@ -18,7 +17,7 @@ export default function ProfileSumary({user}){
                     <div className="relative group">
                     <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-4xl font-bold overflow-hidden">
                         <img 
-                        src="https://via.placeholder.com/128/f97316/ffffff?text=User" 
+                        src={user_info.avatar_url}
                         alt="Avatar" 
                         className="w-full h-full object-cover"
                         />
@@ -31,7 +30,7 @@ export default function ProfileSumary({user}){
                     {/* Info & Actions */}
                     <div className="flex-1 text-center md:text-left w-full">
                     <div className="flex flex-col items-center md:items-start gap-4 mb-3">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{userProfile.username}</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{user_info.username}</h1>
                         <div className="flex gap-2 justify-center md:justify-start">
                         <button 
                             onClick={() => setIsFollowing(!isFollowing)}
@@ -62,20 +61,20 @@ export default function ProfileSumary({user}){
                         </div>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 max-w-md mx-auto md:mx-0">{userProfile.caption}</p>
+                    <p className="text-gray-600 mb-4 max-w-md mx-auto md:mx-0">chua co caption</p>
                     
                     {/* Stats */}
                     <div className="flex gap-6 text-sm justify-center md:justify-start">
                         <div className="text-center md:text-left">
-                        <div className="font-bold text-xl text-gray-800">124</div>
+                        <div className="font-bold text-xl text-gray-800">{user?.posts.filter(r=>r.type=="Công thức")?.length||0}</div>
                         <div className="text-gray-500">Công thức</div>
                         </div>
                         <div className="text-center md:text-left">
-                        <div className="font-bold text-xl text-gray-800">2.5K</div>
+                        <div className="font-bold text-xl text-gray-800">{user?.followers?.length||"Nav"}</div>
                         <div className="text-gray-500">Người theo dõi</div>
                         </div>
                         <div className="text-center md:text-left">
-                        <div className="font-bold text-xl text-gray-800">856</div>
+                        <div className="font-bold text-xl text-gray-800">{user?.followings?.length||"Nav"}</div>
                         <div className="text-gray-500">Đang theo dõi</div>
                         </div>
                     </div>
@@ -105,7 +104,7 @@ export default function ProfileSumary({user}){
                     </button>
                     <button
                         onClick={() => {setShowEditModal(false)
-                            setUserProfile({...userProfile,caption:newCap})
+                           // setUserProfile({...userProfile,caption:newCap})
                         }}
                         className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition"
                     >

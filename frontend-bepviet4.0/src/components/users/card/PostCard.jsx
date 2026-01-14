@@ -3,8 +3,10 @@ import CommentSection from '../CommentSection';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PostOptions from './PostOptions';
-
-export default function PostCard({ postType = "recipe", post }) {
+/*
+@thamso: card_data: du lieu chinh cua card
+ */
+export default function PostCard({ postType = "recipe", post,card_data }) {
   const [showComments, setShowComments] = useState(false);
   const currentUser = {
     id: 1,
@@ -56,7 +58,7 @@ export default function PostCard({ postType = "recipe", post }) {
         </div>
 
         <p className="text-slate-700 text-[15px] leading-relaxed mt-1">
-          Sáng nay vừa thử làm món <b>Bún Chả Hà Nội</b> theo công thức mới. Nước chấm đậm đà, thịt nướng thơm lừng cả xóm. Mọi người có muốn mình chia sẻ công thức không nhỉ? 🍲✨
+          {card_data.description}
         </p>
       </div>
       {/* 3. Media: Hình ảnh/Video (Tràn viền nhẹ) */}
@@ -72,13 +74,13 @@ export default function PostCard({ postType = "recipe", post }) {
           {/* THẺ ĐÈ TRÊN ẢNH - Phong cách tối giản, mờ đục */}
           <div className="absolute top-3 right-3">
             <div className="backdrop-blur-md bg-black/20 px-3 py-1.5 rounded-full border border-white/30 flex items-center gap-1.5 shadow-sm">
-              {postType === 'recipe' ? (
+              {card_data.type=="Công thức" ? (
                 <UtensilsCrossed size={12} className="text-white" />
               ) : (
                 <BookOpenText size={12} className="text-white" />
               )}
               <span className="text-white text-[10px] font-bold uppercase tracking-widest">
-                {postType === 'recipe' ? 'Công thức' : 'Blog'}
+                {card_data.type=="Công thức"  ? 'Công thức' : 'Blog'}
               </span>
             </div>
           </div>
