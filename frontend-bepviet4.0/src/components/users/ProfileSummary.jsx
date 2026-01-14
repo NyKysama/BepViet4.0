@@ -23,7 +23,7 @@ export default function ProfileSumary({user}){
                         className="w-full h-full object-cover"
                         />
                     </div>
-                    <button className="absolute bottom-0 right-0 w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white hover:bg-orange-600 transition shadow-lg">
+                    <button className="absolute bottom-0 right-0 w-10 h-10 bg-green-400 rounded-full flex items-center justify-center text-white hover:bg-green-500 transition shadow-lg">
                         <Camera size={20} />
                     </button>
                     </div>
@@ -37,17 +37,17 @@ export default function ProfileSumary({user}){
                             onClick={() => setIsFollowing(!isFollowing)}
                             className={`px-6 py-2 rounded-full font-semibold transition ${
                             isFollowing 
-                                ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' 
-                                : 'bg-orange-500 text-white hover:bg-orange-600'
+                                ? 'bg-orange-50 text-yellow-400 hover:bg-orange-100' 
+                                : 'bg-green-400 text-white hover:bg-green-500'
                             }`}
                         >
                             {isFollowing ? (
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center gap-2 ">
                                 <Users size={18} />
                                 Đang theo dõi
                             </span>
                             ) : (
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center gap-2  ">
                                 <UserPlus size={18} />
                                 Theo dõi
                             </span>

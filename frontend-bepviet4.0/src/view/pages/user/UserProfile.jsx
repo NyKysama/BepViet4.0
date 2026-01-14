@@ -98,7 +98,7 @@ export default function UserTable() {
 
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition font-semibold shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-500 transition font-semibold shadow-sm"
             >
               <Plus size={20} />
               <span className="hidden sm:inline">Thêm Cookbook</span>
@@ -227,7 +227,7 @@ export default function UserTable() {
                 disabled={!newCookbook.title.trim()}
                 className={`flex-1 px-4 py-3 rounded-lg font-semibold transition ${
                   newCookbook.title.trim()
-                    ? 'bg-orange-500 text-white hover:bg-orange-600'
+                    ? 'bg-green-400 text-white hover:bg-green-500'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
@@ -249,7 +249,7 @@ export default function UserTable() {
               <button
                 onClick={() => setActiveTab('recipes')}
                 className={`flex-1 py-4 text-center font-semibold transition ${activeTab === 'recipes'
-                    ? 'text-orange-500 border-b-2 border-orange-500'
+                    ? 'text-green-500 border-b-2 border-green-500'
                     : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
@@ -258,7 +258,7 @@ export default function UserTable() {
               <button
                 onClick={() => setActiveTab('blogs')}
                 className={`flex-1 py-4 text-center font-semibold transition ${activeTab === 'blogs'
-                    ? 'text-orange-500 border-b-2 border-orange-500'
+                    ? 'text-green-500 border-b-2 border-green-500'
                     : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
