@@ -23,7 +23,7 @@ import IngredientTable from './view/pages/admin/IngredientTable';
 import UserDetail from './view/pages/admin/UserDetail';
 
 //import context 
-// import {CookbookInfoProvider} from "./contexts/user/CookbookInfoContext"
+import { MyAccountProvider } from './contexts/user/MyAccountContext';
 
 const recipeData ={
   "post": {
@@ -80,7 +80,7 @@ function App() {
             <Route path='/' element={<Home />}></Route>
             <Route path='/create-blog' element={<CreateBlog />}></Route>
             <Route path='/create-recipe' element={<CreateRecipe />}></Route>
-            <Route path='/login' element={<Login />}></Route>
+            <Route path='/login' element={<MyAccountProvider><Login/></MyAccountProvider>}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
             <Route path='/recipe-detail' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>

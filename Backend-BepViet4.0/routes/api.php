@@ -2,13 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\LoginController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
-
+});//->middleware('auth:sanctum');
+Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
     Route::post('/posts/{id}/status', [PostController::class, 'updateStatus']);
