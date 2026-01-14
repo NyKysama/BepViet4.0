@@ -1,46 +1,97 @@
-import React from 'react';
-import { 
-  Users, ChefHat, FileText, AlertTriangle, 
-  Search, Bell, TrendingUp, Database, Server, 
+import React, { useState, useEffect } from 'react';
+import {
+  Users, ChefHat, FileText, AlertTriangle,
+  Search, Bell, TrendingUp, Database, Server,
   Clock, CheckCircle, XCircle, ArrowUpRight
 } from 'lucide-react';
 
-// --- MOCK DATA (Dữ liệu giả lập) ---
-
-const statsData = [
-  { title: "Tổng người dùng", value: "12,340", change: "+12%", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-  { title: "Công thức món ăn", value: "8,540", change: "+5%", icon: ChefHat, color: "text-orange-600", bg: "bg-orange-50" },
-  { title: "Bài viết Blog", value: "1,203", change: "+2%", icon: FileText, color: "text-purple-600", bg: "bg-purple-50" },
-  { title: "Báo cáo vi phạm", value: "15", change: "-5%", icon: AlertTriangle, color: "text-red-600", bg: "bg-red-50" },
-];
-
-const pendingRecipes = [
-  { id: 101, name: "Phở Bò Gia Truyền", chef: "Bếp Cô Ba", time: "10 phút trước", category: "Món nước" },
-  { id: 102, name: "Gỏi Cuốn Tôm Thịt", chef: "Minh Foodie", time: "35 phút trước", category: "Khai vị" },
-  { id: 103, name: "Canh Chua Cá Lóc", chef: "User Mới", time: "1 giờ trước", category: "Món chính" },
-  { id: 104, name: "Chè Trôi Nước", chef: "SweetHome", time: "2 giờ trước", category: "Tráng miệng" },
-];
-
-const trendingRecipes = [
-  { name: "Cơm Tấm Sài Gòn", views: 95, color: "bg-orange-500" },
-  { name: "Bún Bò Huế", views: 82, color: "bg-orange-400" },
-  { name: "Bánh Mì Chảo", views: 65, color: "bg-orange-300" },
-  { name: "Nem Nướng", views: 45, color: "bg-orange-200" },
-];
-
-const mongoLogs = [
-  { id: 1, action: "SEARCH: 'thịt heo kho'", user: "User #882", time: "Just now" },
-  { id: 2, action: "AI: Generated Menu Plan", user: "User #99", time: "15s ago" },
-  { id: 3, action: "SYSTEM: Backup Shopping List", user: "System", time: "1m ago" },
-  { id: 4, action: "LOGIN: New device detected", user: "User #102", time: "5m ago" },
-];
-
-// --- MAIN COMPONENT ---
-
 export default function AdminMainContent() {
+  // --- LOGIC KẾT NỐI BẰNG FETCH ---
+  const [apiData, setApiData] = useState(null);
+  const [liststatus, setListstatus] = useState(false);
+  // gọi api lấy dữ liệu dashboard
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/admin/dashboard/stats')
+      .then(res => res.json())
+      .then(data => setApiData(data));
+  }, []);
+
+  const [processingId, setProcessingId] = useState(null);
+  // Xử lý hành động duyệt hoặc từ chối bài đăng
+  const handleAction = async (postId, action) => {
+    setProcessingId(postId); // Đang xử lý bài này nè
+  // gọi api update trạng thái bài đăng
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/admin/posts/${postId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action })
+      });
+
+      if (response.ok) {
+        // Xóa bài đó ra khỏi danh sách hiển thị ngay lập tức
+        setApiData(prev => ({
+          ...prev,
+          pending_posts: prev.pending_posts.filter(p => p.post_id !== postId)
+        }));
+      }
+    } catch (err) {
+      console.error("Lỗi rồi bro:", err);
+    }
+    setProcessingId(null); // Xong rồi
+  };
+
+  // --- ĐỔ DỮ LIỆU VÀO CÁC BIẾN  ---
+  const statsData = [
+    {
+      title: "Tổng người dùng",
+      value: apiData?.summary?.total_users?.toLocaleString() || "0",
+      change: "+12%", icon: Users, color: "text-blue-600", bg: "bg-blue-50"
+    },
+    {
+      title: "Tổng bài đăng",
+      value: apiData?.summary?.total_recipes?.toLocaleString() || "0",
+      change: "+5%", icon: ChefHat, color: "text-orange-600", bg: "bg-orange-50"
+    },
+    {
+      title: "Bài viết Blog",
+      value: apiData?.summary?.total_blogs?.toLocaleString() || "0",
+      change: "+2%", icon: FileText, color: "text-purple-600", bg: "bg-purple-50"
+    },
+    {
+      title: "Báo cáo vi phạm",
+      value: apiData?.reports?.length || "0",
+      change: "Mới", icon: AlertTriangle, color: "text-red-600", bg: "bg-red-50"
+    },
+  ];
+
+  const pendingRecipes = apiData?.pending_posts?.map(post => ({
+    id: post.post_id,
+    name: post.title,
+    chef: post.user?.name || "Ẩn danh",
+    time: post.created_at ? new Date(post.created_at).toLocaleTimeString('vi-VN') : "Vừa xong",
+    category: post.type || "Công thức"
+  })) || [];
+
+
+  // Các phần Mock Data giữ nguyên như code cũ của bro
+  const trendingRecipes = [
+    { name: "Cơm Tấm Sài Gòn", views: 95, color: "bg-orange-500" },
+    { name: "Bún Bò Huế", views: 82, color: "bg-orange-400" },
+    { name: "Bánh Mì Chảo", views: 65, color: "bg-orange-300" },
+    { name: "Nem Nướng", views: 45, color: "bg-orange-200" },
+  ];
+
+  const mongoLogs = [
+    { id: 1, action: "SEARCH: 'thịt heo kho'", user: "User #882", time: "Just now" },
+    { id: 2, action: "AI: Generated Menu Plan", user: "User #99", time: "15s ago" },
+    { id: 3, action: "SYSTEM: Backup Shopping List", user: "System", time: "1m ago" },
+    { id: 4, action: "LOGIN: New device detected", user: "User #102", time: "5m ago" },
+  ];
+
   return (
     <main className="flex-1 bg-gray-50 p-8 overflow-y-auto h-screen">
-      
+
       {/* 1. Header Section */}
       <header className="flex justify-between items-center mb-8">
         <div>
@@ -48,24 +99,22 @@ export default function AdminMainContent() {
           <p className="text-sm text-gray-500">Cập nhật lúc: {new Date().toLocaleTimeString()}</p>
         </div>
         <div className="flex gap-3">
-            {/* Thanh tìm kiếm */}
-            <div className="relative">
-                <input 
-                    type="text" 
-                    placeholder="Tìm kiếm..." 
-                    className="pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 w-64"
-                />
-                <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-            </div>
-            {/* Nút thông báo */}
-            <button className="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm hover:bg-gray-50 relative">
-                <Bell className="w-5 h-5 text-gray-500" />
-                <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 w-64"
+            />
+            <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+          </div>
+          <button className="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm hover:bg-gray-50 relative">
+            <Bell className="w-5 h-5 text-gray-500" />
+            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
         </div>
       </header>
 
-      {/* 2. Stats Grid (Thống kê 4 thẻ) */}
+      {/* 2. Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statsData.map((stat, index) => (
           <div key={index} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
@@ -83,19 +132,23 @@ export default function AdminMainContent() {
         ))}
       </div>
 
+
+
       {/* 3. Middle Section: Duyệt bài & Xu hướng */}
       <div className="grid grid-cols-12 gap-8 mb-8">
-        
-        {/* Bảng Duyệt Bài (Chiếm 8 phần) */}
+
+        {/* Bảng Duyệt Bài (Lấy từ BE) */}
         <div className="col-span-12 lg:col-span-8 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-gray-800 flex items-center gap-2">
               <AlertTriangle className="text-orange-500 w-5 h-5" />
               Công thức chờ duyệt
             </h3>
-            <button className="text-sm text-emerald-600 font-bold hover:underline">Xem tất cả</button>
+            {/* khi click vào xem tất cả thì hiện ra danh sách công thức chờ duyệt */}
+            <button onClick={() => setListstatus(true)}
+              className="text-sm text-emerald-600 font-bold hover:underline">Xem tất cả</button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -106,23 +159,26 @@ export default function AdminMainContent() {
                   <th className="py-3 font-semibold text-right">Hành động</th>
                 </tr>
               </thead>
-              <tbody className="text-sm">
+              {/* Bảng Duyệt Bài: khi click vào xem tất cả thì hiện ra danh sách công thức chờ duyệt nếu ko thì form sẻ cố định */}
+              <tbody className={`text-sm ${liststatus ? 'overflow-y-auto max-h-[400px]' : 'overflow-y-hidden no-scrollbar'} `}>
                 {pendingRecipes.map((item) => (
                   <tr key={item.id} className="group hover:bg-gray-50 transition">
                     <td className="py-4 font-bold text-gray-800">
-                        {item.name} 
-                        <span className="block text-xs text-gray-400 font-normal mt-0.5">{item.category}</span>
+                      {item.name}
+                      <span className="block text-xs text-gray-400 font-normal mt-0.5">{item.category}</span>
                     </td>
                     <td className="py-4 text-gray-600">{item.chef}</td>
                     <td className="py-4 text-gray-500">
-                        <div className="flex items-center gap-1"><Clock size={14} /> {item.time}</div>
+                      <div className="flex items-center gap-1"><Clock size={14} /> {item.time}</div>
                     </td>
                     <td className="py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition" title="Duyệt">
+                        <button onClick={() => handleAction(item.id, 'update')} disabled={processingId === item.id}
+                          className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition">
                           <CheckCircle size={18} />
                         </button>
-                        <button className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition" title="Từ chối">
+                        <button onClick={() => handleAction(item.id, 'reject')} disabled={processingId === item.id}
+                          className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition">
                           <XCircle size={18} />
                         </button>
                       </div>
@@ -134,44 +190,65 @@ export default function AdminMainContent() {
           </div>
         </div>
 
-        {/* Cột Xu Hướng (Chiếm 4 phần) */}
-        <div className="col-span-12 lg:col-span-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
-          <div>
-            <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <TrendingUp className="text-purple-600 w-5 h-5" />
-                Xu hướng tìm kiếm
+        {/* Cột Tăng trưởng (Mock) */}
+        <div className="col-span-12 lg:col-span-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+              <TrendingUp className="text-purple-600 w-5 h-5" />
+              Tăng trưởng
             </h3>
-            <div className="space-y-6">
-                {trendingRecipes.map((item, idx) => (
-                <div key={idx}>
-                    <div className="flex justify-between text-sm mb-1">
-                    <span className="font-bold text-gray-700">{item.name}</span>
-                    <span className="text-gray-500 text-xs">{item.views}%</span>
-                    </div>
-                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                    <div 
-                        className={`${item.color} h-full rounded-full transition-all duration-1000`} 
-                        style={{ width: `${item.views}%` }}
-                    ></div>
-                    </div>
-                </div>
-                ))}
+            {/* Bộ lọc theo ngày tuần tháng */}
+            <div className="flex bg-gray-50 border border-gray-100 p-1 rounded-lg">
+              {['day', 'week', 'month'].map((f) => (
+                <button
+                  key={f}
+                  className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all ${'hover:bg-white hover:shadow-sm uppercase text-gray-500'
+                    }`}
+                  onClick={() => {
+                    fetch(`http://127.0.0.1:8000/api/admin/dashboard/stats?filter=${f}`) // gọi api chart theo filter
+                      .then(res => res.json())
+                      .then(data => setApiData(data));
+                  }}
+                >
+                  {f === 'day' ? 'D' : f === 'week' ? 'W' : 'M'}
+                </button>
+              ))}
             </div>
           </div>
-          
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl flex items-center justify-between border border-blue-100">
-             <div>
-                <p className="text-xs text-blue-800 font-bold mb-0.5">Người dùng mới</p>
-                <p className="text-lg font-bold text-blue-600">+120</p>
-             </div>
-             <ArrowUpRight className="text-blue-600" />
+
+          {/* Khu vực hiển thị biểu đồ */}
+          <div className="flex-1 overflow-x-auto">
+            <div className="overflow-x-auto flex items-end justify-between h-40 gap-1 px-1 min-w-[100px]">
+              {apiData?.chart?.map((item, index) => (
+                <div key={index} className="flex-1 flex flex-col items-center group relative min-w-[50px] h-full justify-end">
+                  {/* Cột dữ liệu */}
+                  <div
+                    className="w-full bg-gradient-to-t from-orange-400 to-orange-300 rounded-t-sm transition-all duration-700 hover:from-orange-500 hover:to-orange-400 cursor-pointer"
+                    style={{
+                      // Tính toán chiều cao: (giá trị / max) * 100%
+                      height: `${Math.max((item.count / (Math.max(...apiData.chart.map(i => i.count)) || 1)) * 100, 5)}%`
+                    }}
+                  >
+                    {/* Tooltip hiện số lượng */}
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                      {item.count} bài
+                    </div>
+                  </div>
+                  {/* Label ngày/tháng */}
+                  <span className="text-[9px] text-gray-400 mt-2 truncate w-full text-center">
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 4. Bottom Section: MongoDB Logs & Server Status */}
+      {/* 4. Bottom Section (Logs & Health) */}
+      {/* ... (Giữ nguyên phần render MongoDB Logs và Server Health của bro) ... */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8">
-        
+
         {/* MongoDB Logs (Giao diện Terminal) */}
         <div className="lg:col-span-2 bg-gray-900 rounded-2xl p-6 shadow-xl text-gray-300">
           <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-800">
@@ -199,7 +276,7 @@ export default function AdminMainContent() {
             <Server className="text-gray-600 w-5 h-5" />
             Trạng thái Server
           </h3>
-          
+
           <div className="space-y-6">
             <div>
               <div className="flex justify-between text-xs mb-2">
@@ -222,19 +299,19 @@ export default function AdminMainContent() {
             </div>
 
             <div>
-                <div className="flex justify-between text-xs mb-2">
-                  <span className="text-gray-500 font-medium">Storage</span>
-                  <span className="text-gray-800 font-bold">28%</span>
-                </div>
-                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-blue-500 h-full w-[28%]"></div>
-                </div>
+              <div className="flex justify-between text-xs mb-2">
+                <span className="text-gray-500 font-medium">Storage</span>
+                <span className="text-gray-800 font-bold">28%</span>
               </div>
+              <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                <div className="bg-blue-500 h-full w-[28%]"></div>
+              </div>
+            </div>
           </div>
         </div>
 
       </div>
-
     </main>
   );
 }
+
