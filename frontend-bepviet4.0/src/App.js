@@ -74,18 +74,20 @@ const recipeData ={
 function App() {
   return (
     <>
+  
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+        
+          <Route element={<MyAccountProvider><Layout /></MyAccountProvider>}>
             <Route path='/' element={<Home />}></Route>
             <Route path='/create-blog' element={<CreateBlog />}></Route>
             <Route path='/create-recipe' element={<CreateRecipe />}></Route>
-            <Route path='/login' element={<MyAccountProvider><Login/></MyAccountProvider>}></Route>
+            <Route path='/login' element={<Login/>}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
             <Route path='/recipe-detail' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>
             <Route path='/blog-detail' element={<BlogDetail post={recipeData.post} />}></Route>
-            <Route path='/user-profile' element={<UserProfile></UserProfile>}></Route>
+            <Route path='/user-profile' element={<UserProfile/>}></Route>
             <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
 
           </Route>

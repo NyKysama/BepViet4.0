@@ -1,64 +1,23 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { X,Plus, Camera, Edit2, UserPlus, Users } from 'lucide-react';
 //import component
 import ProfileSumary from '../../../components/users/ProfileSummary';
 import CardCookbook from '../../../components/users/card/CardCookbook';
 import PostCard from '../../../components/users/card/PostCard';
+import { useMyAccount } from "../../../contexts/user/MyAccountContext";
 
 export default function UserTable() {
-  const [user, setUser] = useState({//lay tu api/context
-    username: "nguyenvana",
-    caption: "Yêu thích nấu ăn và chia sẻ công thức với mọi người 👨‍🍳",
-  })
+  const {myAccount,setMyAccount,isLogin,setIsLogin} = useMyAccount()//lay tu api/context
+  //filter data
+  const [user_info,setUser_Info]=useState(myAccount)
   const [activeTab, setActiveTab] = useState('recipes');
+  console.log(myAccount)
 
+  const [cookbooks,setCookbooks]=useState(user_info.cookbooks)
 
+  const [recipes,setRecipes] =useState(user_info.posts.filter(p=>p.type=="Công thức"));
 
-  const [cookbooks, setCookbooks] = useState([
-    { id: 1, title: 'Món Ăn Hàng Ngày', count: 24, image: 'https://via.placeholder.com/300x200/f97316/ffffff?text=Món+Ngày' },
-    { id: 2, title: 'Ăn Chay Healthy', count: 15, image: 'https://via.placeholder.com/300x200/fb923c/ffffff?text=Ăn+Chay' },
-    { id: 3, title: 'Món Tráng Miệng', count: 32, image: 'https://via.placeholder.com/300x200/fdba74/333333?text=Tráng+Miệng' },
-    { id: 4, title: 'Món Âu', count: 18, image: 'https://via.placeholder.com/300x200/ea580c/ffffff?text=Món+Âu' },
-    { id: 5, title: 'Bữa Sáng Nhanh', count: 28, image: 'https://via.placeholder.com/300x200/c2410c/ffffff?text=Bữa+Sáng' },
-  ]);
-
-  const recipes = [
-    {
-      id: 1,
-      title: 'Phở Bò Truyền Thống',
-      image: 'https://via.placeholder.com/600x400/f97316/ffffff?text=Phở+Bò',
-      views: 1234,
-      likes: 234,
-      time: '2 giờ trước'
-    },
-    {
-      id: 2,
-      title: 'Bánh Mì Thịt Nguội',
-      image: 'https://via.placeholder.com/600x400/fb923c/ffffff?text=Bánh+Mì',
-      views: 856,
-      likes: 178,
-      time: '5 giờ trước'
-    },
-  ];
-
-  const blogs = [
-    {
-      id: 1,
-      title: '10 Mẹo Nấu Ăn Tiết Kiệm Thời Gian',
-      excerpt: 'Chia sẻ những mẹo nhỏ giúp bạn tiết kiệm thời gian khi vào bếp mà vẫn có món ngon...',
-      image: 'https://via.placeholder.com/600x400/ea580c/ffffff?text=Blog+1',
-      time: '1 ngày trước',
-      readTime: '5 phút đọc'
-    },
-    {
-      id: 2,
-      title: 'Cách Chọn Nguyên Liệu Tươi Ngon',
-      excerpt: 'Hướng dẫn chi tiết cách nhận biết và chọn nguyên liệu tươi ngon tại chợ...',
-      image: 'https://via.placeholder.com/600x400/c2410c/ffffff?text=Blog+2',
-      time: '3 ngày trước',
-      readTime: '7 phút đọc'
-    },
-  ];
+  const [blogs,setBlogs]=useState(user_info.posts.filter(p=>p.type=="Blog"))
   //them coobbook
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCookbook, setNewCookbook] = useState({
@@ -86,7 +45,7 @@ export default function UserTable() {
   return (
     <div className="min-h-screen bg-gray-100 mt-2">
       {/* Profile summary section oke */}
-      <ProfileSumary user={user}></ProfileSumary>
+      <ProfileSumary user={user_info}></ProfileSumary>
 
       {/* Cookbooks Section */}
       <div className="bg-white mt-4 py-6 rounded-xl">
@@ -273,7 +232,7 @@ export default function UserTable() {
               <div className="space-y-6">
                 {recipes.map((recipe) => (
                   <>
-                    <PostCard></PostCard>
+                    <PostCard card_data={recipe}></PostCard>
                   </>
                 ))}
               </div>
@@ -283,7 +242,7 @@ export default function UserTable() {
               <div className="space-y-6">
                 {blogs.map((blog) => (
                   <>
-                    <PostCard></PostCard>
+                    <PostCard card_data={blog}></PostCard>
                   </>
                 ))}
               </div>

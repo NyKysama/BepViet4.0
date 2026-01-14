@@ -1,11 +1,13 @@
 import { useState,useContext,createContext } from "react";
 const MyAccountContext=createContext()
 export function MyAccountProvider({children}){
-    const [myAccount,setMyAccount]=useState({})
-    const [isLogin,setIsLogin]=useState(false)
+    var saveUser=localStorage.getItem('user_data')
+    saveUser=JSON.parse(saveUser)
+    const [myAccount,setMyAccount]=useState(saveUser)
+    // const [isLogin,setIsLogin]=useState(false)//ko dung gia tri nay lam logic
 
     return(
-        <MyAccountContext.Provider value={{myAccount,setMyAccount,isLogin,setIsLogin}}>
+        <MyAccountContext.Provider value={{myAccount,setMyAccount}}>
             {children}
         </MyAccountContext.Provider>
     )
