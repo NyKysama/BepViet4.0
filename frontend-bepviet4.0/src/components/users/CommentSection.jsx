@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, Reply, MoreHorizontal } from 'lucide-react';
 
+// Thành phần hiển thị một bình luận đơn lẻ, có thể bao gồm cả bình luận con (replies)
 const CommentItem = ({ comment = false }) => {
   return (
     <div className={`flex gap-3 `}>
@@ -31,8 +32,6 @@ const CommentItem = ({ comment = false }) => {
             Phản hồi
           </button>
         </div>
-
-        {/* Xử lý Bình luận trong bình luận (Nâng cao) */}
         {/* replies là bình luận con , sau nì có dữ liệu sẽ thany hàm kiểm tra khác
             hàm này chủ yếu dùng để đệ quy hiển thị bình luận con bên trong bình luận cha
             nó kiểm tra nếu comment có replies và độ dài lớn hơn 0 thì sẽ map qua từng reply và gọi lại CommentItem để hiển thị
@@ -83,6 +82,7 @@ export default function CommentSection() {
             placeholder="Viết phản hồi của bạn..."
             className="w-full bg-slate-50 border-none rounded-2xl py-3 px-4 pr-12 text-sm outline-none focus:ring-2 focus:ring-emerald-500/10"
           />
+          {/* Nút gửi bình luận */}
           <button className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 hover:text-emerald-600 font-bold text-sm">
             Gửi
           </button>

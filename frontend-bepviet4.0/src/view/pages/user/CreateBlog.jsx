@@ -1,13 +1,13 @@
-import { ImagePlus, Send, Save, FileText } from "lucide-react";
+import { ImagePlus, Send, FileText } from "lucide-react";
 
 export default function CreateBlog() {
   return (
-    <div className="w-full animate-fadeIn">
+    <div className="w-full animate-fadeIn mt-10">
       {/* Header trang - Giữ nguyên style với trang Công thức */}
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight flex items-center gap-3">
           <FileText className="text-green-500" size={32} />
-          Viết bài mới
+          Tạo bài viết
         </h1>
         <p className="text-slate-500 mt-1">Chia sẻ kiến thức ẩm thực và mẹo nhà bếp của bạn.</p>
       </div>
@@ -39,7 +39,7 @@ export default function CreateBlog() {
 
               {/* Nội dung Blog */}
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase ml-1 block mb-2">Nội dung chi tiết</label>
+                <label className="text-xs font-bold text-slate-400 uppercase ml-1 block mb-2">Nội dung</label>
                 {/* Thay bằng Editor của bạn, textarea này đã được chỉnh kích thước hợp lý */}
                 <textarea 
                   className="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-green-400 rounded-2xl text-lg min-h-[300px] outline-none transition-all"
@@ -54,7 +54,7 @@ export default function CreateBlog() {
         <div className="w-full xl:w-[320px]">
           <div className="sticky top-24 space-y-6">
             <div className="bg-white p-6 rounded-[24px] shadow-md border border-slate-100">
-              <h3 className="font-bold text-slate-800 border-b pb-4 mb-4">Cài đặt bài viết</h3>
+              <h3 className="font-bold text-slate-800 border-b pb-4 mb-4">Danh mục</h3>
               
               <div className="space-y-5">
                 <div>
