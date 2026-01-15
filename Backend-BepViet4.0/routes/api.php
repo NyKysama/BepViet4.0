@@ -14,6 +14,9 @@ Route::get('/user', function (Request $request) {
 });//->middleware('auth:sanctum');
 Route::post('/register',[UserController::class,'register'])->name("register");
 Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
+//posts
+Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
+
 Route::prefix('admin')->group(function () {
     Route::get('/posts', [PostController::class, 'getAllPosts']);
     Route::get('/pendingposts', [PostController::class, 'pendingPost']);
