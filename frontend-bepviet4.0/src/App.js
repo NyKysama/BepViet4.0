@@ -21,7 +21,7 @@ import CommentTable from './view/pages/admin/CommentTable';
 import CategoryTable from './view/pages/admin/CategoryTable';
 import IngredientTable from './view/pages/admin/IngredientTable';
 import UserDetail from './view/pages/admin/UserDetail';
-
+import PendingPosts from './view/pages/admin/PendingPosts';
 //import context 
 import { MyAccountProvider } from './contexts/user/MyAccountContext';
 
@@ -89,12 +89,14 @@ function App() {
             <Route path='/blog-detail' element={<BlogDetail post={recipeData.post} />}></Route>
             <Route path='/user-profile' element={<UserProfile/>}></Route>
             <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
+            <Route path='/update-blog/:id' element={<CreateBlog />}></Route>
 
           </Route>
           <Route element={<LayoutAdmin />}>
             <Route path='/admin' element={<Dashboad/>}></Route>
             <Route path='/admin/dashboard' element={<Dashboad/>}></Route>
             <Route path='/admin/post' element={<PostTable />}></Route>
+            <Route path='/admin/pendingposts' element={<PendingPosts/>}></Route>
             <Route path='/admin/user' element={<UserTable />}></Route>
             <Route path='/admin/comment' element={<CommentTable />}></Route>
             <Route path='/admin/category' element={<CategoryTable />}></Route>

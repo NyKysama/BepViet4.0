@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -14,6 +15,12 @@ Route::get('/user', function (Request $request) {
 Route::post('/register',[UserController::class,'register'])->name("register");
 Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
 Route::prefix('admin')->group(function () {
+    Route::get('/posts', [PostController::class, 'getAllPosts']);
+    Route::get('/pendingposts', [PostController::class, 'pendingPost']);
     Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
     Route::post('/posts/{id}/status', [PostController::class, 'updateStatus']);
+    Route::get('/update-blog/{id}', [PostController::class, 'editBlog']);
+    Route::put('/update-blog/{id}', [PostController::class, 'update'])->name("update-blog");
+    Route::delete('/delete-post/{id}', [PostController::class, 'destroy']);
 });
+Route::get('/category', [CategoryController::class, 'getCategory']);

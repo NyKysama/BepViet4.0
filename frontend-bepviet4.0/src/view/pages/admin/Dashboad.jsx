@@ -149,12 +149,12 @@ export default function AdminMainContent() {
               className="text-sm text-emerald-600 font-bold hover:underline">{liststatus ? 'Thu gọn' : 'Xem tất cả'}</button>
           </div>
           <div className="w-full border border-gray-100 rounded-xl overflow-hidden bg-white">
-            <div className="h-[450px] overflow-y-auto no-scrollbar">
+            <div className="h-[350px] overflow-y-auto">
               <table className="w-full text-left border-collapse table-fixed min-w-[600px]">
                 <thead>
                   <tr className="text-xs text-gray-400 uppercase border-b border-gray-100 sticky top-0 bg-white z-10">
                     <th className="py-3 px-4 font-semibold w-[35%]">Tên món ăn</th>
-                    <th className="py-3 px-4 font-semibold w-[25%]">Đầu bếp</th>
+                    <th className="py-3 px-4 font-semibold w-[25%]">Người đăng</th>
                     <th className="py-3 px-4 font-semibold w-[20%]">Thời gian</th>
                     <th className="py-3 px-4 font-semibold w-[20%] text-right">Hành động</th>
                   </tr>
@@ -169,10 +169,14 @@ export default function AdminMainContent() {
                       <td className="py-4 px-4 text-gray-500">{item.time}</td>
                       <td className="py-4 px-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <button className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition">
+                          <button disabled={processingId === item.id}
+                            onClick={() => handleAction(item.id, 'update')}
+                            className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition">
                             <CheckCircle size={18} />
                           </button>
-                          <button className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition">
+                          <button disabled={processingId === item.id}
+                            onClick={() => handleAction(item.id, 'rej')}
+                            className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition">
                             <XCircle size={18} />
                           </button>
                         </div>
@@ -250,7 +254,7 @@ export default function AdminMainContent() {
       </div>
 
       {/* 4. Bottom Section (Logs & Health) */}
-      {/* ... (Giữ nguyên phần render MongoDB Logs và Server Health của bro) ... */}
+      {/* ... (Giữ nguyên phần render MongoDB Logs và Server Health) ... */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8">
 
         {/* MongoDB Logs (Giao diện Terminal) */}

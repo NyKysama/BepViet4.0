@@ -16,18 +16,15 @@ class DashboardController extends Controller
         $totalUsers = User::count();
 
         // 2. Tổng số bài đăng (Công thức & Bài viết)
-        $totalRecipes = Post::where('type', 'Công thức')->where('status', 1)->count();
-        $totalBlogs   = Post::where('type', 'blog')->where('status', 1)->count();
+        $totalRecipes = Post::countRecipes();
+        $totalBlogs   = Post::countBlog();
 
         // 3. Biểu đồ tăng trưởng bài đăng (Tùy chỉnh: date, week, month)
         $filter = $request->query('filter', 'month'); // dl truyền vào để lọc mặc định theo tháng
         $growthData = $this->getGrowthData($filter); // hàm tự định nghĩa bên dưới
 
         // 4. Bài viết chờ duyệt (Trạng thái status = 0 hoặc 'pending')
-        $pendingPosts = Post::with('user')
-            ->where('status', 0) 
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $pendingPost = Post::pending();
 
         // // 5. Danh sách báo cáo/report mới nhất
         // $reports = Report::with(['user', 'post'])
@@ -42,7 +39,7 @@ class DashboardController extends Controller
                 'total_blogs' => $totalBlogs,
             ],
             'chart' => $growthData,
-            'pending_posts' => $pendingPosts,
+            'pending_posts' => $pendingPost,
             //'reports' => $reports
         ]);
     }
