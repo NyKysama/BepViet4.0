@@ -24,9 +24,9 @@ export default function UserProfile() {
   useEffect(() => {
   if (!username){
     setUser_Info(myAccount)
-    setCookbooks(myAccount.user.cookbooks)
-    setRecipes(myAccount.user.posts.filter(p=>p.type=="Công thức"))
-    setBlogs(myAccount.user.posts.filter(p=>p.type=="Blog"))
+    setCookbooks(myAccount.cookbooks)
+    setRecipes(myAccount.posts.filter(p=>p.type=="Công thức"))
+    setBlogs(myAccount.posts.filter(p=>p.type=="Blog"))
     return
   };
 
@@ -135,7 +135,7 @@ export default function UserProfile() {
             <div className="flex gap-4" style={{ minWidth: 'min-content' }}>
               {/*card cookbok*/}
               {cookbooks.map((cookbook) => (
-                <CardCookbook cookbook={cookbook}></CardCookbook>
+                <CardCookbook cookbook={cookbook} isMycookbook={username&&myAccount.username!=username?false:true}></CardCookbook>
               ))}
             </div>
           </div>

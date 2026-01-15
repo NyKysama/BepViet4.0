@@ -1,7 +1,7 @@
 import { useState } from "react"
 import {MoreVertical, Trash2} from "lucide-react"
 
-export default function CardCookbook({ cookbook }) {
+export default function CardCookbook({ cookbook,isMycookbook }) {
 
         const [showMenu, setShowMenu] = useState(false);
         const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -25,8 +25,9 @@ export default function CardCookbook({ cookbook }) {
                         alt={cookbook.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                     />
-                              {/*Nu 3 cham dropdow menu*/}
-                    <div className="absolute top-2 right-2">
+                    {/*Nu 3 cham dropdow menu*/}
+                    {isMycookbook &&(<>
+                      <div className="absolute top-2 right-2">
                           <button 
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -62,6 +63,10 @@ export default function CardCookbook({ cookbook }) {
                         </>
                     )}
                     </div>
+                    </>)
+
+                    }
+                  
                 </div>
 
                 {/* Popup Xác Nhận Xóa */}
