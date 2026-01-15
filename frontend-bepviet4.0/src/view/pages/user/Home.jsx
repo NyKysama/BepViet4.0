@@ -1,28 +1,28 @@
+
+import { useState,useEffect } from "react";
 import PostCard from "../../../components/users/card/PostCard";
+
 
 export default function Home() {
     // Giả định danh sách bài viết từ database (MySQL)
-const mockPosts = [
-  {
-    id: 101,
-    user_id: 1, // Trùng với currentUser.id -> Mình là chủ bài này
-    content: "Món bún chả tự làm nè mọi người!",
-    type: "recipe"
-  },
-  {
-    id: 102,
-    user_id: 99, // Khác currentUser.id -> Mình là khách
-    content: "Review quán phở ngon quận 1",
-    type: "blog"
-  }
-];
+const [posts,setPosts]=useState([])
+useEffect(()=>{
+fetch("http://127.0.0.1:8000/api/posts")
+.then(res=>res.json())
+.then(data=>{
+    console.log(data)
+    setPosts(data.posts)
+})
+},[])
     return (
         <div className="flex flex-col items-center py-8 bg-slate-50 min-h-screen">         
-            {mockPosts && mockPosts.map((item) => (
+            {posts && posts.map(    post => (
+                
                 <PostCard 
-                    key={item.id} 
-                    postType={item.type} 
-                    post={item} 
+                    card_data={post}
+                    key={post.post_id} 
+                    // postType={item.type} 
+                    // post={item} 
                 />
             ))}
         </div>

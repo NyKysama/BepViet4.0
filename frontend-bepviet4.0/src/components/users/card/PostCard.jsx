@@ -58,7 +58,7 @@ export default function PostCard({ postType = "recipe", post,card_data }) {
         </div>
 
         <p className="text-slate-700 text-[15px] leading-relaxed mt-1">
-          {card_data.description}
+          {card_data?.description||"nav"}
         </p>
       </div>
       {/* 3. Media: Hình ảnh/Video (Tràn viền nhẹ) */}
