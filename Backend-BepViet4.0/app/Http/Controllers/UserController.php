@@ -46,6 +46,29 @@ class UserController extends Controller
         return $validator;
     }
 
+    // hàm xử lý upload ảnh
+    public function uploadAvatar(Request $request)
+    {
+        //nếu có file ảnh đc gửi lên
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $destinationPath = public_path('images'); // đi đến thư mục lưu trữ ảnh
+            $originalName = $file->getClientOriginalName(); // Lấy tên gốc của file
+            $pathForDB = $destinationPath . '/' . $originalName;
+            // 2. KIỂM TRA: Nếu file CHƯA TỒN TẠI thì mới tạo/di chuyển vào
+            if (file_exists($pathForDB)) {
+                file($pathForDB);
+            }
+            // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
+            $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+            // 2. Di chuyển file thẳng vào thư mục public/images của dự án
+            $file->move(public_path('images'), $avatarName);                
+            return 'images/' . $avatarName;                       
+        }
+        // Ngược lại nếu KHÔNG CÓ file ảnh đc gửi lên
+        return 'images/default-avatar.png';
+    }
+
     public function CreateUser(Request $request, $avatarName)
     {
         $user = User::create([
@@ -56,39 +79,41 @@ class UserController extends Controller
             'phone' => $request->phone,
             'birthday' => $request->birthday,
             'sex' => $request->sex,
-            'avatar' => 'avatars/' . $avatarName,
+            'avatar' => $avatarName,
             'slug' => Str::slug($request->name) . '-' . Str::random(5), // Tạo slug duy nhất
             'role' => 'user',    // Mặc định là user
             'status' => 1,         // Mặc định là đang hoạt động
         ]);
         return $user;
     }
+
     public function register(Request $request)
     {
+        try {
         // 1. Validate dữ liệu đầu vào
         $validator = $this->checkValidation($request);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
-        }
-        // 2. Xử lý Upload Ảnh
-        $avatarName = 'default-avatar.png'; // Tên mặc định nếu user không upload
-        $pathForDB = null;
-        if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-            // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
-            $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-            // 2. Di chuyển file thẳng vào thư mục public/images của dự án
-            $file->move(public_path('images'), $avatarName);
-            $pathForDB = 'images/' . $avatarName;
-        }
+        }       
 
-        $user = $this->CreateUser($request, $pathForDB);
+        // 2. Xử lý Upload Ảnh
+        $avatarName = $this->uploadAvatar($request);
+
+        // 3. Tạo tài khoản User mới
+        $user = $this->CreateUser($request, $avatarName);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Tạo tài khoản thành công rồi bro!',
             'user' => $user
         ], 201);
+        } catch (\Exception $e) {
+        // Trả về JSON lỗi để React không bị crash Unexpected token <
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
     }
 }
