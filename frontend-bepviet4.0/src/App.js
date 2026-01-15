@@ -87,7 +87,8 @@ function App() {
             <Route path='/not-found' element={<NotFound />}></Route>
             <Route path='/recipe-detail' element={<RecipeDetail post={recipeData.post} ingredients={recipeData.ingredients} steps={recipeData.steps} />}></Route>
             <Route path='/blog-detail' element={<BlogDetail post={recipeData.post} />}></Route>
-            <Route path='/user-profile' element={<UserProfile/>}></Route>
+            <Route path='/user-profile/my-account' element={<UserProfile/>}></Route>
+            <Route path='/user-profile/:username' element={<UserProfile/>}></Route>
             <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
 
           </Route>

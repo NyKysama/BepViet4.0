@@ -1,23 +1,65 @@
-import React, { use, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X,Plus, Camera, Edit2, UserPlus, Users } from 'lucide-react';
+import { useParams,useNavigate } from "react-router-dom";
 //import component
 import ProfileSumary from '../../../components/users/ProfileSummary';
 import CardCookbook from '../../../components/users/card/CardCookbook';
 import PostCard from '../../../components/users/card/PostCard';
 import { useMyAccount } from "../../../contexts/user/MyAccountContext";
 
-export default function UserTable() {
+export default function UserProfile() {
+  const navigate=useNavigate()
+  const {username}=useParams()
   const {myAccount,setMyAccount,isLogin,setIsLogin} = useMyAccount()//lay tu api/context
-  //filter data
-  const [user_info,setUser_Info]=useState(myAccount)
+  //filter userdata
+  const [user_info,setUser_Info]=useState()
   const [activeTab, setActiveTab] = useState('recipes');
-  console.log(myAccount)
+  console.log(username)
 
-  const [cookbooks,setCookbooks]=useState(user_info.cookbooks)
+  const [cookbooks,setCookbooks]=useState([])
 
-  const [recipes,setRecipes] =useState(user_info.posts.filter(p=>p.type=="Công thức"));
+  const [recipes,setRecipes] =useState([]);
 
-  const [blogs,setBlogs]=useState(user_info.posts.filter(p=>p.type=="Blog"))
+  const [blogs,setBlogs]=useState([])
+  useEffect(() => {
+  if (!username){
+    setUser_Info(myAccount)
+    setCookbooks(myAccount.user.cookbooks)
+    setRecipes(myAccount.user.posts.filter(p=>p.type=="Công thức"))
+    setBlogs(myAccount.user.posts.filter(p=>p.type=="Blog"))
+    return
+  };
+
+  const fetchUser = async () => {
+    try {
+      // setLoading(true);
+      // setError(null);
+      const res = await fetch(`http://127.0.0.1:8000/api/user/${username}`);
+      const data = await res.json();
+      console.log(data)
+      //xu li loi
+      if (!res.ok) {
+        navigate("/not-found")
+        throw new Error(data.message || "Lỗi");
+
+      }
+
+      setUser_Info(data.user);
+      setCookbooks(data.user.cookbooks)
+      setRecipes(data.user.posts.filter(p=>p.type=="Công thức"))
+      setBlogs(data.user.posts.filter(p=>p.type=="Blog"))
+    } catch (err) {
+      // setError(err.message);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  fetchUser();
+}, [username]);
+
+
+
   //them coobbook
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCookbook, setNewCookbook] = useState({
@@ -52,7 +94,7 @@ export default function UserTable() {
         <div className="max-w-5xl mx-auto px-4 ">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-gray-800">
-              Cookbook của tôi
+              Cookbook của {user_info?.name}
             </h2>
 
             <button

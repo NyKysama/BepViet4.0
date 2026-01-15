@@ -13,6 +13,8 @@ Route::get('/user', function (Request $request) {
 });//->middleware('auth:sanctum');
 Route::post('/register',[UserController::class,'register'])->name("register");
 Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
+//user
+Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name("user.username");
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 
