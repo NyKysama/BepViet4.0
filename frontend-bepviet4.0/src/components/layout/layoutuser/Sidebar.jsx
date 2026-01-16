@@ -6,12 +6,11 @@ import {Link} from "react-router-dom";
 export default function Sidebar({ isOpen, onClose }) {
 
   // biến activeItem: để xác định mục nào đang được chọn trong sidebar
-  const [activeItem, setActiveItem] = useState("Bảng tin (News Feed)");
+  const [activeItem, setActiveItem] = useState("Trang chủ");
 
   const handleItemClick = (label) => {
     setActiveItem(label); // Cập nhật mục đang active
     console.log(`Bạn đã chuyển sang: ${label}`);
-    // Tại đây bạn có thể dùng thêm useNavigate() của react-router-dom để chuyển trang
   };
   return (
     <>
@@ -34,19 +33,20 @@ export default function Sidebar({ isOpen, onClose }) {
         md:rounded-[24px] md:border md:shadow-sm md:bg-white
       `}>
 
-        {/* USER INFO */}
+        {/* Tiêu đề thanh điều hướng */}
         <div className="flex items-center gap-3 mb-6">
           <img
             src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
             alt="avatar"
             className="w-10 h-10 rounded-full"
           />
+
           <span className="font-semibold text-gray-800">
-            Nguyễn Văn A
+            Menu
           </span>
         </div>
 
-        {/* MENU */}
+        {/* Các Page chính */}
         <nav className="space-y-2">
           <SidebarItem icon={<Newspaper />} label="Bảng tin (News Feed)" active={activeItem === "Bảng tin (News Feed)"} onClick={() => handleItemClick("Bảng tin (News Feed)")} />
           <SidebarItem icon={<BookOpen />} label="Cookbook của tôi" active={activeItem === "Cookbook của tôi"} onClick={() => handleItemClick("Cookbook của tôi")} />
@@ -54,7 +54,7 @@ export default function Sidebar({ isOpen, onClose }) {
         </nav>
 
         <hr className="my-4" />
-        {/* REGION */}
+        {/* Chức năng đăng bài */}
         <div>
           <p className="text-sm font-semibold text-gray-500 mb-2">
             Chia sẻ bài viết của bạn

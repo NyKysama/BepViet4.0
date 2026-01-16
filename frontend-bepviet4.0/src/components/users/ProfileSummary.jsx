@@ -17,7 +17,7 @@ export default function ProfileSumary({user}){
                     <div className="relative group">
                     <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-4xl font-bold overflow-hidden">
                         <img 
-                        src={user_info.avatar_url}
+                        src={user_info?.avatar_url}
                         alt="Avatar" 
                         className="w-full h-full object-cover"
                         />
@@ -30,7 +30,7 @@ export default function ProfileSumary({user}){
                     {/* Info & Actions */}
                     <div className="flex-1 text-center md:text-left w-full">
                     <div className="flex flex-col items-center md:items-start gap-4 mb-3">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{user_info.username}</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{user_info?.username}</h1>
                         <div className="flex gap-2 justify-center md:justify-start">
                         <button 
                             onClick={() => setIsFollowing(!isFollowing)}

@@ -114,6 +114,35 @@ class UserController extends Controller
             'status' => 'error',
             'message' => $e->getMessage()
         ], 500);
+        }
     }
+    //Lay thong tin user bang username
+      public function getUserByUsername($username){
+        //cach 2
+            //        $user = User::with([
+            //     'posts',
+            //     'cookbooks',
+            //     'followers',
+            //     'followings'
+            // ])->where('username', $username)->first();
+
+        $user=User::where("username",$username)->first();
+    
+        if($user){
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+            $user->avatar_url="http://127.0.0.1:8000/storage/".$user->avatar;
+            return response()->json([
+                "user"=>$user,
+                "message"=>`Lấy thông tin {$user->username} thành công!`,
+                "success"=>true,
+            ],200);
+        }
+        return response()->json([
+                "message"=>"không tìm thấy thông tin!",
+                "success"=>false,
+        ],404);
     }
 }
