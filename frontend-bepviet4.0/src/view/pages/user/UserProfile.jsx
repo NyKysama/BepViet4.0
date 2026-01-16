@@ -25,6 +25,7 @@ export default function UserProfile() {
   if (!username){
     if(!myAccount){
       navigate("/login")
+      return
     }
     setUser_Info(myAccount)
     setCookbooks(myAccount.cookbooks)
