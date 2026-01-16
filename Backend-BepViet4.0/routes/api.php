@@ -27,3 +27,7 @@ Route::prefix('admin')->group(function () {
     Route::delete('/delete-post/{id}', [PostController::class, 'destroy']);
 });
 Route::get('/category', [CategoryController::class, 'getCategory']);
+Route::get('/recipe-detail/{id}', [PostController::class, 'recipeDetail']);
+Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
+
+

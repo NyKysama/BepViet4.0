@@ -73,7 +73,7 @@ export default function PostTable() {
               <tr key={post.post_id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="py-4">
                   <div className="flex items-center gap-3">
-                    <Link to='/recipe-detail'>
+                    <Link to={post.type ==="Blog"?`blog-detail/${post.post_id}`:`recipe-detail/${post.post_id}`}>
                       <img src={post.img} alt="" className="w-12 h-12 rounded-xl object-cover" />
 
                       <div>

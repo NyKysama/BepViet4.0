@@ -6,6 +6,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Post;
+use App\Models\Step;
 use Laravel\Pail\ValueObjects\Origin\Console;
 
 
@@ -74,6 +75,21 @@ class PostController extends Controller
     {
         $post = Post::with('categories')->where('type', 'Blog')->find($id);
         return response()->json($post);
+    }
+
+    public function blogDetail($id)
+    {
+        $post = Post::with('categories','user')->where('type', 'Blog')->find($id);
+        return response()->json($post);
+    }
+
+    public function recipeDetail($id){
+        $post = Post::with('ingredients')->where('type', 'Công thức')->find($id);
+        $steps = Step::getStepByPostID($id);
+        return response()->json([
+            'post'=>$post,
+            'steps' => $steps
+        ]);
     }
 
     // 2. Hàm Cập nhật

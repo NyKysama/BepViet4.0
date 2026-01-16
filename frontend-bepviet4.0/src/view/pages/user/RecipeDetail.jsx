@@ -1,9 +1,16 @@
 import { Clock, BarChart, MapPin, ChevronLeft, CheckCircle2, UtensilsCrossed, Star } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StarRating from '../../../components/users/StarRating';
 import CommentSection from '../../../components/users/CommentSection';
-
-export default function RecipeDetail({ post, ingredients, steps }) {
+import { useParams } from 'react-router-dom';
+export default function RecipeDetail() {
+  const [recipe, setRecipe] = useState({});
+  const {id} = useParams();
+  useEffect(()=>{
+    fetch(`http://127.0.0.1:8000/api/recipe-detail/${id}`)
+        .then(res => res.json())
+        .then(data => setRecipe(data));
+  },[id]);
   const [userRating, setUserRating] = useState(0);
   // Hàm tính toán đơn giản
   const ratings = [5, 4, 5, 3, 5, 1]; // Dữ liệu mẫu từ DB
@@ -16,13 +23,13 @@ export default function RecipeDetail({ post, ingredients, steps }) {
   const handleSendRating = (star) => {
     setUserRating(star); // Lưu vào state để hiển thị feedback
     // Xử lý logic tại đây
-    console.log(`Đã nhận đánh giá ${star} sao cho bài viết: ${post.post_id}`);
+    console.log(`Đã nhận đánh giá ${star} sao cho bài viết: ${recipe.post?.title}`);
     alert(`Cảm ơn bạn đã đánh giá ${star} sao!`);
   };
   return (
     <div className="max-w-[1000px] mx-auto bg-gray-50 min-h-screen pb-20">
       <div className="relative h-[400px] w-full">
-        <img src={post.img} className="w-full h-full object-cover" alt={post.title} />
+        <img src={recipe.post?.img} className="w-full h-full object-cover" alt={recipe.post?.title} />
         <div className="absolute inset-0 bg-black/20" />
         <button className="absolute top-6 left-6 bg-white/90 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
           <ChevronLeft size={24} />
@@ -44,7 +51,7 @@ export default function RecipeDetail({ post, ingredients, steps }) {
             </span>
           </div>
           <div className="border-b border-slate-50 pb-8 mb-8">
-            <h1 className="text-3xl font-black text-slate-800 mb-4">{post.title}</h1>
+            <h1 className="text-3xl font-black text-slate-800 mb-4">{recipe.post?.title}</h1>
 
             <div className="flex items-center gap-2 mb-6">
               <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
@@ -55,24 +62,24 @@ export default function RecipeDetail({ post, ingredients, steps }) {
               <span className="text-sm text-slate-500 font-medium">{totalReviews} lượt đánh giá</span>
             </div>
 
-            <p className="text-slate-500 italic mb-8 border-l-4 border-emerald-500 pl-4">{post.description}</p>
+            <p className="text-slate-500 italic mb-8 border-l-4 border-emerald-500 pl-4">{recipe.post?.description}</p>
 
             {/* Stats Bar dạng 1 hàng ngang */}
             <div className="grid grid-cols-3 gap-2 bg-slate-50 rounded-2xl p-4">
               <div className="text-center">
                 <Clock className="mx-auto text-orange-500 mb-1" size={20} />
                 <p className="text-[10px] uppercase font-bold text-slate-400">Thời gian</p>
-                <p className="font-bold text-slate-700 text-sm">{post.cook_time}</p>
+                <p className="font-bold text-slate-700 text-sm">{recipe.post?.cook_time}</p>
               </div>
               <div className="text-center border-x border-slate-200">
                 <BarChart className="mx-auto text-emerald-500 mb-1" size={20} />
                 <p className="text-[10px] uppercase font-bold text-slate-400">Độ khó</p>
-                <p className="font-bold text-slate-700 text-sm">{post.difficulty}</p>
+                <p className="font-bold text-slate-700 text-sm">{recipe.post?.difficulty}</p>
               </div>
               <div className="text-center">
                 <MapPin className="mx-auto text-rose-500 mb-1" size={20} />
                 <p className="text-[10px] uppercase font-bold text-slate-400">Vùng miền</p>
-                <p className="font-bold text-slate-700 text-sm">{post.region}</p>
+                <p className="font-bold text-slate-700 text-sm">{recipe.post?.region}</p>
               </div>
             </div>
           </div>
@@ -84,11 +91,11 @@ export default function RecipeDetail({ post, ingredients, steps }) {
               <h3 className="text-xl font-black text-slate-800">Nguyên liệu cần chuẩn bị</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* Chia 2 cột nhẹ cho nguyên liệu nếu màn hình rộng */}
-              {ingredients.map((ing, index) => (
+              {recipe.post?.ingredients?.map((ing, index) => (
                 <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-emerald-100 transition-all">
-                  <span className="text-slate-700 font-bold">{ing.ing_id}</span>
+                  <span className="text-slate-700 font-bold">{ing.name}</span>
                   <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-black">
-                    {ing.amount} {ing.unit}
+                    {ing.pivot?.amount} {ing.pivot?.unit}
                   </span>
                 </div>
               ))}
@@ -102,7 +109,7 @@ export default function RecipeDetail({ post, ingredients, steps }) {
               <h3 className="text-xl font-black text-slate-800">Các bước thực hiện</h3>
             </div>
             <div className="space-y-10">
-              {steps.map((step) => (
+              {recipe.steps?.map((step) => (
                 <div key={step.step_id} className="group">
                   <div className="flex gap-4 mb-4">
                     <span className="flex-none w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-black text-sm shadow-lg group-hover:bg-emerald-500 transition-colors">
