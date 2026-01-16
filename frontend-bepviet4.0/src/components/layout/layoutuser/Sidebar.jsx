@@ -1,4 +1,4 @@
-import { Newspaper, BookOpen, Flame, MapPin, PlusCircle, ChefHat } from "lucide-react";
+import { Newspaper, PlusCircle, ChefHat, UserCircle, Soup } from "lucide-react";
 import { useState } from "react";
 import {Link} from "react-router-dom";
 // biên isOpen: để xác định sidebar có đang mở hay không (dùng cho mobile)
@@ -11,6 +11,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const handleItemClick = (label) => {
     setActiveItem(label); // Cập nhật mục đang active
     console.log(`Bạn đã chuyển sang: ${label}`);
+    // Tại đây bạn có thể dùng thêm useNavigate() của react-router-dom để chuyển trang
   };
   return (
     <>
@@ -21,47 +22,47 @@ export default function Sidebar({ isOpen, onClose }) {
         onClick={onClose} // Đóng sidebar khi click vào lớp phủ
       />
       <aside className={`
-        /* MOBILE: Đã bo tròn sắn nhưng có thể tăng thêm độ mềm mại */
-        fixed top-20 right-4 z-[70] w-64 bg-white rounded-[24px] shadow-2xl border border-gray-100 
+        /* Hieu ung cho mobile */
+        fixed top-20 right-4 z-[70] w-64 bg-yellow-50 rounded-[24px] shadow-2xl border border-gray-100 
         transform transition-all duration-300 ease-out p-5
         ${isOpen ? "translate-y-0 opacity-100 scale-100" : "-translate-y-4 opacity-0 scale-95 pointer-events-none"}
 
-        /* DESKTOP (md:): Bo tròn các góc bên phải để tạo cảm giác tách biệt với nội dung */
+        /* Hieu ung cho desktop*/
         md:static md:translate-y-0 md:opacity-100 md:scale-100 md:pointer-events-auto
         md:w-64 md:h-[calc(100vh-80px)] 
         md:ml-2 md:mt-2 md:mb-2 /* Thêm margin để Sidebar "nổi" lên thay vì dính sát mép */
-        md:rounded-[24px] md:border md:shadow-sm md:bg-white
+        md:rounded-[24px] md:border md:shadow-sm md:bg-yellow-50
+       
       `}>
 
-        {/* Tiêu đề thanh điều hướng */}
-        <div className="flex items-center gap-3 mb-6">
+        {/* USER INFO */}
+        {/* <div className="flex items-center gap-3 mb-6">
           <img
             src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
             alt="avatar"
             className="w-10 h-10 rounded-full"
           />
-
           <span className="font-semibold text-gray-800">
-            Menu
-          </span>
-        </div>
+            Nguyễn Văn A
+          </span> 
+        </div>*/}
 
-        {/* Các Page chính */}
+        {/* MENU */}
         <nav className="space-y-2">
-          <SidebarItem icon={<Newspaper />} label="Bảng tin (News Feed)" active={activeItem === "Bảng tin (News Feed)"} onClick={() => handleItemClick("Bảng tin (News Feed)")} />
-          <SidebarItem icon={<BookOpen />} label="Cookbook của tôi" active={activeItem === "Cookbook của tôi"} onClick={() => handleItemClick("Cookbook của tôi")} />
-          <SidebarItem icon={<Flame />} label="Món ngon Trending" active={activeItem === "Món ngon Trending"} onClick={() => handleItemClick("Món ngon Trending")} />
+          <Link to='/'><SidebarItem icon={<Newspaper />} label="Trang chủ" active={activeItem === "Trang chủ"} onClick={() => handleItemClick("Trang chủ")} /></Link>
+          <Link to='/user-profile/my-account'><SidebarItem icon={<UserCircle />} label="Trang cá nhân" active={activeItem === "Trang cá nhân"} onClick={() => handleItemClick("Trang cá nhân")} /></Link>
+          <Link to='/not-found'><SidebarItem icon={<Soup />} label="Hôm nay ăn gì?" active={activeItem === "Hôm nay ăn gì?"} onClick={() => handleItemClick("Hôm nay ăn gì?")} /></Link>
         </nav>
 
         <hr className="my-4" />
-        {/* Chức năng đăng bài */}
+        {/* REGION */}
         <div>
-          <p className="text-sm font-semibold text-gray-500 mb-2">
+          <p className="text-sm font-semibold text-gray-600 mb-2">
             Chia sẻ bài viết của bạn
           </p>
 
-          <SidebarItem icon={<PlusCircle />} label="Đăng bài viết mới" active={activeItem === "Đăng bài viết mới"} onClick={() => handleItemClick("Đăng bài viết mới")} />
-          <SidebarItem icon={<ChefHat />} label="Chia sẻ công thức mới" active={activeItem === "Chia sẻ công thức mới"} onClick={() => handleItemClick("Chia sẻ công thức mới")} />
+          <Link to='/create-blog'><SidebarItem icon={<PlusCircle />} label="Đăng bài viết mới" active={activeItem === "Đăng bài viết mới"} onClick={() => handleItemClick("Đăng bài viết mới")} /></Link>
+          <Link to='/create-recipe'><SidebarItem icon={<ChefHat />} label="Chia sẻ công thức mới" active={activeItem === "Chia sẻ công thức mới"} onClick={() => handleItemClick("Chia sẻ công thức mới")} /></Link>
         </div>
       </aside>
     </>
@@ -81,8 +82,8 @@ const SidebarItem = ({ icon, label, active, onClick }) => {
   return (
     <div onClick={onClick} className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer
         ${active
-        ? "bg-orange-100 text-yellow-400 font-semibold"
-        : "text-gray-700 hover:bg-gray-100"
+        ? "bg-green-200 text-yellow-500 font-semibold"
+        : "text-gray-700 hover:bg-white"
       }`}>
       <span className="w-5 h-5">{icon}</span>
       <span className="text-sm">{label}</span>

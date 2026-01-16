@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Header from "../../components/layout/layoutuser/Header";
-import Footer from "../../components/layout/layoutuser/Footer";
+//import Footer from "../../components/layout/layoutuser/Footer";
 import Sidebar from "../../components/layout/layoutuser/Sidebar";
 import AISuggestions from "../../components/layout/layoutuser/AISuggestions";
 export default function Layout() {
@@ -23,7 +23,9 @@ export default function Layout() {
                             <Outlet />
                         </div>
                     </main>
-                    {isHomePage && <AISuggestions />} {/* Chỉ hiển thị AISuggestions trên trang chủ */}
+
+                    {/* {isHomePage && <AISuggestions />} Chỉ hiển thị AISuggestions trên trang chủ */}
+
                 </div>
                 {/* <Footer /> */}
             </div>
