@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Camera, Edit2, UserPlus, Users } from 'lucide-react';
 import { Link,Navigate, useNavigate } from "react-router-dom";
 import { useMyAccount } from "../../contexts/user/MyAccountContext";
 
-export default function ProfileSumary({ user}) {
+export default function ProfileSumary({ user ,isMyAccount}) {
     const user_info = user
-    const {setMyAccount}=useMyAccount()
+    const {myAccount,setMyAccount}=useMyAccount()
     const [newCap, setNewCap] = useState("chua co caption")
     const [isFollowing, setIsFollowing] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const navigate=useNavigate()
+    var following
 
     //dang xuat
     const handleLogout = () => {
@@ -18,17 +19,26 @@ export default function ProfileSumary({ user}) {
     navigate("/")
     return
     };
+    useEffect(()=>{
+        if(myAccount){
+           following=myAccount.followings.filter(p=>p.user_id==user_info?.user_id)// sai lam:following=myAccount.followings.filter(p=>{p.user_id==user_info.user_id}) co {} thi phai co return
+            if(following.length>0){
+                setIsFollowing(true)
+            }else( setIsFollowing(true))
+            console.log(following)
+        }
+    },[user_info,myAccount])
     return (
         <>
             {/* Header Section */}
             <div className="bg-white shadow-sm rounded-xl relative">
-
-                <button
+                {isMyAccount && <button
                     onClick={handleLogout}
                     className="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded-full text-sm font-semibold hover:bg-red-600 transition"
                 >
                     Đăng xuất
-                </button>
+                </button>}
+               
 
                 <div className="max-w-5xl mx-auto px-4 py-6">
                     {/* Profile Info */}
@@ -52,6 +62,7 @@ export default function ProfileSumary({ user}) {
                             <div className="flex flex-col items-center md:items-start gap-4 mb-3">
                                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{user_info?.username}</h1>
                                 <div className="flex gap-2 justify-center md:justify-start">
+                                    {!isMyAccount && 
                                     <button
                                         onClick={() => setIsFollowing(!isFollowing)}
                                         className={`px-6 py-2 rounded-full font-semibold transition ${isFollowing
@@ -71,12 +82,16 @@ export default function ProfileSumary({ user}) {
                                             </span>
                                         )}
                                     </button>
-                                    <button
+                                    }
+                                    {isMyAccount && 
+                                                                        <button
                                         onClick={() => setShowEditModal(true)}
                                         className="p-2 rounded-full hover:bg-gray-100 transition"
                                     >
                                         <Edit2 size={20} className="text-gray-600" />
                                     </button>
+                                    }
+
                                 </div>
                             </div>
 
