@@ -45,6 +45,17 @@ class LoginController extends Controller
         //jwt
         // $token = JWTAuth::fromUser($user);
 
+        if(!$user){
+            return response()->json([
+            // 'access_token' => $token,
+            "message"=>"Dang nhap that bai",
+            "success"=>false,
+            // 'expires_in'   => auth()->factory()->getTTL() * 60,
+            'user'         =>$user,
+        ],404);
+        }
+    
+
         // Trả về token
         return response()->json([
             // 'access_token' => $token,
@@ -52,6 +63,6 @@ class LoginController extends Controller
             "success"=>true,
             // 'expires_in'   => auth()->factory()->getTTL() * 60,
             'user'         =>$user,
-        ]);
+        ],200);
     }
 }
