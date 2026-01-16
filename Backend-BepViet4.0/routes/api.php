@@ -8,6 +8,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\IngredientController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -20,6 +21,7 @@ Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name(
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 
 Route::prefix('admin')->group(function () {
+    //post
     Route::get('/posts', [PostController::class, 'getAllPosts']);
     Route::get('/pendingposts', [PostController::class, 'pendingPost']);
     Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
@@ -27,8 +29,19 @@ Route::prefix('admin')->group(function () {
     Route::get('/update-blog/{id}', [PostController::class, 'editBlog']);
     Route::put('/update-blog/{id}', [PostController::class, 'update'])->name("update-blog");
     Route::delete('/delete-post/{id}', [PostController::class, 'destroy']);
+    //category
+    Route::post('create-category', [CategoryController::class, 'createCategory']);
+    Route::get('update-category/{id}', [CategoryController::class, 'edit']);
+    Route::put('update-category/{id}', [CategoryController::class, 'update']);
+    Route::delete('delete-category', [CategoryController::class, 'destroy']);
+    //ingredient
+    Route::post('create-ingredient', [IngredientController::class, 'createIng']);
+    Route::get('update-ingredient/{id}', [IngredientController::class, 'edit']);
+    Route::put('update-ingredient/{id}', [IngredientController::class, 'update']);
+    Route::delete('delete-ingredient/{id}', [IngredientController::class, 'destroy']);
 });
 Route::get('/category', [CategoryController::class, 'getCategory']);
+Route::get('/ingredient', [CategoryController::class, 'getIng']);
 Route::get('/recipe-detail/{id}', [PostController::class, 'recipeDetail']);
 Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
 

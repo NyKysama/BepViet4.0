@@ -19,21 +19,22 @@ export default function Header({ onOpenMenu }) {
         </span>
       </div>
 
-      {/* RIGHT - ICONS
+      {/* RIGHT - ICONS */}
       <div className="flex items-center gap-4">
-        <img
+         {/*<img
           src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
           alt="avatar"
           className="w-8 h-8 rounded-full cursor-pointer"
         />
         <LogOut className="w-5 h-5"/>
+        */}
         <button 
           onClick={onOpenMenu} 
           className="md:hidden p-2 hover:bg-gray-100 rounded-lg bg-gray-50 active:scale-90 transition-all"
         >
           <Menu size={24} className="text-gray-800" />
         </button>
-      </div> */}
+      </div> 
     </nav>
   );
 };
