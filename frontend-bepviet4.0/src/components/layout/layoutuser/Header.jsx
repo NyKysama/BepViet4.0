@@ -1,3 +1,4 @@
+
 import { LogOut, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 // thư viện mới lucide-react có các icon như sau để tối ưu hơn
@@ -6,12 +7,14 @@ cách dùng:
     <LogOut className="w-5 h-5"/>
     className="w-5 h-5" để chỉnh kích thước icon
 */
+
 /* biến onOpenMenu dùng để mở menu sidebar */
 export default function Header({ onOpenMenu }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-white z-50 shadow-sm flex justify-between items-center px-6">
+    <nav className="fixed top-0 left-0 right-0 h-16 bg-yellow-50 z-50 shadow-sm flex justify-between items-center px-6">
+      
+      {/* logo ben trai */}
 
-      {/* LEFT - LOGO */}
       <div className="flex items-center gap-2">
         <span className="flex ">
           <Link to="/" className="flex items-center gap-2 text-green-600 text-lg font-bold whitespace-nowrap">
@@ -22,21 +25,21 @@ export default function Header({ onOpenMenu }) {
         </span>
       </div>
 
-      {/* RIGHT - ICONS
+      {/* nut mo menu ben phai */}
       <div className="flex items-center gap-4">
-        <img
+        {/* <img
           src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
           alt="avatar"
           className="w-8 h-8 rounded-full cursor-pointer"
         />
-        <LogOut className="w-5 h-5"/>
+        <LogOut className="w-5 h-5"/> */}
         <button 
           onClick={onOpenMenu} 
-          className="md:hidden p-2 hover:bg-gray-100 rounded-lg bg-gray-50 active:scale-90 transition-all"
+          className="md:hidden p-2 hover:bg-gray-100 rounded-lg bg-green-200 active:scale-90 transition-all"
         >
           <Menu size={24} className="text-gray-800" />
         </button>
-      </div> */}
+      </div>
     </nav>
   );
 };

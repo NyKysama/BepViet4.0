@@ -22,16 +22,18 @@ export default function UserProfile() {
 
   const [blogs,setBlogs]=useState([])
   useEffect(() => {
-  if (!username && myAccount){
+  if (!username){
+    if(!myAccount){
+      navigate("/login")
+      return
+    }
     setUser_Info(myAccount)
     setCookbooks(myAccount.cookbooks)
     setRecipes(myAccount.posts.filter(p=>p.type=="Công thức"))
     setBlogs(myAccount.posts.filter(p=>p.type=="Blog"))
     return
   }
-  else{
-    navigate("login")
-  };
+ ;
 
   const fetchUser = async () => {
     try {
