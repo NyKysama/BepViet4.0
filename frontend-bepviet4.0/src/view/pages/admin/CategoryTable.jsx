@@ -1,17 +1,17 @@
-import {useState} from 'react';
-import {X, Plus, Edit, EyeOff, Eye, Trash2, FolderTree, Search } from 'lucide-react';
+import { useState } from 'react';
+import { X, Plus, Edit, EyeOff, Eye, Trash2, FolderTree, Search } from 'lucide-react';
 
 export default function CategoryTable() {
   const mockCategories = [
-  { category_id: "CAT_001", name: "Món ngon Trending", status: "Visible" },
-  { category_id: "CAT_002", name: "Ẩm thực Miền Bắc", status: "Visible" },
-  { category_id: "CAT_003", name: "Ẩm thực Miền Trung", status: "Visible" },
-  { category_id: "CAT_004", name: "Ẩm thực Miền Nam", status: "Visible" },
-  { category_id: "CAT_005", name: "Món Chay", status: "Hidden" } // Admin đang ẩn danh mục này
-];
+    { category_id: "CAT_001", name: "Món ngon Trending", status: "Visible" },
+    { category_id: "CAT_002", name: "Ẩm thực Miền Bắc", status: "Visible" },
+    { category_id: "CAT_003", name: "Ẩm thực Miền Trung", status: "Visible" },
+    { category_id: "CAT_004", name: "Ẩm thực Miền Nam", status: "Visible" },
+    { category_id: "CAT_005", name: "Món Chay", status: "Hidden" } // Admin đang ẩn danh mục này
+  ];
 
- const [searchTerm, setSearchTerm] = useState('');
- const filteredCategories = mockCategories.filter(cat =>
+  const [searchTerm, setSearchTerm] = useState('');
+  const filteredCategories = mockCategories.filter(cat =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cat.category_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -26,10 +26,17 @@ export default function CategoryTable() {
           </h2>
           <p className="text-slate-500 text-sm">Quản lý các nhóm món ăn và vùng miền trên hệ thống</p>
         </div>
-        
-        <button className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100">
-          <Plus size={20} /> Thêm Danh mục
-        </button>
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-bold text-gray-400 uppercase">Tên Danh Mục:</label>
+          <input
+            type="text"
+            placeholder="Ví dụ: Món kho"
+            className="flex-1 px-3 py-2 border rounded"
+          />
+          <button className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100 text-sm">
+            <Plus size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -82,9 +89,8 @@ export default function CategoryTable() {
                   {cat.name}
                 </td>
                 <td className="py-5 px-4">
-                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${
-                    cat.status === 'Visible' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${cat.status === 'Visible' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
+                    }`}>
                     {cat.status === 'Visible' ? 'Đang hiển thị' : 'Đang ẩn'}
                   </span>
                 </td>
@@ -95,11 +101,10 @@ export default function CategoryTable() {
                       <Edit size={16} />
                     </button>
                     {/* Quyền Ẩn/Hiện */}
-                    <button 
-                      title={cat.status === 'Visible' ? "Ẩn danh mục" : "Hiện danh mục"} 
-                      className={`p-2 rounded-xl transition-all ${
-                        cat.status === 'Visible' ? 'bg-amber-50 text-amber-600 hover:bg-amber-600' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600'
-                      } hover:text-white`}
+                    <button
+                      title={cat.status === 'Visible' ? "Ẩn danh mục" : "Hiện danh mục"}
+                      className={`p-2 rounded-xl transition-all ${cat.status === 'Visible' ? 'bg-amber-50 text-amber-600 hover:bg-amber-600' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600'
+                        } hover:text-white`}
                     >
                       {cat.status === 'Visible' ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
