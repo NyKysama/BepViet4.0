@@ -61,8 +61,8 @@ export default function Sidebar({ isOpen, onClose }) {
             Chia sẻ bài viết của bạn
           </p>
 
-          <SidebarItem icon={<PlusCircle />} label="Đăng bài viết mới" active={activeItem === "Đăng bài viết mới"} onClick={() => handleItemClick("Đăng bài viết mới")} />
-          <SidebarItem icon={<ChefHat />} label="Chia sẻ công thức mới" active={activeItem === "Chia sẻ công thức mới"} onClick={() => handleItemClick("Chia sẻ công thức mới")} />
+          <Link to='/create-blog'><SidebarItem icon={<PlusCircle />} label="Đăng bài viết mới" active={activeItem === "Đăng bài viết mới"} onClick={() => handleItemClick("Đăng bài viết mới")} /></Link>
+          <Link to='/create-recipe'><SidebarItem icon={<ChefHat />} label="Chia sẻ công thức mới" active={activeItem === "Chia sẻ công thức mới"} onClick={() => handleItemClick("Chia sẻ công thức mới")} /></Link>
         </div>
       </aside>
     </>
