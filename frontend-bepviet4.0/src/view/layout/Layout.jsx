@@ -23,7 +23,7 @@ export default function Layout() {
                             <Outlet />
                         </div>
                     </main>
-                    {isHomePage && <AISuggestions />} {/* Chỉ hiển thị AISuggestions trên trang chủ */}
+                    {/* {isHomePage && <AISuggestions />} Chỉ hiển thị AISuggestions trên trang chủ */}
                 </div>
                 {/* <Footer /> */}
             </div>

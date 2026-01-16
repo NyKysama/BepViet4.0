@@ -1,4 +1,5 @@
 import { LogOut, Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 // thư viện mới lucide-react có các icon như sau để tối ưu hơn
 /* Home, Bell, Search, User, Heart, MessageCircle, Settings, LogOut 
 cách dùng: 
@@ -9,13 +10,15 @@ cách dùng:
 export default function Header({ onOpenMenu }) {
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 bg-white z-50 shadow-sm flex justify-between items-center px-6">
-      
+
       {/* LEFT - LOGO */}
       <div className="flex items-center gap-2">
-        <span className="flex items-center gap-2 text-green-600 text-lg font-bold whitespace-nowrap">
-          <img src="/logo_BepViet.png"
-          alt="logo"
-          className="w-9 h-9 rounded-full cursor-pointer"></img>Bếp Việt 4.0
+        <span className="flex ">
+          <Link to="/" className="flex items-center gap-2 text-green-600 text-lg font-bold whitespace-nowrap">
+            <img src="/logo_BepViet.png"
+              alt="logo"
+              className="w-9 h-9 rounded-full cursor-pointer" ></img>Bếp Việt 4.0
+          </Link>
         </span>
       </div>
 
