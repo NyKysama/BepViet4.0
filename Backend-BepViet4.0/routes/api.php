@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CookbookController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -49,6 +50,8 @@ Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
 //comment
 Route::get('/post/comments/{id}', [CommentController::class, 'getCommentByPost']);
 Route::post('/post/create-comments/{post}/{id?}', [CommentController::class, 'create']);
+//cookbook
+Route::post("/coobook/create",[CookbookController::class,"createCookbook"])->name("cookbook.create");
 
 
 

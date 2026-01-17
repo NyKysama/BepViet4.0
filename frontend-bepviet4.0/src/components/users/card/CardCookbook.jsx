@@ -21,8 +21,8 @@ export default function CardCookbook({ cookbook,isMycookbook }) {
             >
                 <div className="aspect-video overflow-hidden bg-gray-200 relative">
                     <img
-                        src={cookbook.image}
-                        alt={cookbook.title}
+                        src={"http://127.0.0.1:8000/"+cookbook.image}
+                        alt={cookbook.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                     />
                     {/*Nu 3 cham dropdow menu*/}
