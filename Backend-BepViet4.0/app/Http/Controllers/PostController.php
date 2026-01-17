@@ -60,7 +60,7 @@ class PostController extends Controller
     public function updateStatus(Request $request, $id)
     {
         // Tìm bài viết
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
 
         // 'status' (0: chờ, 1: duyệt, 2: từ chối)
         $post->update([

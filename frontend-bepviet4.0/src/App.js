@@ -54,7 +54,9 @@ function App() {
             <Route path='/admin/user' element={<UserTable />}></Route>
             <Route path='/admin/comment' element={<CommentTable />}></Route>
             <Route path='/admin/category' element={<CategoryTable />}></Route>
-            <Route path='/admin/ingredient' element={<IngredientTable />}></Route>
+            <Route path='/admin/category/:id' element={<CategoryTable />}></Route>
+             <Route path='/admin/ingredient' element={<IngredientTable />}></Route>
+            <Route path='/admin/ingredient/:id' element={<IngredientTable />}></Route>
             <Route path='/admin/user-detail/:id' element={<UserDetail />}></Route>
             <Route path='/admin/post/recipe-detail/:id' element={<RecipeDetail />}></Route>
             <Route path='/admin/post/blog-detail/:id' element={<BlogDetail />}></Route>

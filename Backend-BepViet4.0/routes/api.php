@@ -32,16 +32,16 @@ Route::prefix('admin')->group(function () {
     //category
     Route::post('create-category', [CategoryController::class, 'createCategory']);
     Route::get('update-category/{id}', [CategoryController::class, 'edit']);
-    Route::put('update-category/{id}', [CategoryController::class, 'update']);
-    Route::delete('delete-category', [CategoryController::class, 'destroy']);
+    Route::put('update-category/{id}', [CategoryController::class, 'update'])->name('update-category');
+    Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
     //ingredient
     Route::post('create-ingredient', [IngredientController::class, 'createIng']);
     Route::get('update-ingredient/{id}', [IngredientController::class, 'edit']);
-    Route::put('update-ingredient/{id}', [IngredientController::class, 'update']);
+    Route::put('update-ingredient/{id}', [IngredientController::class, 'update'])->name('update-ingredient');
     Route::delete('delete-ingredient/{id}', [IngredientController::class, 'destroy']);
 });
 Route::get('/category', [CategoryController::class, 'getCategory']);
-Route::get('/ingredient', [CategoryController::class, 'getIng']);
+Route::get('/ingredient', [IngredientController::class, 'getIng']);
 Route::get('/recipe-detail/{id}', [PostController::class, 'recipeDetail']);
 Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
 

@@ -14,7 +14,7 @@ class IngredientController extends Controller
     }
     //hàm kiểm tra dl đầu vào
     public function checkValidate(Request $request){
-        $validate = $request->Validate([
+        $validate = $request->validate([
             'name' => 'required|string|unique:ingredients,name|max:100'
         ]);
         return $validate;
@@ -32,13 +32,16 @@ class IngredientController extends Controller
 
     public function destroy($id){
         $ing = Ingredient::findOrFail($id);
+        $ing->delete();
         return response()->json(['message'=>'Xóa nguyên liệu thành công ']);
     }
 
     public function update(Request $request, $id){
-        $ing = $ing = Ingredient::find($id);
-        $validate = $this->checkValidate($request);
-        $ing::update($validate);
+        $ing = $ing = Ingredient::findOrFail($id);
+        $validate = $request->validate([
+            'name' => 'required|string|max:100|unique:ingredients,name,'.$id.',ing_id'
+        ]);
+        $ing->update($validate);
         return response()->json(['message'=>'Sửa nguyên liệu thành công ']);
     }
 }

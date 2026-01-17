@@ -1,21 +1,103 @@
-import { useState } from 'react';
-import { X, Plus, Edit, EyeOff, Eye, Trash2, FolderTree, Search } from 'lucide-react';
-
+import { X, Plus, Edit, Trash2, FolderTree, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 export default function CategoryTable() {
-  const mockCategories = [
-    { category_id: "CAT_001", name: "Món ngon Trending", status: "Visible" },
-    { category_id: "CAT_002", name: "Ẩm thực Miền Bắc", status: "Visible" },
-    { category_id: "CAT_003", name: "Ẩm thực Miền Trung", status: "Visible" },
-    { category_id: "CAT_004", name: "Ẩm thực Miền Nam", status: "Visible" },
-    { category_id: "CAT_005", name: "Món Chay", status: "Hidden" } // Admin đang ẩn danh mục này
-  ];
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name:''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [category, setCategory] = useState([]);
 
+  const {id} = useParams();
+
+  useEffect(()=>{
+    fetch('http://127.0.0.1:8000/api/category')
+      .then(res=>res.json())
+      .then(data=>setCategory(data))
+  },[])
+
+  useEffect(()=>{
+    if(id){
+      fetch(`http://127.0.0.1:8000/api/admin/update-category/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          setFormData({ // nì là dùng để lưu lại danh sách củ ý ds mà ms hiện ra
+            name: data.name || ''            
+          });          
+        })
+    }},[id])
+    // hàm dùng để thay đổi dl cập nhật cho set dự trên dl của input
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // ko bx này là j nhưng đại khái có nó ms gửi dl đi đc
+    setIsLoading(true);
+
+    const data = new FormData();// đây dl sẽ đc đưa vào hàm nì để đc đưa lên server 
+    data.append('name', formData.name);    
+
+    // Trick: Laravel kén PUT với FormData, dùng POST + _method PUT
+    if (id) data.append('_method', 'PUT'); // cái nì là dùng để báo cho hệ thống là mk đang cập nhật 
+    //cái try nì dùng để kiểm tra hôi
+    try {
+      // nì là dùng để xem hệ thống gửi qua đâu thực hiện chức năng j. hàm tạo ch có viết 
+      const url = id
+        ? `http://127.0.0.1:8000/api/admin/update-category/${id}`
+        : `http://127.0.0.1:8000/api/admin/create-category`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        alert(id ? "Cập nhật thành công!" : "Tạo danh mục thành công!");
+        navigate('/admin/category'); // Chuyển hướng sau khi xong
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (categoryId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài này không?")) return;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/admin/delete-category/${categoryId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',                
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);
+            setCategory(category.filter(p => p.category_id !== categoryId)); 
+        } else {
+            alert("Lỗi: " + result.message);
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API xóa:", error);
+    }
+};
+
+  // biến filteredCategories vừa có thể lọc vừa có thể xuất
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredCategories = mockCategories.filter(cat =>
-    cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cat.category_id.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = category?.filter(cat =>
+    cat?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl">
       {/* Header với chức năng Thêm */}
@@ -28,13 +110,16 @@ export default function CategoryTable() {
         </div>
         <div className="flex items-center gap-3">
           <label className="text-xs font-bold text-gray-400 uppercase">Tên Danh Mục:</label>
-          <input
+          <input            
             type="text"
             placeholder="Ví dụ: Món kho"
             className="flex-1 px-3 py-2 border rounded"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
           />
-          <button className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100 text-sm">
-            <Plus size={20} />
+          <button onClick={handleSubmit} className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100 text-sm">
+            {id ? <Edit size={16} /> : <Plus size={20} />}
           </button>
         </div>
       </div>
@@ -72,8 +157,7 @@ export default function CategoryTable() {
           <thead>
             <tr className="text-slate-400 text-xs uppercase tracking-widest border-b border-slate-50">
               <th className="pb-4 px-4 font-semibold">ID Danh mục</th>
-              <th className="pb-4 px-4 font-semibold">Tên Danh mục</th>
-              <th className="pb-4 px-4 font-semibold">Trạng thái</th>
+              <th className="pb-4 px-4 font-semibold">Tên Danh mục</th>              
               <th className="pb-4 px-4 text-right">Thao tác Admin</th>
             </tr>
           </thead>
@@ -87,28 +171,14 @@ export default function CategoryTable() {
                 </td>
                 <td className="py-5 px-4 font-bold text-slate-700">
                   {cat.name}
-                </td>
-                <td className="py-5 px-4">
-                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${cat.status === 'Visible' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
-                    }`}>
-                    {cat.status === 'Visible' ? 'Đang hiển thị' : 'Đang ẩn'}
-                  </span>
-                </td>
+                </td>                
                 <td className="py-5 px-4">
                   <div className="flex justify-end gap-2">
                     {/* Quyền Sửa */}
-                    <button title="Sửa tên" className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                    <Link to={`/admin/category/${cat.category_id}`} title="Sửa tên" className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                       <Edit size={16} />
-                    </button>
-                    {/* Quyền Ẩn/Hiện */}
-                    <button
-                      title={cat.status === 'Visible' ? "Ẩn danh mục" : "Hiện danh mục"}
-                      className={`p-2 rounded-xl transition-all ${cat.status === 'Visible' ? 'bg-amber-50 text-amber-600 hover:bg-amber-600' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600'
-                        } hover:text-white`}
-                    >
-                      {cat.status === 'Visible' ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                    <button className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
+                    </Link>                  
+                    <button onClick={()=>handleDelete(cat.category_id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
                       <Trash2 size={16} />
                     </button>
                   </div>

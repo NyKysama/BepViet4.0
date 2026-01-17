@@ -1,21 +1,99 @@
-import {React, useState} from 'react';
+import {React, useState, useEffect} from 'react';
 import {X, Plus, Edit, EyeOff, Eye, Trash2, Soup, Search, Tag } from 'lucide-react';
-
+import { useParams, Link } from 'react-router-dom';
 
 export default function IngredientTable() {
-    const mockIngredients = [
-  { ingredient_id: "ING_001", name: "Thịt ba chỉ", unit: "gram", category: "Thực phẩm tươi", status: "Visible" },
-  { ingredient_id: "ING_002", name: "Nước mắm", unit: "ml", category: "Gia vị", status: "Visible" },
-  { ingredient_id: "ING_003", name: "Đường thốt nốt", unit: "gram", category: "Gia vị", status: "Visible" },
-  { ingredient_id: "ING_004", name: "Cà cuống", unit: "con", category: "Đặc sản", status: "Hidden" }, // Đang ẩn
-  { ingredient_id: "ING_005", name: "Hành tím", unit: "gram", category: "Rau củ", status: "Visible" }
-];
+  const [formData, setFormData] = useState({
+    name:''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [ing, setIng] = useState([]);
+
+  const {id} = useParams();
+
+  useEffect(()=>{
+    fetch('http://127.0.0.1:8000/api/ingredient')
+      .then(res=>res.json())
+      .then(data=>setIng(data))
+  },[])
+
+  useEffect(()=>{
+    if(id){
+      fetch(`http://127.0.0.1:8000/api/admin/update-ingredient/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          setFormData({ // nì là dùng để lưu lại danh sách củ ý ds mà ms hiện ra
+            name: data.name || ''            
+          });          
+        })
+    }},[id])
+    // hàm dùng để thay đổi dl cập nhật cho set dự trên dl của input
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // ko bx này là j nhưng đại khái có nó ms gửi dl đi đc
+    setIsLoading(true);
+
+    const data = new FormData();// đây dl sẽ đc đưa vào hàm nì để đc đưa lên server 
+    data.append('name', formData.name);    
+
+    // Trick: Laravel kén PUT với FormData, dùng POST + _method PUT
+    if (id) data.append('_method', 'PUT'); // cái nì là dùng để báo cho hệ thống là mk đang cập nhật 
+    //cái try nì dùng để kiểm tra hôi
+    try {
+      // nì là dùng để xem hệ thống gửi qua đâu thực hiện chức năng j. hàm tạo ch có viết 
+      const url = id
+        ? `http://127.0.0.1:8000/api/admin/update-ingredient/${id}`
+        : `http://127.0.0.1:8000/api/admin/create-ingredient`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        alert(id ? "Cập nhật thành công!" : "Tạo nguyên liệu thành công!");        
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleDelete = async (ingId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài này không?")) return;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/admin/delete-ingredient/${ingId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',                
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);
+            setIng(ing.filter(p => p.ing_id !== ingId)); 
+        } else {
+            alert("Lỗi: " + result.message);
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API xóa:", error);
+    }
+};
 
  const [searchTerm, setSearchTerm] = useState('');
- const filteredIngredients = mockIngredients.filter(cat =>
-    cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cat.ingredient_id.toLowerCase().includes(searchTerm.toLowerCase())
+ const filteredIngredients = ing.filter(cat =>
+    cat?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   return (
     <div className="p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl">
       {/* Header với chức năng Thêm */}
@@ -26,9 +104,20 @@ export default function IngredientTable() {
           </h2>
           <p className="text-slate-500 text-sm">Quản lý danh mục nguyên liệu dùng trong các công thức nấu ăn</p>
         </div>
-        <button className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100">
-          <Plus size={20} /> Thêm Nguyên liệu
-        </button>
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-bold text-gray-400 uppercase">Tên Danh Mục:</label>
+          <input            
+            type="text"
+            placeholder="Ví dụ: Món kho"
+            className="flex-1 px-3 py-2 border rounded"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <button onClick={handleSubmit} className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-100 text-sm">
+            {id ? <Edit size={16} /> : <Plus size={20} />}
+          </button>
+        </div>
       </div>
 
        {/* Search Bar */}
@@ -64,40 +153,24 @@ export default function IngredientTable() {
             <tr className="text-slate-400 text-xs uppercase tracking-widest border-b border-slate-50">
               <th className="pb-4 px-4 font-semibold">ID</th>
               <th className="pb-4 px-4 font-semibold">Tên Nguyên liệu</th>
-              <th className="pb-4 px-4 font-semibold">Trạng thái</th>
               <th className="pb-4 px-4 text-right">Thao tác Admin</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
             {filteredIngredients.map((ing) => (
-              <tr key={ing.ingredient_id} className={`hover:bg-slate-50/50 transition-all ${ing.status === 'Hidden' ? 'bg-slate-50/30' : ''}`}>
+              <tr key={ing.ing_id} className={`hover:bg-slate-50/50 transition-all ${ing.status === 'Hidden' ? 'bg-slate-50/30' : ''}`}>
                 <td className="py-5 px-4 text-xs font-mono font-bold text-slate-400">
-                  {ing.ingredient_id}
+                  {ing.ing_id}
                 </td>
                 <td className="py-5 px-4 font-bold text-slate-700">
                   {ing.name}
-                </td>
-                <td className="py-5 px-4">
-                  <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${
-                    ing.status === 'Visible' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
-                  }`}>
-                    {ing.status === 'Visible' ? 'Khả dụng' : 'Đã ẩn'}
-                  </span>
-                </td>
+                </td>                
                 <td className="py-5 px-4">
                   <div className="flex justify-end gap-2">
-                    <button title="Sửa" className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                    <Link to={`/admin/ingredient/${ing.ing_id}`} title="Sửa" className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                       <Edit size={16} />
-                    </button>
-                    <button 
-                      title={ing.status === 'Visible' ? "Ẩn nguyên liệu" : "Hiện nguyên liệu"} 
-                      className={`p-2 rounded-xl transition-all ${
-                        ing.status === 'Visible' ? 'bg-amber-50 text-amber-600 hover:bg-amber-600' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600'
-                      } hover:text-white`}
-                    >
-                      {ing.status === 'Visible' ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                    <button className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
+                    </Link>                    
+                    <button onClick={()=>handleDelete(ing.ing_id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
                       <Trash2 size={16} />
                     </button>
                   </div>
