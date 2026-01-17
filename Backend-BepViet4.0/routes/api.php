@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -44,5 +45,9 @@ Route::get('/category', [CategoryController::class, 'getCategory']);
 Route::get('/ingredient', [IngredientController::class, 'getIng']);
 Route::get('/recipe-detail/{id}', [PostController::class, 'recipeDetail']);
 Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
+//comment
+Route::get('/post/comments/{id}', [CommentController::class, 'getCommentByPost']);
+Route::post('/post/create-comments/{post}/{id?}', [CommentController::class, 'create']);
+
 
 

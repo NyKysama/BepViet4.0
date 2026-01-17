@@ -9,7 +9,7 @@ use App\Models\Post;
 class Comment extends Model {
     protected $table = 'comments';
     protected $primaryKey = 'comment_id';
-    protected $fillable = ['description', 'user_id', 'post_id', 'parent_id'];
+    protected $fillable = ['content', 'user_id', 'post_id', 'parent_id'];
 
     public function user() { return $this->belongsTo(User::class, 'user_id'); }
     public function post() { return $this->belongsTo(Post::class, 'post_id'); }

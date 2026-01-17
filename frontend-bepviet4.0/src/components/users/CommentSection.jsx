@@ -1,46 +1,38 @@
-import React, { useState } from 'react';
-import { Heart, Reply, MoreHorizontal } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Heart, Reply, MoreHorizontal, X } from 'lucide-react';
 
-// Thành phần hiển thị một bình luận đơn lẻ, có thể bao gồm cả bình luận con (replies)
-const CommentItem = ({ comment = false }) => {
+const CommentItem = ({ comment, onReply }) => {
   return (
-    <div className={`flex gap-3 `}>
-      {/* Avatar người bình luận */}
+    <div className="flex gap-3 mb-4">
       <img 
-        src={comment.user.avatar} 
-        alt={comment.user.name} 
-        className={`w-10 h-10 rounded-full object-cover shrink-0`}
+        src={`http://127.0.0.1:8000/${comment.user?.avatar}`}
+        alt={comment.user?.name} 
+        className="w-10 h-10 rounded-full object-cover shrink-0"
       />
-
       <div className="flex-1">
-        {/* Khối nội dung bình luận */}
         <div className="bg-slate-50 px-4 py-2.5 rounded-[20px] inline-block max-w-full">
-          <h5 className="text-[13px] font-bold text-slate-800 hover:underline cursor-pointer">
-            {comment.user.name}
-          </h5>
-          <p className="text-[14px] text-slate-700 leading-snug">
-            {comment.content}
-          </p>
+          <h5 className="text-[13px] font-bold text-slate-800">{comment.user?.name}</h5>
+          <p className="text-[14px] text-slate-700 leading-snug">{comment.content}</p>
         </div>
 
-        {/* Các nút chức năng & Thời gian */}
         <div className="flex items-center gap-4 mt-1.5 ml-2">
-          <span className="text-[12px] font-medium text-slate-400">
-            {comment.time}
+          <span className="text-[12px] text-slate-400">
+            {new Date(comment.created_at).toLocaleDateString('vi-VN')}
           </span>
-          <button className="text-[12px] font-bold text-slate-500 hover:text-slate-800">
+          {/* Khi bấm nút này, truyền comment lên cha để xử lý reply */}
+          <button 
+            onClick={() => onReply(comment)}
+            className="text-[12px] font-bold text-slate-500 hover:text-emerald-500"
+          >
             Phản hồi
           </button>
         </div>
-        {/* replies là bình luận con , sau nì có dữ liệu sẽ thany hàm kiểm tra khác
-            hàm này chủ yếu dùng để đệ quy hiển thị bình luận con bên trong bình luận cha
-            nó kiểm tra nếu comment có replies và độ dài lớn hơn 0 thì sẽ map qua từng reply và gọi lại CommentItem để hiển thị
-        */}
-        
+
+        {/* Đệ quy hiển thị reply với đường kẻ dọc */}
         {comment.replies && comment.replies.length > 0 && ( 
-          <div className="mt-2">
+          <div className="mt-3 ml-4 border-l-2 border-slate-100 pl-4">
             {comment.replies.map((reply) => (
-              <CommentItem key={reply.id} comment={reply} />
+              <CommentItem key={reply.comment_id} comment={reply} onReply={onReply} />
             ))}
           </div>
         )}
@@ -49,49 +41,99 @@ const CommentItem = ({ comment = false }) => {
   );
 };
 
-export default function CommentSection() {
-  // Dữ liệu mẫu (Gồm bình luận cha và con)
-  const [comments] = useState([
-    {
-      id: 1,
-      user: { name: "Thanh Tùng", avatar: "https://ui-avatars.com/api/?name=TT&bg=emerald" },
-      content: "Món này dùng mắm tôm hay nước mắm thì ngon hơn hả chủ thớt?",
-      time: "2 giờ trước",
-      replies: [
-        {
-          id: 101,
-          user: { name: "Admin Bếp Việt", avatar: "https://ui-avatars.com/api/?name=AD&bg=slate" },
-          content: "Theo mình dùng mắm tôm sẽ chuẩn vị Bắc hơn bạn nhé!",
-          time: "1 giờ trước",
-          replies: []
-        }
-      ]
+export default function CommentSection({ id }) {
+  const [comments, setComments] = useState([]);
+  const [formData, setFormData] = useState({ content: '' });
+  const [replyingTo, setReplyingTo] = useState(null); // Lưu comment đang được reply
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchComments();
+  }, [id]);
+
+  const fetchComments = () => {
+    fetch(`http://127.0.0.1:8000/api/post/comments/${id}`)
+      .then(res => res.json())
+      .then(data => setComments(data));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(localStorage.getItem('user_data'))
+    if (!formData.content.trim()) return;
+    setIsLoading(true);
+
+    try {
+      // Nếu có replyingTo thì dùng ID của nó làm parent_id
+      const url = replyingTo 
+        ? `http://127.0.0.1:8000/api/post/create-comments/${id}/${replyingTo.comment_id}`
+        : `http://127.0.0.1:8000/api/post/create-comments/${id}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('user_data')}`
+        },
+        body: JSON.stringify({ content: formData.content })
+      });
+
+      
+      if (response.ok) {
+        setFormData({ content: '' });
+        setReplyingTo(null);
+        fetchComments(); // Load lại để hiện cmt mới
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+    } finally {
+      setIsLoading(false);
     }
-  ]);
+  };
 
   return (
     <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm mt-6">
-      <h3 className="text-lg font-black text-slate-800 mb-6">Bình luận (12)</h3>
+      <h3 className="text-lg font-black text-slate-800 mb-6">Bình luận ({comments.length})</h3>
       
-      {/* Ô nhập bình luận mới */}
+      {/* Thông báo đang trả lời ai đó */}
+      {replyingTo && (
+        <div className="flex items-center justify-between bg-emerald-50 px-4 py-2 rounded-lg mb-2">
+          <span className="text-xs text-emerald-700">
+            Đang trả lời <b>{replyingTo.user?.name}</b>
+          </span>
+          <button onClick={() => setReplyingTo(null)}><X size={14} /></button>
+        </div>
+      )}
+
       <div className="flex gap-3 mb-8">
-        <img src="..." className="w-10 h-10 rounded-full" alt="me" /> {/* Thay "..." bằng avatar người dùng hiện tại */}
         <div className="flex-1 relative">
           <input 
+            name='content'
+            value={formData.content}
+            onChange={(e) => setFormData({content: e.target.value})}
             type="text" 
-            placeholder="Viết phản hồi của bạn..."
-            className="w-full bg-slate-50 border-none rounded-2xl py-3 px-4 pr-12 text-sm outline-none focus:ring-2 focus:ring-emerald-500/10"
+            placeholder={replyingTo ? "Viết phản hồi..." : "Viết bình luận..."}
+            className="w-full bg-slate-50 border-none rounded-2xl py-3 px-4 pr-12 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
-          {/* Nút gửi bình luận */}
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 hover:text-emerald-600 font-bold text-sm">
-            Gửi
+          <button 
+            disabled={isLoading}
+            onClick={handleSubmit} 
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 font-bold text-sm"
+          >
+            {isLoading ? "..." : "Gửi"}
           </button>
         </div>
       </div>
 
-      {/* Danh sách bình luận */}
-      <div className="space-y-2">
-        {comments.map(c => <CommentItem key={c.id} comment={c} />)} {/* Hiển thị từng bình luận bằng cách gọi lại CommentItem */}
+      <div className="space-y-4">
+        {comments.map(c => (
+          <CommentItem 
+            key={c.comment_id} 
+            comment={c} 
+            onReply={(cmt) => setReplyingTo(cmt)} 
+          />
+        ))}
       </div>
     </div>
   );

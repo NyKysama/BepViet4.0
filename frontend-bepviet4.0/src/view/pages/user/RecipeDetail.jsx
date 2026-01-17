@@ -151,7 +151,7 @@ export default function RecipeDetail() {
 
             <div className="bg-slate-50 rounded-[32px] p-6">
               <h3 className="font-black text-slate-800 mb-6 text-xl px-2">Bình luận từ cộng đồng</h3>
-              <CommentSection />
+              <CommentSection id={recipe.post?.post_id}/>
             </div>
           </div>
 
