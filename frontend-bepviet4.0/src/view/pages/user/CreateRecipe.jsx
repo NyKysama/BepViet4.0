@@ -1,5 +1,25 @@
+import { useState, useEffect } from "react";
 import { Trash2, Plus, ImagePlus, Send, FileText } from "lucide-react";
+
+
+
 export default function CreateRecipe() {
+  
+//Lay danh sach danh mục từ backend
+// danh sach danh muc
+const [categories,setCategories]=useState([])
+//goi api lay danh sach danh muc
+useEffect(()=>{
+fetch("http://127.0.0.1:8000/api/category")
+.then(res=>res.json())
+.then(data=>{
+    console.log(data)
+    setCategories(data)
+})
+},[])
+
+
+
   return (
     <div className="max-w-5xl mx-auto pb-20 mt-10 px-4">
       {/* HEADER TRANG */}
@@ -140,9 +160,13 @@ export default function CreateRecipe() {
               <div>
                 <label className="text-xs font-bold text-gray-400 uppercase">Danh mục</label>
                 <select className="w-full mt-1 p-2.5 bg-gray-50 border rounded-xl text-sm outline-none">
-                  <option>Món kho</option>
-                  <option>Món canh</option>
-                  <option>Món xào</option>
+                  {
+                    categories.map( 
+                      categories=>(
+                        <option>{categories.name}</option>
+                      )
+                    )
+                  }
                 </select>
               </div>
               <div>
