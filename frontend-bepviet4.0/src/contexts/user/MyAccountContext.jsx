@@ -1,10 +1,13 @@
-import { useState,useContext,createContext } from "react";
+import { useState,useContext,createContext,useEffect } from "react";
 const MyAccountContext=createContext()
 export function MyAccountProvider({children}){
     var saveUser=localStorage.getItem('user_data')
     saveUser=JSON.parse(saveUser)
     const [myAccount,setMyAccount]=useState(saveUser)
     // const [isLogin,setIsLogin]=useState(false)//ko dung gia tri nay lam logic
+    useEffect(()=>{
+        localStorage.setItem('user_data', JSON.stringify(myAccount))
+    },[myAccount])
 
     return(
         <MyAccountContext.Provider value={{myAccount,setMyAccount}}>

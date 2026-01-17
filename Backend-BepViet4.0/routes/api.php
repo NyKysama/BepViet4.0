@@ -18,6 +18,7 @@ Route::post('/register',[UserController::class,'register'])->name("register");
 Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
 //user
 Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name("user.username");
+Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name("user.update");    
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 
