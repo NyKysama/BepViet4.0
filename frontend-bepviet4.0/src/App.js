@@ -12,6 +12,7 @@ import Home from './view/pages/user/Home';
 import RecipeDetail from './view/pages/user/RecipeDetail';
 import BlogDetail from './view/pages/user/BlogDetail';  
 import UserProfile from "./view/pages/user/UserProfile"
+import UserInfo from './view/pages/user/UserInfo';
 import CookbookDetail from "./view/pages/user/CookbookDetail"
 //admin pages
 import PostTable from './view/pages/admin/PostTable';
@@ -42,6 +43,7 @@ function App() {
             <Route path='/blog-detail/:id' element={<BlogDetail />}></Route>
             <Route path='/user-profile/my-account' element={<UserProfile/>}></Route>
             <Route path='/user-profile/:username' element={<UserProfile/>}></Route>
+            <Route path='/my-info' element={<UserInfo/>}></Route>
             <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
             <Route path='/update-blog/:id' element={<CreateBlog />}></Route>
           </Route>
