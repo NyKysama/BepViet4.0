@@ -41,7 +41,7 @@ export default function UserProfile() {
       // setError(null);
       const res = await fetch(`http://127.0.0.1:8000/api/user/${username}`);
       const data = await res.json();
-      console.log(data)
+      console.log(data.user.followers)
       //xu li loi
       if (!res.ok) {
         navigate("/not-found")
@@ -92,7 +92,7 @@ export default function UserProfile() {
   return (
     <div className="min-h-screen bg-gray-100 mt-2">
       {/* Profile summary section oke */}
-      <ProfileSumary user={user_info}></ProfileSumary>
+      <ProfileSumary user={user_info} setMyAccount={setMyAccount}  isMyAccount={username&&myAccount?.username!=username?false:true}></ProfileSumary>
 
       {/* Cookbooks Section */}
       <div className="bg-white mt-4 py-6 rounded-xl">
@@ -140,7 +140,7 @@ export default function UserProfile() {
             <div className="flex gap-4" style={{ minWidth: 'min-content' }}>
               {/*card cookbok*/}
               {cookbooks.map((cookbook) => (
-                <CardCookbook cookbook={cookbook} isMycookbook={username&&myAccount.username!=username?false:true}></CardCookbook>
+                <CardCookbook cookbook={cookbook} isMycookbook={username&&myAccount?.username!=username?false:true}></CardCookbook>
               ))}
             </div>
           </div>

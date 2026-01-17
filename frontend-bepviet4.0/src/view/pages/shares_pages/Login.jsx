@@ -15,19 +15,19 @@ export default function Login() {
   const [showPopup, setShowPopup] = useState(false)
   const navigate = useNavigate();
   function closePopup() {
-    if (myAccount.username) {
+    if (myAccount) {
       setShowPopup(false)
       navigate("/")
     }
     else {
       setShowPopup(false)
       navigate("/login")
+      return
     }
 
   }
 
   async function handleLogin(e) {
-    e.preventDefault();
     e.preventDefault();
     // // Reset lại trạng thái trước khi bắt đầu
     // setIsLogin(false); 
@@ -74,7 +74,7 @@ export default function Login() {
       <div className="w-full max-w-md bg-white rounded-[32px] p-10 shadow-xl shadow-slate-200/50">
 
         {/*LoginSuccessPopup*/}
-        {showPopup && <LoginSuccessPopup onClose={closePopup} success={myAccount.username}></LoginSuccessPopup>}
+        {showPopup && <LoginSuccessPopup onClose={closePopup} success={myAccount?true:false}></LoginSuccessPopup>}
 
         {/* Logo & Header */}
         <div className="text-center mb-10">

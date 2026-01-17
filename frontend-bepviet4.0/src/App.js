@@ -31,7 +31,6 @@ function App() {
   
       <BrowserRouter>
         <Routes>
-        
           <Route element={<MyAccountProvider><Layout /></MyAccountProvider>}>
             <Route path='/' element={<Home />}></Route>
             <Route path='/create-blog' element={<CreateBlog />}></Route>
