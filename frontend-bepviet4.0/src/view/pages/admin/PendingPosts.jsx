@@ -3,17 +3,15 @@ import { Trash2, Clock, XCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function PendingPosts() {
-    const [posts, setPosts] = useState([]); // Đặt tên chữ thường cho chuẩn convention
+    const [posts, setPosts] = useState([]); // hiện ds post ch duyệt và đã bị từ chối
     const [isLoading, setIsLoading] = useState(true);
-    const [processingId, setProcessingId] = useState(null);
+    const [processingId, setProcessingId] = useState(null);// lưu id của post 
 
     // 1. Lấy dữ liệu bài đăng
     useEffect(() => {
         fetch('http://localhost:8000/api/admin/pendingposts')
             .then((response) => response.json())
             .then((data) => {
-                // Giả sử API trả về mảng trực tiếp: [{}, {}]
-                // Nếu API trả về { pending_posts: [] } thì đổi thành setPosts(data.pending_posts)
                 setPosts(data);
                 setIsLoading(false);
             })
@@ -46,6 +44,31 @@ export default function PendingPosts() {
         }
     };
 
+    const handleDelete = async (postId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài này không?")) return;
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/admin/forcedestroy-post/${postId}`, {
+        method: 'DELETE', // Khai báo phương thức DELETE ở đây
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          // Nếu có token thì thêm vào đây: 'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(result.message);
+        setPosts(posts.filter(p => p.post_id !== postId));
+      } else {
+        alert("Lỗi: " + result.message);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API xóa:", error);
+    }
+  };
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-screen text-slate-500 font-bold">
@@ -122,22 +145,43 @@ export default function PendingPosts() {
                                         </td>
                                         <td className="p-5">
                                             <div className="flex justify-end gap-2">
-                                                <button
-                                                    disabled={processingId === post.post_id}
-                                                    onClick={() => handleAction(post.post_id, 'update')}
-                                                    className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50"
-                                                    title="Duyệt bài"
-                                                >
-                                                    {processingId === post.post_id ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <CheckCircle size={20} />}
-                                                </button>
-                                                <button
-                                                    disabled={processingId === post.post_id}
-                                                    onClick={() => handleAction(post.post_id, 'rej')}
-                                                    className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
-                                                    title="Từ chối"
-                                                >
-                                                    <XCircle size={20} />
-                                                </button>
+                                                {post.status === 0 ? (<>
+                                                    <button
+                                                        disabled={processingId === post.post_id}
+                                                        onClick={() => handleAction(post.post_id, 'update')}
+                                                        className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50"
+                                                        title="Duyệt bài"
+                                                    >
+                                                        {processingId === post.post_id ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <CheckCircle size={20} />}
+                                                    </button>
+                                                    <button
+                                                        disabled={processingId === post.post_id}
+                                                        onClick={() => handleAction(post.post_id, 'rej')}
+                                                        className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                                                        title="Từ chối"
+                                                    >
+                                                        <XCircle size={20} />
+                                                    </button>
+                                                </>
+                                                ) : (<>
+                                                    <button
+                                                        disabled={processingId === post.post_id}
+                                                        onClick={() => handleAction(post.post_id, 'update')}
+                                                        className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50"
+                                                        title="Duyệt bài"
+                                                    >
+                                                        {processingId === post.post_id ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <CheckCircle size={20} />}
+                                                    </button>
+                                                    <button
+                                                        disabled={processingId === post.post_id}
+                                                        onClick={() => handleDelete(post.post_id)}
+                                                        className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                                                        title="Xóa"
+                                                    >
+                                                        <Trash2 size={20} />
+                                                    </button>
+                                                </>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
