@@ -57,6 +57,7 @@ Route::get('/post/comments/{id}', [CommentController::class, 'getCommentByPost']
 Route::post('/post/create-comments/{post}/{id?}', [CommentController::class, 'create']);
 //cookbook
 Route::post("/coobook/create",[CookbookController::class,"createCookbook"])->name("cookbook.create");
+Route::post("/cookbook/delete/{cookbook_id}",[CookbookController::class,"delete"])->name("cookbook.delete");
 
 
 

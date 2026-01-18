@@ -50,4 +50,9 @@ class CookbookController extends Controller
             ], 200);
         }
     }
+    //xoa cookbook
+    public function delete($cookbook_id){
+        Cookbook::where("cookbook_id",$cookbook_id)->delete();
+        return response()->json(["message"=>"Xoa thanh cong coobook so: ".$cookbook_id],200);
+    }
 }

@@ -1,17 +1,33 @@
 import { useState } from "react"
 import {MoreVertical, Trash2} from "lucide-react"
+import { useMyAccount } from "../../../contexts/user/MyAccountContext";
 
-export default function CardCookbook({ cookbook,isMycookbook }) {
-
+export default function CardCookbook({ cookbook,isMycookbook,setCookbooks }) {
+        const {setMyAccount}=useMyAccount()
         const [showMenu, setShowMenu] = useState(false);
         const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
          
 
-        const handleDelete = () => {
-            
-            console.log('Đã xóa cookbook:', cookbook);
-            setShowDeleteConfirm(false);
-            setShowMenu(false);
+        async function handleDelete() {
+            try {
+                const res=await fetch(`http://127.0.0.1:8000/api/cookbook/delete/${cookbook.cookbook_id}`,{
+                    method:"POST",
+                    headers: {"Content-Type": "application/json",}
+                })
+                const data=await res.json()
+                if(!res.ok){
+                    console.log("Xoa that bai: ".data)
+                }
+                console.log("Xoa thanh cong: ".data)
+                setMyAccount(prev=>({...prev,cookbooks:prev.cookbooks.filter(c=>c.cookbook_id!=cookbook.cookbook_id)}))
+                setCookbooks(prev=>prev.filter(c=>c.cookbook_id!=cookbook.cookbook_id))
+                setShowDeleteConfirm(false);
+                setShowMenu(false);
+            } catch (error) {
+                console.log(error)
+                
+            }
+        
         };
 
     return (

@@ -216,7 +216,9 @@ export default function UserProfile() {
             <div className="flex gap-4" style={{ minWidth: 'min-content' }}>
               {/*card cookbok*/}
               {cookbooks.map((cookbook) => (
-                <CardCookbook cookbook={cookbook} isMycookbook={username && myAccount?.username != username ? false : true}></CardCookbook>
+                <CardCookbook cookbook={cookbook} isMycookbook={username && myAccount?.username != username ? false : true}
+                setCookbooks={setCookbooks}
+                ></CardCookbook>
               ))}
             </div>
           </div>
