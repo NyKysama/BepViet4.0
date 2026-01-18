@@ -1,29 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-// Dữ liệu mẫu (giữ nguyên)
-const INITIAL_COOKBOOK = {
-  id: 1,
-  title: "Món Ngon Cuối Tuần 🍜",
-  coverImage: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",
-  description: "Tuyển tập những công thức nấu ăn đơn giản nhưng cực kỳ bắt miệng dành cho những ngày nghỉ.",
-  ownerName: "Chef Ramsey Fake",
-  ownerAvatar: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=100&q=80",
-  totalPosts: 8,
-  lastUpdated: "2 ngày trước",
-  isPrivate: false
-};
-
-const INITIAL_POSTS = Array.from({ length: 8 }).map((_, i) => ({
-  id: i,
-  title: `Công thức nấu ăn số #${i + 1}`,
-  image: `https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=80`,
-  author: "Chef Ramsey Fake",
-  views: "12K",
-  time: "20 phút"
-}));
+import { useParams,useNavigate, data} from 'react-router-dom';
+import { useMyAccount } from '../../../contexts/user/MyAccountContext';
+import LoadingPage from '../../../components/users/LoadingPage';
 
 // 1. Component PostCard (giữ nguyên)
-const PostCard = ({ post, index, onDelete }) => {
+const PostCard = ({ post, index, onDelete ,user_info}) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
@@ -40,12 +21,12 @@ const PostCard = ({ post, index, onDelete }) => {
   return (
     <div className="flex gap-4 p-3 hover:bg-gray-100 rounded-xl cursor-pointer transition-colors group relative">
       <div className="hidden md:flex items-center justify-center w-6 text-gray-500 font-medium">
-        {index + 1}
+        1{/* {index + 1} */}
       </div>
 
       <div className="relative w-32 md:w-40 h-20 md:h-24 flex-shrink-0 overflow-hidden rounded-lg">
         <img
-          src={post.image}
+          src={post.img}
           alt={post.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -53,9 +34,9 @@ const PostCard = ({ post, index, onDelete }) => {
 
       <div className="flex flex-col justify-center flex-1 pr-8">
         <h3 className="font-semibold text-gray-800 line-clamp-2 text-sm md:text-base">{post.title}</h3>
-        <p className="text-xs md:text-sm text-gray-500 mt-1">{post.author} • {post.views} views</p>
+        <p className="text-xs md:text-sm text-gray-500 mt-1">{user_info.username} • soview views</p>
         <span className="inline-block mt-2 text-xs bg-gray-200 w-fit px-2 py-0.5 rounded text-gray-600">
-          {post.time}
+          {post.cook_time}
         </span>
       </div>
 
@@ -77,7 +58,7 @@ const PostCard = ({ post, index, onDelete }) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(post.id);
+                onDelete(post.post_id);
                 setShowMenu(false);
               }}
               className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
@@ -96,16 +77,52 @@ const PostCard = ({ post, index, onDelete }) => {
 
 // 2. Main Page Component
 export default function CookbookPage() {
-  const [cookbook, setCookbook] = useState(INITIAL_COOKBOOK);
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const {username,name}=useParams()//name la name cua cookbook
+  const navigate=useNavigate()
+  const {myAccount,setMyAccount}=useMyAccount()
+  const [user_info,setUser_Info]=useState()
+  const [cookbook, setCookbook] = useState();
+  const [posts, setPosts] = useState();
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState(INITIAL_COOKBOOK);
+  const [editForm, setEditForm] = useState();
+  const [isLoading,setIsLoading]=useState(true);
 
-  const handleDeletePost = (postId) => {
+  useEffect(()=>{
+   async function fetchData() {
+    try {
+      const res=await fetch(`http://127.0.0.1:8000/api/cookbook/${username}/${name}`)
+       if(!res.ok){}
+      const data=await res.json()
+      setUser_Info(data.user)
+      setCookbook(data.cookbook)
+      setPosts(data.posts)
+      setEditForm(data.cookbook)//chen thong tin cookbook
+      console.log(data)
+    } catch (error) {
+      
+    }finally{
+    setIsLoading(false)
+    }
+   }
+   fetchData();
+  }
+  ,[])
+
+  const handleDeletePost = async(post_id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
-      const newPosts = posts.filter(p => p.id !== postId);
-      setPosts(newPosts);
-      setCookbook(prev => ({ ...prev, totalPosts: newPosts.length }));
+      // const newPosts = posts.filter(p => p.id !== postId);
+      // setPosts(newPosts);
+      // setCookbook(prev => ({ ...prev, totalPosts: newPosts.length }));
+      const res=await fetch(`http://127.0.0.1:8000/api/cookbook/${cookbook.cookbook_id}/detatch/${post_id}`,{
+        method:"POST",
+        headers:{ "Content-Type": "application/json",}
+      })
+      if(!res.ok){
+        return
+      }
+      const data=await res.json()
+      setPosts(prev=>(prev.filter(p=>p.post_id!=post_id)))
+      
     }
   };
 
@@ -122,6 +139,10 @@ export default function CookbookPage() {
   const handleCancel = () => {
     setIsEditing(false);
   };
+
+  if(isLoading){
+    return (<LoadingPage></LoadingPage>)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 md:p-4 lg:p-8">
@@ -190,16 +211,16 @@ export default function CookbookPage() {
               /* --- VIEW MODE --- */
               <>
                 <div className="aspect-square w-full rounded-lg md:rounded-xl overflow-hidden shadow-md mb-4 md:mb-6 relative group">
-                  <img src={cookbook.coverImage} alt={cookbook.title} className="w-full h-full object-cover" />
+                  <img src="" alt={cookbook.name} className="w-full h-full object-cover" />
                 </div>
 
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 leading-tight">
-                  {cookbook.title}
+                  {cookbook.name}
                 </h1>
 
                 <div className="mb-3 md:mb-4 flex items-center justify-between">
                   <div>
-                    {cookbook.isPrivate ? (
+                    {/* {cookbook.isPrivate ? (
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-gray-100 text-gray-600 text-xs font-medium border border-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
@@ -214,7 +235,7 @@ export default function CookbookPage() {
                         </svg>
                         Công khai
                       </span>
-                    )}
+                    )} */}
                   </div>
 
                   {/* Nút sửa bên phải */}
@@ -228,11 +249,11 @@ export default function CookbookPage() {
                 <div className="flex items-center gap-3 mb-4 md:mb-6">
                   <img src={cookbook.ownerAvatar} alt={cookbook.ownerName} className="w-9 h-9 md:w-10 md:h-10 rounded-full" />
                   <div className="flex flex-col">
-                    <span className="text-xs md:text-sm font-bold text-gray-800 hover:underline cursor-pointer">{cookbook.ownerName}</span>
+                    <span className="text-xs md:text-sm font-bold text-gray-800 hover:underline cursor-pointer">{user_info.username}</span>
                     <div className="text-xs text-gray-500 flex gap-2">
                       <span>{posts.length} công thức</span>
                       <span>•</span>
-                      <span>{cookbook.lastUpdated}</span>
+                      <span>last update</span>
                     </div>
                   </div>
                 </div>
@@ -254,11 +275,11 @@ export default function CookbookPage() {
             <h2 className="font-bold text-base md:text-lg text-gray-800">Danh sách công thức</h2>
           </div>
           <div className="flex flex-col gap-1 bg-white rounded-xl md:rounded-2xl p-2 md:p-4 border border-gray-100">
-            {posts.map((post, index) => (
+            {posts.map((post) => (
               <PostCard
                 key={post.id}
                 post={post}
-                index={index}
+                user_info={user_info}
                 onDelete={handleDeletePost}
               />
             ))}

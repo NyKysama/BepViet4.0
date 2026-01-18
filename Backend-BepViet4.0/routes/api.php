@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CookbookController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,8 +19,14 @@ Route::post('/register',[UserController::class,'register'])->name("register");
 Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
 //user
 Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name("user.username");
+Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name("user.update");    
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
+//create_blog 18/01/2026
+Route::post('/user/blog', [PostController::class, 'createBlog']);
+//create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
+// Route::middleware('auth:sanctum')->post('/user/blog',[PostController::class, 'createBlog']);
+
 
 Route::prefix('admin')->group(function () {
     //post
@@ -48,6 +55,11 @@ Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
 //comment
 Route::get('/post/comments/{id}', [CommentController::class, 'getCommentByPost']);
 Route::post('/post/create-comments/{post}/{id?}', [CommentController::class, 'create']);
+//cookbook
+Route::post("/coobook/create",[CookbookController::class,"createCookbook"])->name("cookbook.create");
+Route::post("/cookbook/delete/{cookbook_id}",[CookbookController::class,"delete"])->name("cookbook.delete");
+Route::get("/cookbook/{username}/{name}",[CookbookController::class,"getCookbookDetail"])->name("cookbook.cookbook_detail");
+Route::post("/cookbook/{cookbook_id}/detatch/{post_id}",[CookbookController::class,"detachCoobook_Post"])->name("cookbook.detatch.post");
 
 
 

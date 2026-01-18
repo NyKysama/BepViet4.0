@@ -145,4 +145,29 @@ class UserController extends Controller
                 "success"=>false,
         ],404);
     }
+    public function updateUserByUsername(Request $request){
+        //validate
+        $data = $request->validate([
+        'name'     => 'required',
+        'phone'    => 'required',
+        'birthday' => 'required',
+        'sex'      => 'required',
+        ]);
+        $username=$request->username;
+        $user=User::where("username",$username)->first();
+        if(!$user){
+            // $user->name=$data->name;
+            // $user->phone=$request->phone;
+            // $user->birthday=$request->birthday;
+            // $user->sex=$request->sex;
+            // $user->save();
+           
+            return response()->json(["message"=>"Cập nhật thông tin thất bại"],404);
+        }
+
+        $user->update($data);
+        return response()->json(["message"=>"Cập nhật thông tin thành công",
+        "user"=>$user,
+        ],200);
+    }
 }

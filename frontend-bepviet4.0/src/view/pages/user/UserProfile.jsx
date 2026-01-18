@@ -1,98 +1,171 @@
-import React, { useEffect, useState } from 'react';
-import { X,Plus, Camera, Edit2, UserPlus, Users } from 'lucide-react';
-import { useParams,useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from 'react';
+import { X, Plus, Camera, Edit2, UserPlus, Users } from 'lucide-react';
+import { useParams, useNavigate } from "react-router-dom";
 //import component
 import ProfileSumary from '../../../components/users/ProfileSummary';
 import CardCookbook from '../../../components/users/card/CardCookbook';
 import PostCard from '../../../components/users/card/PostCard';
 import { useMyAccount } from "../../../contexts/user/MyAccountContext";
+import LoadingPage from '../../../components/users/LoadingPage';
 
 export default function UserProfile() {
-  const navigate=useNavigate()
-  const {username}=useParams()
-  const {myAccount,setMyAccount,isLogin,setIsLogin} = useMyAccount()//lay tu api/context
+  const navigate = useNavigate()
+  const { username } = useParams()
+  const { myAccount, setMyAccount, isLogin, setIsLogin } = useMyAccount()//lay tu api/context
+  const [isLoading, setIsLoading] = useState(true)
+  const [preview, setPreview] = useState(null);
   //filter userdata
-  const [user_info,setUser_Info]=useState()
+  const [user_info, setUser_Info] = useState()
   const [activeTab, setActiveTab] = useState('recipes');
   console.log(username)
-
-  const [cookbooks,setCookbooks]=useState([])
-
-  const [recipes,setRecipes] =useState([]);
-
-  const [blogs,setBlogs]=useState([])
-  useEffect(() => {
-  if (!username){
-    if(!myAccount){
-      navigate("/login")
-      return
-    }
-    setUser_Info(myAccount)
-    setCookbooks(myAccount.cookbooks)
-    setRecipes(myAccount.posts.filter(p=>p.type=="Công thức"))
-    setBlogs(myAccount.posts.filter(p=>p.type=="Blog"))
-    return
-  }
- ;
-
-  const fetchUser = async () => {
-    try {
-      // setLoading(true);
-      // setError(null);
-      const res = await fetch(`http://127.0.0.1:8000/api/user/${username}`);
-      const data = await res.json();
-      console.log(data.user.followers)
-      //xu li loi
-      if (!res.ok) {
-        navigate("/not-found")
-        throw new Error(data.message || "Lỗi");
-
-      }
-
-      setUser_Info(data.user);
-      setCookbooks(data.user.cookbooks)
-      setRecipes(data.user.posts.filter(p=>p.type=="Công thức"))
-      setBlogs(data.user.posts.filter(p=>p.type=="Blog"))
-    } catch (err) {
-      // setError(err.message);
-    } finally {
-      // setLoading(false);
-    }
-  };
-
-  fetchUser();
-}, [username]);
-
-
-
+  const [cookbooks, setCookbooks] = useState([])
+  const [recipes, setRecipes] = useState([]);
+  const [blogs, setBlogs] = useState([])
   //them coobbook
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCookbook, setNewCookbook] = useState({
-    title: '',
-    description: ''
+    name: '',
+    description: '',
+    imageFile: null // Thêm field image
   });
+  useEffect(() => {
+    if (!username) {
+      if (!myAccount) {
+        navigate("/login")
+        return
+      }
+      setUser_Info(myAccount)
+      setCookbooks(myAccount.cookbooks)
+      setRecipes(myAccount.posts.filter(p => p.type == "Công thức"))
+      setBlogs(myAccount.posts.filter(p => p.type == "Blog"))
+      setIsLoading(false)
+      return
+    };
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/user/${username}`);
+        const data = await res.json();
+        console.log(data.user.followers)
+        //xu li loi
+        if (!res.ok) {
+          navigate("/not-found")
+          throw new Error(data.message || "Lỗi");
+        }
+
+        setUser_Info(data.user);
+        setCookbooks(data.user.cookbooks)
+        setRecipes(data.user.posts.filter(p => p.type == "Công thức"))
+        setBlogs(data.user.posts.filter(p => p.type == "Blog"))
+
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setIsLoading(false);
+        console.log(myAccount)
+      }
+    };
+
+    fetchUser();
+  }, [username]);
+  //ham
+  // Hàm xử lý khi chọn file ảnh
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Kiểm tra file có phải là ảnh không
+      if (!file.type.startsWith('image/')) {
+        alert('Vui lòng chọn file ảnh!');
+        return;
+      }
+
+      // Kiểm tra kích thước file (ví dụ: tối đa 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Kích thước ảnh không được vượt quá 5MB!');
+        return;
+      }
+
+      // Đọc file và chuyển thành base64 để hiển thị
+     setNewCookbook(prev=>({...prev,imageFile:file}))
+     setPreview(URL.createObjectURL(file))
+    }
+  }
+  const handleRemoveImage = () => {
+    setNewCookbook(prev => ({ ...prev, imageFile: null }));
+    setPreview(null)
+  };
+  async function saveCookBook(){
+    //Luu vao formdata
+    const formData = new FormData();
+     formData.append("user_id", myAccount.user_id);
+    formData.append("name", newCookbook.name);
+    formData.append("description", newCookbook.description || "");
+    if (newCookbook.imageFile) {
+      formData.append("image_file", newCookbook.imageFile);
+    }
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/coobook/create", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          // Authorization: `Bearer ${token}` // nếu có login
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error(data);
+        alert(data.message || "Tạo cookbook thất bại");
+        return;
+      }
+      console.log("Tạo cookbook thành công:", data.newCookbook);
+
+      // reset form (optional)
+      
+      setNewCookbook({
+        name: "",
+        description: "",
+        imageFile: null,
+      });
+      setCookbooks([...cookbooks,data.newCookbook])
+      setMyAccount({...myAccount,cookbooks:[...cookbooks,data.newCookbook]})
+      console.log("setMyAccount dc thuc hien")
+    } catch (error) {
+    console.error(error);
+    alert("Không kết nối được server");
+    }
+  }
+
+  if (isLoading) {
+    return (<LoadingPage></LoadingPage>)
+  }
+
+
 
   const handleAddCookbook = () => {
-    if (newCookbook.title.trim()) {
-      const colors = ['f97316', 'fb923c', 'fdba74', 'ea580c', 'c2410c', '9a3412'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    // if (newCookbook.title.trim()) {
+    //   const colors = ['f97316', 'fb923c', 'fdba74', 'ea580c', 'c2410c', '9a3412'];
+    //   const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
-      setCookbooks([...cookbooks, {
-        id: Date.now(),
-        title: newCookbook.title,
-        count: 0,
-        image: `https://via.placeholder.com/300x200/${randomColor}/ffffff?text=${encodeURIComponent(newCookbook.title.substring(0, 10))}`
-      }]);
+    //   // setCookbooks([...cookbooks, {
+    //   //   id: Date.now(),
+    //   //   name: newCookbook.name,
+    //   //   count: 0,
+    //   //   image: `https://via.placeholder.com/300x200/${randomColor}/ffffff?text=${encodeURIComponent(newCookbook.title.substring(0, 10))}`
+    //   // }]);
 
-      setNewCookbook({ title: '', description: '' });
+    //   setNewCookbook({ title: '', description: '' });
+      saveCookBook()
       setShowAddModal(false);
-    }
+    // }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 mt-2">
       {/* Profile summary section oke */}
-      <ProfileSumary user={user_info} setMyAccount={setMyAccount}  isMyAccount={username&&myAccount?.username!=username?false:true}></ProfileSumary>
+      <ProfileSumary user={user_info} setMyAccount={setMyAccount} isMyAccount={username && myAccount?.username != username ? false : true}></ProfileSumary>
 
       {/* Cookbooks Section */}
       <div className="bg-white mt-4 py-6 rounded-xl">
@@ -101,8 +174,9 @@ export default function UserProfile() {
             <h2 className="text-2xl font-bold text-gray-800">
               Cookbook của {user_info?.name}
             </h2>
-
-            <button
+            {/*Nut them cookbook*/}
+            {(!username||username==myAccount?.username) &&
+             <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-500 transition font-semibold shadow-sm"
             >
@@ -110,6 +184,8 @@ export default function UserProfile() {
               <span className="hidden sm:inline">Thêm Cookbook</span>
               <span className="sm:hidden">Thêm</span>
             </button>
+          }
+           
           </div>
           <div
             className="overflow-x-auto -mx-4 px-4 pb-4 cursor-grab active:cursor-grabbing"
@@ -140,7 +216,10 @@ export default function UserProfile() {
             <div className="flex gap-4" style={{ minWidth: 'min-content' }}>
               {/*card cookbok*/}
               {cookbooks.map((cookbook) => (
-                <CardCookbook cookbook={cookbook} isMycookbook={username&&myAccount?.username!=username?false:true}></CardCookbook>
+                <CardCookbook cookbook={cookbook} isMycookbook={username && myAccount?.username != username ? false : true}
+                setCookbooks={setCookbooks}
+                user_info={user_info}
+                ></CardCookbook>
               ))}
             </div>
           </div>
@@ -157,10 +236,59 @@ export default function UserProfile() {
             >
               <X size={20} className="text-gray-600" />
             </button>
-
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Tạo Cookbook Mới</h2>
-            
             <div className="space-y-4">
+
+              {/* Image Upload Section */}
+              <div className=''>
+                <label className="text-sm font-semibold text-gray-700 mb-2">
+                  Ảnh bìa
+                </label>
+                {/* Nút Upload */}
+                <div className="flex items-center gap-3 mb-3">
+                  <label className='inline-flex items-center justify-center
+             px-3 py-1.5 text-sm bg-emerald-500 text-white
+             rounded-full shadow-lg hover:bg-emerald-600
+             transition-all border-2 border-white cursor-pointer'>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />  
+                    Chọn ảnh
+                  </label>
+
+
+                  {newCookbook.imageFile && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="px-3 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition"
+                    >
+                      Xóa ảnh
+                    </button>
+                  )}
+                </div>
+
+                {/* Khung hiển thị ảnh */}
+                <div className="aspect-video w-full bg-gray-100 rounded-lg overflow-hidden border border-dashed border-gray-300">
+                  {newCookbook.imageFile ? (
+                    <img
+                      src={preview}
+                      alt="Ảnh bìa"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                      <Camera size={40} className="mb-2" />
+                      <p className="text-sm font-medium">Chưa có ảnh bìa</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+
               {/* Title Input */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -168,14 +296,14 @@ export default function UserProfile() {
                 </label>
                 <input
                   type="text"
-                  value={newCookbook.title}
-                  onChange={(e) => setNewCookbook({ ...newCookbook, title: e.target.value })}
+                  value={newCookbook.name}
+                  onChange={(e) => setNewCookbook({ ...newCookbook, name: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Ví dụ: Món Ăn Hàng Ngày"
                   maxLength={50}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {newCookbook.title.length}/50 ký tự
+                  {newCookbook.name.length}/50 ký tự
                 </p>
               </div>
 
@@ -222,7 +350,7 @@ export default function UserProfile() {
               <button
                 onClick={() => {
                   setShowAddModal(false);
-                  setNewCookbook({ title: '', description: '' });
+                  setNewCookbook({ name: '', description: '' });
                 }}
                 className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition"
               >
@@ -230,12 +358,11 @@ export default function UserProfile() {
               </button>
               <button
                 onClick={handleAddCookbook}
-                disabled={!newCookbook.title.trim()}
-                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition ${
-                  newCookbook.title.trim()
-                    ? 'bg-green-400 text-white hover:bg-green-500'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                disabled={!newCookbook.name.trim()}
+                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition ${newCookbook.name.trim()
+                  ? 'bg-green-400 text-white hover:bg-green-500'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
               >
                 Tạo Cookbook
               </button>
@@ -243,8 +370,8 @@ export default function UserProfile() {
           </div>
         </div>
       )}
-    
-  
+
+
 
 
       {/* Tabs Section */}
@@ -255,8 +382,8 @@ export default function UserProfile() {
               <button
                 onClick={() => setActiveTab('recipes')}
                 className={`flex-1 py-4 text-center font-semibold transition ${activeTab === 'recipes'
-                    ? 'text-green-500 border-b-2 border-green-500'
-                    : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-green-500 border-b-2 border-green-500'
+                  : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Công thức ({recipes.length})
@@ -264,8 +391,8 @@ export default function UserProfile() {
               <button
                 onClick={() => setActiveTab('blogs')}
                 className={`flex-1 py-4 text-center font-semibold transition ${activeTab === 'blogs'
-                    ? 'text-green-500 border-b-2 border-green-500'
-                    : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-green-500 border-b-2 border-green-500'
+                  : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Blog ({blogs.length})

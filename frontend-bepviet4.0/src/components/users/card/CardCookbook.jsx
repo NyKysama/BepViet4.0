@@ -1,16 +1,34 @@
 import { useState } from "react"
 import {MoreVertical, Trash2} from "lucide-react"
+import { useMyAccount } from "../../../contexts/user/MyAccountContext";
+import { Link } from "react-router-dom";
 
-export default function CardCookbook({ cookbook,isMycookbook }) {
-
+export default function CardCookbook({ cookbook,isMycookbook,setCookbooks,user_info }) {
+        const {setMyAccount}=useMyAccount()
         const [showMenu, setShowMenu] = useState(false);
         const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
          
 
-        const handleDelete = () => {
-            console.log('Đã xóa cookbook:', cookbook);
-            setShowDeleteConfirm(false);
-            setShowMenu(false);
+        async function handleDelete() {
+            try {
+                const res=await fetch(`http://127.0.0.1:8000/api/cookbook/delete/${cookbook.cookbook_id}`,{
+                    method:"POST",
+                    headers: {"Content-Type": "application/json",}
+                })
+                const data=await res.json()
+                if(!res.ok){
+                    console.log("Xoa that bai: ".data)
+                }
+                console.log("Xoa thanh cong: ".data)
+                setMyAccount(prev=>({...prev,cookbooks:prev.cookbooks.filter(c=>c.cookbook_id!=cookbook.cookbook_id)}))
+                setCookbooks(prev=>prev.filter(c=>c.cookbook_id!=cookbook.cookbook_id))
+                setShowDeleteConfirm(false);
+                setShowMenu(false);
+            } catch (error) {
+                console.log(error)
+                
+            }
+        
         };
 
     return (
@@ -20,11 +38,13 @@ export default function CardCookbook({ cookbook,isMycookbook }) {
                 className="flex-shrink-0 w-40 md:w-56 bg-white rounded-xl shadow-sm hover:shadow-md transition cursor-pointer overflow-hidden group"
             >
                 <div className="aspect-video overflow-hidden bg-gray-200 relative">
+                    <Link to={"/user-profile/"+user_info.username+"/cookbook/"+cookbook.name}>
                     <img
-                        src={cookbook.image}
-                        alt={cookbook.title}
+                        src={"http://127.0.0.1:8000/"+cookbook.image}
+                        alt={cookbook.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                     />
+                    </Link>
                     {/*Nu 3 cham dropdow menu*/}
                     {isMycookbook &&(<>
                       <div className="absolute top-2 right-2">
