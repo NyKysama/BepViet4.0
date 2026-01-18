@@ -22,8 +22,10 @@ Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name(
 Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name("user.update");    
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
-//create_blog
+//create_blog 18/01/2026
 Route::post('/user/blog', [PostController::class, 'createBlog']);
+//create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
+// Route::middleware('auth:sanctum')->post('/user/blog',[PostController::class, 'createBlog']);
 
 
 Route::prefix('admin')->group(function () {

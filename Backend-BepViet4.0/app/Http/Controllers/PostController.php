@@ -146,7 +146,7 @@ class PostController extends Controller
         return response()->json(['message' => 'Không tìm thấy bài viết để khôi phục'], 404);
     }
 
-    public function createBlog(Request $request)
+    public function createBlog(Request $request) //18/01/2026
     {
     //Kiểm tra dữ liệu
     $request->validate([
