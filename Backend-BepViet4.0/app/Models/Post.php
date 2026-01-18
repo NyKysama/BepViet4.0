@@ -32,7 +32,7 @@ class Post extends Model
     //hàm lấy dsct chưa chuyệt 
     public static function pending()
     {
-        return self::with('user')->where('status', 0)->where('type', 'Công thức')->orderBy('created_at', 'desc')->get();
+        return self::with('user')->where('status', 0)->orderBy('created_at', 'desc')->get();
     }
 
 

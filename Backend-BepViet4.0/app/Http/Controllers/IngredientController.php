@@ -26,7 +26,7 @@ class IngredientController extends Controller
     }
 
     public function edit($id){
-        $ing = Ingredient::find($id);
+        $ing = Ingredient::findOrFail($id);
         return response()->json($ing);
     }
 

@@ -180,4 +180,12 @@ class PostController extends Controller
         'post' => $post
     ], 201);
     }
+
+    // hàm xóa post khỏi db
+    public function forceDestroy($id) {
+    $post = Post::findOrFail($id);
+    $post->forceDelete();
+    
+    return response()->json(['message' => 'Bài post đã bị xóa']);
+}
 }

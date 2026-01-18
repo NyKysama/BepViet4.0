@@ -37,6 +37,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/update-blog/{id}', [PostController::class, 'editBlog']);
     Route::put('/update-blog/{id}', [PostController::class, 'update'])->name("update-blog");
     Route::delete('/delete-post/{id}', [PostController::class, 'destroy']);
+    Route::delete('/forcedestroy-post/{id}', [PostController::class, 'forceDestroy']);
     //category
     Route::post('create-category', [CategoryController::class, 'createCategory']);
     Route::get('update-category/{id}', [CategoryController::class, 'edit']);

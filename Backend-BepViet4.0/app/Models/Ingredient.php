@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Post;
 
 class Ingredient extends Model {
     protected $table = 'ingredients';
+    use SoftDeletes;
     protected $primaryKey = 'ing_id';
     protected $fillable = ['name'];
 

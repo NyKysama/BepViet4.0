@@ -28,7 +28,9 @@ const CommentItem = ({ comment, onReply }) => {
           </button>
         </div>
 
-        {/* Đệ quy hiển thị reply với đường kẻ dọc */}
+        {/* Đệ quy hiển thị reply với đường kẻ dọc 
+        replies: bình luận con
+        */}
         {comment.replies && comment.replies.length > 0 && ( 
           <div className="mt-3 ml-4 border-l-2 border-slate-100 pl-4">
             {comment.replies.map((reply) => (
@@ -59,7 +61,6 @@ export default function CommentSection({ id }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(localStorage.getItem('user_data'))
     if (!formData.content.trim()) return;
     setIsLoading(true);
 
@@ -74,12 +75,12 @@ export default function CommentSection({ id }) {
         headers: { 
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('user_data')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`//gọi token để lấy thông tin user
         },
-        body: JSON.stringify({ content: formData.content })
+        body: JSON.stringify({ content: formData.content })// truyền dl sang server
       });
 
-      
+      // khi mà api đã có và hoạt động thì ms gửi dl đi
       if (response.ok) {
         setFormData({ content: '' });
         setReplyingTo(null);
@@ -125,13 +126,13 @@ export default function CommentSection({ id }) {
           </button>
         </div>
       </div>
-
+      {/* hiển thị ds bình luận có trong post*/}
       <div className="space-y-4">
         {comments.map(c => (
           <CommentItem 
             key={c.comment_id} 
             comment={c} 
-            onReply={(cmt) => setReplyingTo(cmt)} 
+            onReply={(cmt) => setReplyingTo(cmt)} // lấy id của bình luận đc chọn 
           />
         ))}
       </div>
