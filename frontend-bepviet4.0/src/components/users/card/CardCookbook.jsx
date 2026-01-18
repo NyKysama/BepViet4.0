@@ -1,8 +1,9 @@
 import { useState } from "react"
 import {MoreVertical, Trash2} from "lucide-react"
 import { useMyAccount } from "../../../contexts/user/MyAccountContext";
+import { Link } from "react-router-dom";
 
-export default function CardCookbook({ cookbook,isMycookbook,setCookbooks }) {
+export default function CardCookbook({ cookbook,isMycookbook,setCookbooks,user_info }) {
         const {setMyAccount}=useMyAccount()
         const [showMenu, setShowMenu] = useState(false);
         const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -37,11 +38,13 @@ export default function CardCookbook({ cookbook,isMycookbook,setCookbooks }) {
                 className="flex-shrink-0 w-40 md:w-56 bg-white rounded-xl shadow-sm hover:shadow-md transition cursor-pointer overflow-hidden group"
             >
                 <div className="aspect-video overflow-hidden bg-gray-200 relative">
+                    <Link to={"/user-profile/"+user_info.username+"/cookbook/"+cookbook.name}>
                     <img
                         src={"http://127.0.0.1:8000/"+cookbook.image}
                         alt={cookbook.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
                     />
+                    </Link>
                     {/*Nu 3 cham dropdow menu*/}
                     {isMycookbook &&(<>
                       <div className="absolute top-2 right-2">

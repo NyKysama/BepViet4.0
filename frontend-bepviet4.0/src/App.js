@@ -44,7 +44,7 @@ function App() {
             <Route path='/user-profile/my-account' element={<UserProfile/>}></Route>
             <Route path='/user-profile/:username' element={<UserProfile/>}></Route>
             <Route path='/my-info' element={<UserInfo/>}></Route>
-            <Route path='/cookbook-detail' element={<CookbookDetail/>}></Route>
+            <Route path='/user-profile/:username/cookbook/:name' element={<CookbookDetail/>}></Route>
             <Route path='/update-blog/:id' element={<CreateBlog />}></Route>
           </Route>
           <Route element={<LayoutAdmin />}>

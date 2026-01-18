@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cookbook;
+use App\Models\User;
 
 class CookbookController extends Controller
 {
@@ -54,5 +55,25 @@ class CookbookController extends Controller
     public function delete($cookbook_id){
         Cookbook::where("cookbook_id",$cookbook_id)->delete();
         return response()->json(["message"=>"Xoa thanh cong coobook so: ".$cookbook_id],200);
+    }
+    //lay chi tieet cookbook gom ten ng so huu, thong tin cookbook, danh sach cong thuc cua cookbook
+    public function getCookbookDetail($username,$name){//name la ten cua cookbook
+        $user=User::where("username",$username)->first();
+        $cookbook=Cookbook::where([["name",$name],["user_id",$user->user_id],])->first();
+        return response()->json(["message"=>"Lay chi tiet cookbook thanh cong",
+        "cookbook"=>$cookbook,
+        "user"=>$cookbook->user,
+        "posts"=>$cookbook->posts,
+        ],200);
+    }
+    //huy lien ket 1 post den cookbook
+    public function detachCoobook_Post($cookbook_id,$post_id){
+        $cookbook = Cookbook::where("cookbook_id",$cookbook_id)->first();
+
+        $cookbook->posts()->detach($post_id);
+
+        return response()->json([
+            'message' => 'Đã gỡ post khỏi cookbook'
+        ],200);
     }
 }

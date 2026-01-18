@@ -58,6 +58,8 @@ Route::post('/post/create-comments/{post}/{id?}', [CommentController::class, 'cr
 //cookbook
 Route::post("/coobook/create",[CookbookController::class,"createCookbook"])->name("cookbook.create");
 Route::post("/cookbook/delete/{cookbook_id}",[CookbookController::class,"delete"])->name("cookbook.delete");
+Route::get("/cookbook/{username}/{name}",[CookbookController::class,"getCookbookDetail"])->name("cookbook.cookbook_detail");
+Route::post("/cookbook/{cookbook_id}/detatch/{post_id}",[CookbookController::class,"detachCoobook_Post"])->name("cookbook.detatch.post");
 
 
 

@@ -218,6 +218,7 @@ export default function UserProfile() {
               {cookbooks.map((cookbook) => (
                 <CardCookbook cookbook={cookbook} isMycookbook={username && myAccount?.username != username ? false : true}
                 setCookbooks={setCookbooks}
+                user_info={user_info}
                 ></CardCookbook>
               ))}
             </div>
