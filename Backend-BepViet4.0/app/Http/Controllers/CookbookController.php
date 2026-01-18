@@ -15,7 +15,7 @@ class CookbookController extends Controller
             "user_id"=>"required|exists:users,user_id",
             'name' => 'required|string|max:100',
             'description' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:5120', // 5MB
+            'image_file' => 'nullable|image|max:5120', // 5MB
         ]);
 
          // 2. Tạo cookbook
@@ -26,30 +26,26 @@ class CookbookController extends Controller
 
         // 3. Upload ảnh nếu có
         if ($request->hasFile('image_file')) {
-           $file = $request->file('image_file');
-
+            $file = $request->file('image_file');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
             // đường dẫn vật lý
             $destinationPath = public_path('images');
-
             // tạo folder nếu chưa có
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0755, true);
             }
-
             // di chuyển file
-            $file->move($destinationPath, $filename);
-
+            $file->move($destinationPath, $filename);   
             // lưu path vào DB
             $cookbook->image = 'images/' . $filename;
-             $cookbook->save();
-
-            return response()->json([
-                'message' => 'Tạo cookbook thành công',
-                'newCookbook' => $cookbook
-            ], 200);
         }
+        //4. luu
+        $cookbook->save();
+        //5. tra ket qua
+        return response()->json([
+            'message' => 'Tạo cookbook thành công',
+                'newCookbook' => $cookbook
+        ], 200);
     }
     //xoa cookbook
     public function delete($cookbook_id){
@@ -75,5 +71,40 @@ class CookbookController extends Controller
         return response()->json([
             'message' => 'Đã gỡ post khỏi cookbook'
         ],200);
+    }
+     public function updateCookbook(Request $request,$cookbook_id){
+        // 1. Validate dữ liệu
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
+            'image_file' => 'nullable|image|max:5120', // 5MB
+        ]);
+
+         // 2. Tạo cookbook
+        $cookbook = Cookbook::where("cookbook_id",$cookbook_id)->first();
+        $cookbook->name = $request->name;
+        $cookbook->description = $request->description;
+
+        // 3. Upload ảnh nếu có
+        if ($request->hasFile('image_file')) {
+           $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            // đường dẫn vật lý
+            $destinationPath = public_path('images');
+            // tạo folder nếu chưa có
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            // di chuyển file
+            $file->move($destinationPath, $filename);
+             // lưu path vào DB
+            $cookbook->image = 'images/' . $filename;
+        }
+        $cookbook->save();
+
+        return response()->json([
+             'message' => 'Tạo cookbook thành công',
+            'newCookbook' => $cookbook
+         ], 200);
     }
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams,useNavigate, data} from 'react-router-dom';
 import { useMyAccount } from '../../../contexts/user/MyAccountContext';
 import LoadingPage from '../../../components/users/LoadingPage';
+import { Camera } from 'lucide-react';
 
 // 1. Component PostCard (giữ nguyên)
 const PostCard = ({ post, index, onDelete ,user_info}) => {
@@ -86,6 +87,7 @@ export default function CookbookPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState();
   const [isLoading,setIsLoading]=useState(true);
+  const [preview, setPreview] = useState(null);
 
   useEffect(()=>{
    async function fetchData() {
@@ -106,7 +108,7 @@ export default function CookbookPage() {
    }
    fetchData();
   }
-  ,[])
+  ,[username,name])
 
   const handleDeletePost = async(post_id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
@@ -131,13 +133,78 @@ export default function CookbookPage() {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setCookbook(editForm);
-    setIsEditing(false);
+  const handleSave = async() => {
+     //Luu vao formdata
+    const formData = new FormData();
+    formData.append("name", editForm.name);
+    formData.append("description", editForm.description || "");
+    if (editForm.imageFile) {
+    formData.append("image_file", editForm.imageFile);
+    }
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/coobook/update/${cookbook.cookbook_id}`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          // Authorization: `Bearer ${token}` // nếu có login
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error(data);
+        alert(data.message || "Sua cookbook thất bại");
+        return;
+      }
+      console.log("Sua cookbook thành công:", data);
+
+      // reset form (optional)
+      
+      // setEditForm({
+      //   name: "",
+      //   description: "",
+      //   imageFile: null,
+      // });
+      // setCookbooks([...cookbooks,data.newCookbook])
+      // setMyAccount({...myAccount,cookbooks:[...cookbooks,data.newCookbook]})
+      // console.log("setMyAccount dc thuc hien")
+      setCookbook(data.newCookbook);
+      setIsEditing(false);
+      navigate(`/user-profile/${username}/cookbook/${editForm.name}`)
+    }catch (error) {
+    console.error(error);
+    alert("Không kết nối được server");
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+  };
+    const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Kiểm tra file có phải là ảnh không
+      if (!file.type.startsWith('image/')) {
+        alert('Vui lòng chọn file ảnh!');
+        return;
+      }
+
+      // Kiểm tra kích thước file (ví dụ: tối đa 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Kích thước ảnh không được vượt quá 5MB!');
+        return;
+      }
+
+      // Đọc file và chuyển thành base64 để hiển thị
+     setEditForm(prev=>({...prev,imageFile:file}))
+     setPreview(URL.createObjectURL(file))
+    }
+  }
+  const handleRemoveImage = () => {
+    setEditForm(prev => ({ ...prev, imageFile: null }));
+    setPreview(null)
   };
 
   if(isLoading){
@@ -173,21 +240,62 @@ export default function CookbookPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-500 uppercase">Ảnh bìa (URL)</label>
-                  <input
-                    type="text"
-                    value={editForm.coverImage}
-                    onChange={(e) => setEditForm({ ...editForm, coverImage: e.target.value })}
-                    className="w-full p-2 border border-gray-300 rounded-lg text-xs md:text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
+                  {/* Image Upload Section */}
+              <div className=''>
+                <label className="text-sm font-semibold text-gray-700 mb-2">
+                  Ảnh bìa
+                </label>
+                {/* Nút Upload */}
+                <div className="flex items-center gap-3 mb-3">
+                  <label className='inline-flex items-center justify-center
+             px-3 py-1.5 text-sm bg-emerald-500 text-white
+             rounded-full shadow-lg hover:bg-emerald-600
+             transition-all border-2 border-white cursor-pointer'>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={e=>handleImageUpload(e)}
+                      className="hidden"
+                    />  
+                    Chọn ảnh
+                  </label>
+
+
+                  {editForm.imageFile && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="px-3 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition"
+                    >
+                      Xóa ảnh
+                    </button>
+                  )}
+                </div>
+
+                {/* Khung hiển thị ảnh */}
+                <div className="aspect-video w-full bg-gray-100 rounded-lg overflow-hidden border border-dashed border-gray-300">
+                  {editForm.imageFile? (
+                    <img
+                      src={preview}
+                      alt="Ảnh bìa"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                      <Camera size={40} className="mb-2" />
+                      <p className="text-sm font-medium">Chưa có ảnh bìa</p>
+                    </div>
+                  )}
+                </div>
+              </div>
                 </div>
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-gray-500 uppercase">Tên Cookbook</label>
                   <input
                     type="text"
-                    value={editForm.title}
-                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                     className="w-full p-2 border border-gray-300 rounded-lg font-bold text-gray-800 text-sm md:text-base focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
@@ -211,7 +319,7 @@ export default function CookbookPage() {
               /* --- VIEW MODE --- */
               <>
                 <div className="aspect-square w-full rounded-lg md:rounded-xl overflow-hidden shadow-md mb-4 md:mb-6 relative group">
-                  <img src="" alt={cookbook.name} className="w-full h-full object-cover" />
+                  <img src={"http://127.0.0.1:8000/"+cookbook.image} alt={cookbook.name} className="w-full h-full object-cover" />
                 </div>
 
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 leading-tight">
@@ -247,7 +355,7 @@ export default function CookbookPage() {
                 </div>
 
                 <div className="flex items-center gap-3 mb-4 md:mb-6">
-                  <img src={cookbook.ownerAvatar} alt={cookbook.ownerName} className="w-9 h-9 md:w-10 md:h-10 rounded-full" />
+                  <img src={"http://127.0.0.1:8000/images/"+user_info.avatar} alt={user_info.username+" avatar"} className="w-9 h-9 md:w-10 md:h-10 rounded-full" />
                   <div className="flex flex-col">
                     <span className="text-xs md:text-sm font-bold text-gray-800 hover:underline cursor-pointer">{user_info.username}</span>
                     <div className="text-xs text-gray-500 flex gap-2">

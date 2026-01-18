@@ -61,6 +61,7 @@ Route::post("/coobook/create",[CookbookController::class,"createCookbook"])->nam
 Route::post("/cookbook/delete/{cookbook_id}",[CookbookController::class,"delete"])->name("cookbook.delete");
 Route::get("/cookbook/{username}/{name}",[CookbookController::class,"getCookbookDetail"])->name("cookbook.cookbook_detail");
 Route::post("/cookbook/{cookbook_id}/detatch/{post_id}",[CookbookController::class,"detachCoobook_Post"])->name("cookbook.detatch.post");
+Route::post("/coobook/update/{cookbook_id}",[CookbookController::class,"updateCookbook"])->name("cookbook.update");
 
 
 
