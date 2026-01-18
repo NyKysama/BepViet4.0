@@ -46,7 +46,7 @@ class CookbookController extends Controller
 
             return response()->json([
                 'message' => 'Tạo cookbook thành công',
-                'data' => $cookbook
+                'newCookbook' => $cookbook
             ], 200);
         }
     }

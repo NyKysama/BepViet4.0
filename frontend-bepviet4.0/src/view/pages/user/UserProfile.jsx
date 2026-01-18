@@ -120,15 +120,18 @@ export default function UserProfile() {
         alert(data.message || "Tạo cookbook thất bại");
         return;
       }
-      console.log("Tạo cookbook thành công:", data);
+      console.log("Tạo cookbook thành công:", data.newCookbook);
 
       // reset form (optional)
+      
       setNewCookbook({
         name: "",
         description: "",
         imageFile: null,
       });
-      // setMyAccount({...myAccount,cookbooks:[...cookbooks]})
+      setCookbooks([...cookbooks,data.newCookbook])
+      setMyAccount({...myAccount,cookbooks:[...cookbooks,data.newCookbook]})
+      console.log("setMyAccount dc thuc hien")
     } catch (error) {
     console.error(error);
     alert("Không kết nối được server");
@@ -171,8 +174,9 @@ export default function UserProfile() {
             <h2 className="text-2xl font-bold text-gray-800">
               Cookbook của {user_info?.name}
             </h2>
-
-            <button
+            {/*Nut them cookbook*/}
+            {(!username||username==myAccount?.username) &&
+             <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-green-400 text-white rounded-full hover:bg-green-500 transition font-semibold shadow-sm"
             >
@@ -180,6 +184,8 @@ export default function UserProfile() {
               <span className="hidden sm:inline">Thêm Cookbook</span>
               <span className="sm:hidden">Thêm</span>
             </button>
+          }
+           
           </div>
           <div
             className="overflow-x-auto -mx-4 px-4 pb-4 cursor-grab active:cursor-grabbing"

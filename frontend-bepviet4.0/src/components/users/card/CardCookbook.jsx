@@ -8,6 +8,7 @@ export default function CardCookbook({ cookbook,isMycookbook }) {
          
 
         const handleDelete = () => {
+            
             console.log('Đã xóa cookbook:', cookbook);
             setShowDeleteConfirm(false);
             setShowMenu(false);

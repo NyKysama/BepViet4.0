@@ -5,7 +5,7 @@ export function MyAccountProvider({children}){
     saveUser=JSON.parse(saveUser)
     const [myAccount,setMyAccount]=useState(saveUser)
     // const [isLogin,setIsLogin]=useState(false)//ko dung gia tri nay lam logic
-    useEffect(()=>{
+    useEffect(()=>{//khi myAccount thay doi se tu dong luu vao local storage
         localStorage.setItem('user_data', JSON.stringify(myAccount))
     },[myAccount])
 
