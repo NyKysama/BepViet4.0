@@ -29,45 +29,40 @@ export default function CreateRecipe() {
       })
   }, [])
 
-  //Mang chua ID cac danh muc da chon
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState([""]);
-
-  // //Ham them o chon danh muc
-  const addCategoryField = () => {
-    setSelectedCategoryIds([...selectedCategoryIds, ""]);
-  };
-
-  // //  ham cap nhat gia tri (value) tai vi tri (index)
-  // const handleCategoryChange = (index, value) => {
-  //   const newSelected = [...selectedCategoryIds];
-  //   newSelected[index] = value;
-  //   setSelectedCategoryIds(newSelected);
-  // };
-
-  // //Ham xoa mot o chon danh muc khi an
-  // const removeCategoryField = (index) => {
-  //   const newSelected = selectedCategoryIds.filter((_, i) => i !== index);
-  //   setSelectedCategoryIds(newSelected);
-  // };
-
   //danh sach cac nguyen lieu cua cong thuc tren giao dien
   const [ing, setIng] = useState([
     { ing_id: 0, name: '', amount: 0, unit: '' }
   ]);
   //ham them nguyen lieu moi
   const handleAddIngredient = () => {
-    const newIngs ={ ing_id: 0, name: '', amount: 0, unit: '' }
-    setIng([
-      ...ing, newIngs] )
+    const newIngs = { ing_id: 0, name: '', amount: 0, unit: '' }
+    setIng([...ing, newIngs])
   };
   //ham huy o nhap nguyen lieu duoi cung
-  // const handleRemoveLastIngredient = () => {
-  //   if (ingredients.length > 1) {
-  //     // Tạo mảng mới bằng cách bỏ phần tử cuối cùng
-  //     const newIngredients = ingredients.slice(0, -1);
-  //     setIngredients(newIngredients);
-  //   }
-  // };
+  const handleRemoveLastIngredient = () => {
+    if (ing.length > 1) {
+      // Tao mang moi bang mang cu bo phan tu cuoi
+      const newIngredients = ing.slice(0, -1);
+      setIng(newIngredients);
+    }
+  };
+
+  //danh sach cac danh muc tren giao dien
+  const [cat, setCat] = useState([
+    { cat_id: 0, name: '' }
+  ])
+  //Them o chon danh muc tren giao dien
+  const handleAddCategory = () => {
+    const newCategory = { cat_id: 0, name: '' }
+    setCat([...cat, newCategory])
+  }
+  //Huy o nhap danh muc
+  const handleRemoveLastCategory = () => {
+    if (cat.length > 1) {
+      const newCategory = cat.slice(0, -1)
+      setCat(newCategory)
+    }
+  }
 
   return (
     <div className="max-w-5xl mx-auto pb-20 mt-10 px-4">
@@ -152,9 +147,15 @@ export default function CreateRecipe() {
 
 
               {/* 4. Nút xóa */}
-              <button className="col-span-1 text-red-400 hover:text-red-600 flex justify-center">
-                <Trash2 size={18} />
-              </button>
+              {ing.length > 1 ?
+                (<button
+                  onClick={handleRemoveLastIngredient}
+                  className="col-span-1 text-red-400 hover:text-red-600 flex justify-center"
+                >
+                  <Trash2 size={18} />
+                </button>)
+                : (<div></div>)
+              }
 
               {/* Nút thêm mới */}
               <button
@@ -212,9 +213,9 @@ export default function CreateRecipe() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-bold text-gray-400 uppercase">Danh mục</label>
-
-                <select className="w-full mt-1 p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                <label className="space-y-3 text-xs font-bold text-gray-400 uppercase">Danh mục</label>
+                {cat.map(()=> (
+                  <select className="w-full mt-1 p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
                   {
                     categories.map(
                       categories => (
@@ -223,16 +224,25 @@ export default function CreateRecipe() {
                     )
                   }
                 </select>
+                ))}
 
                 {/* Nut xoa danh muc */}
-                <button className="col-span-1 text-red-400 hover:text-red-600 flex justify-center">
-                  <Trash2 size={18} />
-                </button>
+                { cat.length > 1 ?
+                    (<button
+                      onClick={handleRemoveLastCategory}
+                      className="col-span-1 text-red-400 hover:text-red-600 flex justify-center"
+                    >
+                      <Trash2 size={18} />
+                    </button>)
+                    :
+                    (<div></div>)
+                }
+
 
                 {/* Nut them o chon danh muc */}
                 <button
                   type="button"
-                  onClick={addCategoryField}
+                  onClick={handleAddCategory}
                   className="text-sm font-bold text-green-600 flex items-center gap-1 hover:underline pt-2"
                 >
                   <Plus size={16} /> Thêm danh mục
