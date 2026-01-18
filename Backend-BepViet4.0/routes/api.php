@@ -22,6 +22,9 @@ Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name(
 Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name("user.update");    
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
+//create_blog
+Route::post('/user/blog', [PostController::class, 'createBlog']);
+
 
 Route::prefix('admin')->group(function () {
     //post

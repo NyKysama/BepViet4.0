@@ -146,5 +146,38 @@ class PostController extends Controller
         return response()->json(['message' => 'Không tìm thấy bài viết để khôi phục'], 404);
     }
 
-
+    public function createBlog(Request $request)
+    {
+    //Kiểm tra dữ liệu
+    $request->validate([
+        'title' => 'required|max:150',
+        'description' => 'required',
+        'category_id' => 'nullable|string',
+        'img' => 'nullable|image|max:2048',
+    ], [
+        'title.required' => 'Tiêu đề không được để trống',
+        'description.required' => 'Nội dung không được để trống',
+    ]);
+    // Upload ảnh
+    $imgPath = $this->uploadImg($request);
+    // Tạo blog
+    $post = Post::create([
+        'title' => $request->title,
+        'description' => $request->description,
+        'img' => $imgPath,
+        'type' => 'Blog',
+        'user_id' => auth()->id(), // USER ĐANG ĐĂNG NHẬP
+        'slug' => Str::slug($request->title),
+        'status' => 0, 
+    ]);
+    // Gán danh mục 
+    if ($request->category_id) {
+        $ids = array_map('intval', explode(',', $request->category_id));
+        $post->categories()->sync($ids);
+    }
+    return response()->json([
+        'message' => 'Đăng blog thành công, đang chờ duyệt',
+        'post' => $post
+    ], 201);
+    }
 }

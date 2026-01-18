@@ -71,13 +71,17 @@ export default function CreateBlog() {
       // nì là dùng để xem hệ thống gửi qua đâu thực hiện chức năng j. hàm tạo ch có viết 
       const url = id
         ? `http://127.0.0.1:8000/api/admin/update-blog/${id}`
-        : `http://127.0.0.1:8000/api/admin/create-blog`;
-
-      const response = await fetch(url, {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      });
+        : `http://127.0.0.1:8000/api/user/blog`;
+      //gửi dữ liệu tạo blog lên api
+     const response = await fetch('http://127.0.0.1:8000/api/user/blog',{
+      method: 'POST',
+      body: data,
+      headers: {
+      'Accept': 'application/json',//trả dữ liệu dạng json
+      'Authorization': `Bearer ${localStorage.getItem('token')}`//Gửi token đăng nhập của user lên server tạm để đó
+    }
+  }
+  );
 
       if (response.ok) {
         alert(id ? "Cập nhật thành công!" : "Đăng bài thành công!");
