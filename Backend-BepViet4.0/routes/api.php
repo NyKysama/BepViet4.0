@@ -21,6 +21,7 @@ Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-use
 Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name("user.username");
 Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name("user.update"); 
 Route::get("/admin/user/{id}",[UserController::class,"getUserByUser_id"])->name("user.user_id");   
+Route::post("/unfollow",[UserController::class,"unfollow"])->name("user.unfollow");
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 //create_blog 18/01/2026

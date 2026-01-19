@@ -133,7 +133,7 @@ class UserController extends Controller
             $user->cookbooks;
             $user->followers;
             $user->followings;
-            $user->avatar_url="http://127.0.0.1:8000/storage/".$user->avatar;
+            $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
             return response()->json([
                 "user"=>$user,
                 "message"=>`Lấy thông tin {$user->username} thành công!`,
@@ -198,5 +198,21 @@ class UserController extends Controller
                 "success"=>false,
         ],404);
     }
-    
+    //ham follow
+    //ham unfollow
+    public function unfollow(Request $request)
+    {   //validate
+        $data = $request->validate([
+            'follower_id'  => 'required|exists:users,user_id',
+            'following_id' => 'required|exists:users,user_id',
+        ]);
+
+        $follower = User::find($data['follower_id']);
+        $follower->followings()->detach($data['following_id']);
+
+        return response()->json([
+            'message' => 'Unfollow thành công'
+        ], 200);
+    }
+
 }
