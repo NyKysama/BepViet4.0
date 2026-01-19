@@ -97,6 +97,24 @@ export default function CreateRecipe() {
   }
   // ham gui anh len serve
 
+  //thao tac voi cac buoc
+  const [steps, setSteps] = useState([
+    { step: 1, content: '', img: null }
+  ])
+  //Them o chon danh muc tren giao dien
+  const handleAddStep = () => {
+    const lastStep = steps.at(-1)
+    const newstep = { step: lastStep.step + 1, content: '', img: null }
+    setSteps([...steps, newstep])
+  }
+  //Huy o nhap danh muc
+  const handleRemoveLastStep = () => {
+    if (steps.length > 1) {
+      const newstep = steps.slice(0, -1)
+      setSteps(newstep)
+    }
+  }
+
   return (
     <div className="max-w-5xl mx-auto pb-20 mt-10 px-4">
       {/* HEADER TRANG */}
@@ -130,34 +148,34 @@ export default function CreateRecipe() {
               {/* Upload anh */}
               <div>
                 <label className="text-xs font-bold text-gray-400 uppercase">Ảnh bìa công thức
-                {
-                  !previewImg ?
-                    // khong co anh
-                    (<div className="w-full h-40 border-2 border-dashed border-slate-200 rounded-[24px] flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 cursor-pointer transition-all">
-                      <ImagePlus size={24} />
-                      <span className="mt-2 font-medium">Click để chọn ảnh</span>
-                      
-                    </div>) : (
-                      //co anh
-                      <div className="relative w-full h-64 rounded-lg overflow-hidden border border-gray-200">
-                        <img
-                          src={previewImg}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Nút X để xóa ảnh */}
-                        <button
-                          onClick={handleRemoveImage}
-                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
-                          type="button"
-                        >
-                          <X size={20} />
-                        </button>
-                      </div>
-                    )
+                  {
+                    !previewImg ?
+                      // khong co anh
+                      (<div className="w-full h-40 border-2 border-dashed border-slate-200 rounded-[24px] flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 cursor-pointer transition-all">
+                        <ImagePlus size={24} />
+                        <span className="mt-2 font-medium">Click để chọn ảnh</span>
+
+                      </div>) : (
+                        //co anh
+                        <div className="relative w-full h-64 rounded-lg overflow-hidden border border-gray-200">
+                          <img
+                            src={previewImg}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Nút X để xóa ảnh */}
+                          <button
+                            onClick={handleRemoveImage}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+                            type="button"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
+                      )
                   }
                   <input type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
-                  </label>
+                </label>
               </div>
 
               <div>
@@ -229,25 +247,44 @@ export default function CreateRecipe() {
           </div>
 
           {/* Section 3: Các bước thực hiện */}
+
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <h2 className="font-bold mb-4 flex items-center gap-2">
               <span className="w-1.5 h-5 bg-green-600 rounded-full"></span>
               Cách chế biến
             </h2>
             <div className="space-y-6">
-              <div className="relative pl-8 border-l-2 border-dashed border-gray-200">
-                <div className="absolute -left-[11px] top-0 w-5 h-5 bg-green-600 rounded-full text-white text-[10px] flex items-center justify-center font-bold">1</div>
-                <textarea className="w-full p-3 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Bước 1: Sơ chế nguyên liệu..." />
-                <div className="mt-2 w-32 h-24 bg-gray-100 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200">
-                  <ImagePlus size={20} />
-                  <span className="text-[10px] mt-1 text-center px-2">Thêm ảnh bước này</span>
+              {steps.map((step) => (
+                <div className="relative pl-8 border-l-2 border-dashed border-gray-200">
+                  <div className="absolute -left-[11px] top-0 w-5 h-5 bg-green-600 rounded-full text-white text-[10px] flex items-center justify-center font-bold">{step.step}</div>
+                  <textarea className="w-full p-3 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Nhập bước tiến hành" />
+                  <div className="mt-2 w-32 h-24 bg-gray-100 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200">
+                    <ImagePlus size={20} />
+                    <span className="text-[10px] mt-1 text-center px-2">Thêm ảnh bước này</span>
+                  </div>
                 </div>
-              </div>
-              <button className="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 font-medium hover:bg-gray-50 transition-colors">
+              ))}
+              {/* nut xoa buoc */}
+              {steps.length > 1 ?
+                (<button
+                  onClick={handleRemoveLastStep}
+                  className="col-span-1 text-red-400 hover:text-red-600 flex justify-center"
+                >
+                  <Trash2 size={18} />
+                </button>)
+                : (<div></div>)
+              }
+              {/* nut them buoc */}
+              <button
+                onClick={handleAddStep}
+                className="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 font-medium hover:bg-gray-50 transition-colors">
                 + Thêm bước thực hiện
               </button>
             </div>
+
+
           </div>
+
         </div>
 
         {/* CỘT PHẢI: THIẾT LẬP PHỤ */}
