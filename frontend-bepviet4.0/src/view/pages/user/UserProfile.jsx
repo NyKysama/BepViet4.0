@@ -406,7 +406,9 @@ export default function UserProfile() {
               <div className="space-y-6">
                 {recipes.map((recipe) => (
                   <>
-                    <PostCard card_data={recipe}></PostCard>
+                  <div key={recipe.post_id}>
+                    <PostCard post={recipe} card_data={recipe}></PostCard>
+                  </div>
                   </>
                 ))}
               </div>
@@ -416,7 +418,9 @@ export default function UserProfile() {
               <div className="space-y-6">
                 {blogs.map((blog) => (
                   <>
-                    <PostCard card_data={blog}></PostCard>
+                  <div key={blog.post_id}>
+                    <PostCard post={blog} card_data={blog}></PostCard>
+                  </div>
                   </>
                 ))}
               </div>

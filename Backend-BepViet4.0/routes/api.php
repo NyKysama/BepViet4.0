@@ -38,6 +38,7 @@ Route::prefix('admin')->group(function () {
     Route::put('/update-blog/{id}', [PostController::class, 'update'])->name("update-blog");
     Route::delete('/delete-post/{id}', [PostController::class, 'destroy']);
     Route::delete('/forcedestroy-post/{id}', [PostController::class, 'forceDestroy']);
+    
     //category
     Route::post('create-category', [CategoryController::class, 'createCategory']);
     Route::get('update-category/{id}', [CategoryController::class, 'edit']);
@@ -56,12 +57,14 @@ Route::get('/blog-detail/{id}', [PostController::class, 'blogDetail']);
 //comment
 Route::get('/post/comments/{id}', [CommentController::class, 'getCommentByPost']);
 Route::post('/post/create-comments/{post}/{id?}', [CommentController::class, 'create']);
+Route::get('/cmt-count/{id}', [CommentController::class, 'cmtCount']);
 //cookbook
 Route::post("/coobook/create",[CookbookController::class,"createCookbook"])->name("cookbook.create");
 Route::post("/cookbook/delete/{cookbook_id}",[CookbookController::class,"delete"])->name("cookbook.delete");
 Route::get("/cookbook/{username}/{name}",[CookbookController::class,"getCookbookDetail"])->name("cookbook.cookbook_detail");
 Route::post("/cookbook/{cookbook_id}/detatch/{post_id}",[CookbookController::class,"detachCoobook_Post"])->name("cookbook.detatch.post");
 Route::post("/coobook/update/{cookbook_id}",[CookbookController::class,"updateCookbook"])->name("cookbook.update");
-
+//post
+Route::get('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds']);
 
 

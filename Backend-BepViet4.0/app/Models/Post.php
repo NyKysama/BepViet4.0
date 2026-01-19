@@ -26,10 +26,10 @@ class Post extends Model
     //hàm lấy ds bài đăng chưa duyệt && đã từ chối
     public static function pendingPosts()
     {
-        return self::with('user')->with('categories')->where('status', '=!', 0)->get();
+        return self::with('user')->with('categories')->where('status', '!=', 1)->get();
     }
 
-    //hàm lấy dsct chưa chuyệt 
+    //hàm lấy post chưa chuyệt 
     public static function pending()
     {
         return self::with('user')->where('status', 0)->orderBy('created_at', 'desc')->get();
