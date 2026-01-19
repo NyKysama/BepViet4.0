@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Post;
 use App\Models\Step;
+use App\Models\User;
 use Laravel\Pail\ValueObjects\Origin\Console;
+use DB;
 
 
 class PostController extends Controller
@@ -27,10 +30,12 @@ class PostController extends Controller
     }
 
     //lay tat ca post
-    public function getPosts(){
+    public function getPosts()
+    {
         //lay tat ca post
-        $posts=Post::skip(0)->take(5)->get();
-        return response()->json(["posts"=>$posts,
+        $posts = Post::skip(0)->take(5)->get();
+        return response()->json([
+            "posts" => $posts,
         ]);
     }
 
@@ -79,15 +84,16 @@ class PostController extends Controller
 
     public function blogDetail($id)
     {
-        $post = Post::with('categories','user')->where('type', 'Blog')->find($id);
+        $post = Post::with('categories', 'user')->where('type', 'Blog')->find($id);
         return response()->json($post);
     }
 
-    public function recipeDetail($id){
+    public function recipeDetail($id)
+    {
         $post = Post::with('ingredients')->where('type', 'Công thức')->find($id);
         $steps = Step::getStepByPostID($id);
         return response()->json([
-            'post'=>$post,
+            'post' => $post,
             'steps' => $steps
         ]);
     }
@@ -148,44 +154,92 @@ class PostController extends Controller
 
     public function createBlog(Request $request) //18/01/2026
     {
-    //Kiểm tra dữ liệu
-    $request->validate([
-        'title' => 'required|max:150',
-        'description' => 'required',
-        'category_id' => 'nullable|string',
-        'img' => 'nullable|image|max:2048',
-    ], [
-        'title.required' => 'Tiêu đề không được để trống',
-        'description.required' => 'Nội dung không được để trống',
-    ]);
-    // Upload ảnh
-    $imgPath = $this->uploadImg($request);
-    // Tạo blog
-    $post = Post::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'img' => $imgPath,
-        'type' => 'Blog',
-        'user_id' => auth()->id(), // USER ĐANG ĐĂNG NHẬP
-        'slug' => Str::slug($request->title),
-        'status' => 0, 
-    ]);
-    // Gán danh mục 
-    if ($request->category_id) {
-        $ids = array_map('intval', explode(',', $request->category_id));
-        $post->categories()->sync($ids);
-    }
-    return response()->json([
-        'message' => 'Đăng blog thành công, đang chờ duyệt',
-        'post' => $post
-    ], 201);
+        //Kiểm tra dữ liệu
+        $request->validate([
+            'title' => 'required|max:150',
+            'description' => 'required',
+            'category_id' => 'nullable|string',
+            'img' => 'nullable|image|max:2048',
+        ], [
+            'title.required' => 'Tiêu đề không được để trống',
+            'description.required' => 'Nội dung không được để trống',
+        ]);
+        // Upload ảnh
+        $imgPath = $this->uploadImg($request);
+        // Tạo blog
+        $post = Post::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'img' => $imgPath,
+            'type' => 'Blog',
+            'user_id' => auth()->id(), // USER ĐANG ĐĂNG NHẬP
+            'slug' => Str::slug($request->title),
+            'status' => 0,
+        ]);
+        // Gán danh mục 
+        if ($request->category_id) {
+            $ids = array_map('intval', explode(',', $request->category_id));
+            $post->categories()->sync($ids);
+        }
+        return response()->json([
+            'message' => 'Đăng blog thành công, đang chờ duyệt',
+            'post' => $post
+        ], 201);
     }
 
     // hàm xóa post khỏi db
-    public function forceDestroy($id) {
-    $post = Post::findOrFail($id);
-    $post->forceDelete();
-    
-    return response()->json(['message' => 'Bài post đã bị xóa']);
-}
+    public function forceDestroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->forceDelete();
+
+        return response()->json(['message' => 'Bài post đã bị xóa']);
+    }
+
+    //hiện ds post trên trang chủ
+    public function getNewsFeeds(Request $request)
+    {
+        $userId = Auth::id(); // lấy id người đang dn
+        $seed = $request->seed ?? rand(1, 999999);// dùng để cố định bài post trong trang page 
+        $sevenDaysAgo = now()->subDays(7)->toDateTimeString();// điều kiện trong 3 ngày 
+
+        // 1. Lấy danh sách ID người đang follow
+        $followingIds = DB::table('follows')
+            ->where('follower_id', $userId)
+            ->pluck('following_id')
+            ->toArray();
+        $followingIdsString = !empty($followingIds) ? implode(',', $followingIds) : '0';
+
+        // 2. Truy vấn nếu id user có trong mảng sẻ lấy hết bài post cảu user đó sau đó lại lấy số bài post của ng ch follow 
+        $posts = Post::with('user')
+            ->where('status', 1)
+            ->orderByRaw("
+            CASE 
+                WHEN user_id IN ($followingIdsString) AND created_at >= '$sevenDaysAgo' THEN 1 
+                WHEN user_id NOT IN ($followingIdsString) AND created_at >= '$sevenDaysAgo' THEN 2               
+                ELSE 3 
+            END ASC
+        ")
+            /* Xáo trộn ngẫu nhiên trong từng nhóm để mỗi lần vào là một trải nghiệm khác */
+            ->inRandomOrder($seed)
+            ->simplePaginate(10); // số post trong 1 page 
+        
+        return response()->json($posts);
+    }
+
+    // hàm tạo câu hỏi
+    public function createQuestion(Request $request)
+    {
+        $validate = $request->validate([
+            'description' => 'required',
+        ]);
+        Post::create([
+            'description' => $request->description,
+            'type' => 'Question',
+            'user_id' => Auth::id(),
+            'slug' => Str::slug($request->description),
+            'status' => 0,
+        ]);
+        return response()->json(['message' => 'Tạo câu hỏi thành công']);
+    }
 }

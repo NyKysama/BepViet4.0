@@ -13,7 +13,7 @@ import RecipeDetail from './view/pages/user/RecipeDetail';
 import BlogDetail from './view/pages/user/BlogDetail';  
 import UserProfile from "./view/pages/user/UserProfile"
 import UserInfo from './view/pages/user/UserInfo';
-import CookbookDetail from "./view/pages/user/CookbookDetail"
+import CookbookDetail from "./view/pages/user/CookbookDetail";
 //admin pages
 import PostTable from './view/pages/admin/PostTable';
 import Dashboad from './view/pages/admin/Dashboad';

@@ -31,4 +31,9 @@ class CommentController extends Controller
         ]);
         return response()->json(['mesage' => 'Bình luận thành công']);
     }
+
+    public function cmtCount($id){
+        $cmt = Comment::where('post_id', $id)->count();
+        return response()->json($cmt);
+    }
 }
