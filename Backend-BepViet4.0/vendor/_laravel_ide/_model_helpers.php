@@ -5,6 +5,7 @@ namespace App\Models {
   /**
    * App\Models\Category
    *
+   * @property \Illuminate\Support\Carbon|null $deleted_at
    * @property \Illuminate\Support\Carbon|null $updated_at
    * @property \Illuminate\Support\Carbon|null $created_at
    * @property string $name
@@ -15,6 +16,7 @@ namespace App\Models {
    * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category whereName($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category whereCreatedAt($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category whereUpdatedAt($value)
+   * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category whereDeletedAt($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category newModelQuery()
    * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category newQuery()
    * @method static \Illuminate\Database\Eloquent\Builder<Category>|Category query()
@@ -965,6 +967,7 @@ namespace App\Models {
   /**
    * App\Models\Ingredient
    *
+   * @property \Illuminate\Support\Carbon|null $deleted_at
    * @property \Illuminate\Support\Carbon|null $updated_at
    * @property \Illuminate\Support\Carbon|null $created_at
    * @property string $name
@@ -975,6 +978,7 @@ namespace App\Models {
    * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient whereName($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient whereCreatedAt($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient whereUpdatedAt($value)
+   * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient whereDeletedAt($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient newModelQuery()
    * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient newQuery()
    * @method static \Illuminate\Database\Eloquent\Builder<Ingredient>|Ingredient query()
@@ -1281,6 +1285,7 @@ namespace App\Models {
   /**
    * App\Models\Post
    *
+   * @property \Illuminate\Support\Carbon|null $deleted_at
    * @property \Illuminate\Support\Carbon|null $updated_at
    * @property \Illuminate\Support\Carbon|null $created_at
    * @property bool|null $status
@@ -1318,6 +1323,7 @@ namespace App\Models {
    * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post whereStatus($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post whereCreatedAt($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post whereUpdatedAt($value)
+   * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post whereDeletedAt($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post newModelQuery()
    * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post newQuery()
    * @method static \Illuminate\Database\Eloquent\Builder<Post>|Post query()
