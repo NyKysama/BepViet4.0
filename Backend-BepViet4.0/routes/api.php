@@ -24,6 +24,7 @@ Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name
 Route::get("/admin/user/{id}",[UserController::class,"getUserByUser_id"])->name("user.user_id");   
 Route::post("/unfollow",[UserController::class,"unfollow"])->name("user.unfollow");
 Route::post("/follow",[UserController::class,"follow"])->name("user.follow");
+Route::post("user/update-avatar",[UserController::class,"updateAvatar"])->name("user.update-avatar");
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 Route::post("/post/serch",[PostController::class,"search"])->name("post.search");

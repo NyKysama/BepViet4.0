@@ -186,7 +186,7 @@ class UserController extends Controller
             $user->cookbooks;
             $user->followers;
             $user->followings;
-            $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
+            // $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
             return response()->json([
                 "user"=>$user,
                 "message"=>`Lấy thông tin {$user->username} thành công!`,
@@ -243,6 +243,49 @@ class UserController extends Controller
             'message' => 'Theo dõi thành công',
             "following"=>User::find($request->following_id),
         ], 200);
+    }
+
+    //ham update avatar
+    public function updateAvatar(Request $request)
+    {
+        //validate
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'image_file'  => 'required|image|max:5120', // 5MB
+        ]);
+        //lay user
+        $user = User::where('user_id', $request->user_id)->first();
+
+        // Xóa avatar cũ nếu có
+        // if ($user->avatar_url) {
+        //     $oldPath = str_replace('/storage/', '', $user->avatar_url);
+        //     Storage::disk('public')->delete($oldPath);
+        // }
+
+        if ($request->hasFile('image_file')) {
+           $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            // đường dẫn vật lý
+            $destinationPath = public_path('images');
+            // tạo folder nếu chưa có
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            // di chuyển file
+            $file->move($destinationPath, $filename);
+             // lưu path vào DB
+            $user->avatar ="images/".$filename;
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+        }
+        $user->save();
+
+        return response()->json([
+            "message"=>"Cập nhật avatar thành công!",
+            "user"=>$user,
+        ],200);
     }
 
 }

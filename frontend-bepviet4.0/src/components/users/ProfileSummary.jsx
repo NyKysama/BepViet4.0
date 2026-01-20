@@ -74,6 +74,51 @@ export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
         }
         
     }
+    const handleChangeAvatar = async(e) => {
+    const file = e.target.files[0];
+        if (file) {
+        // Kiểm tra file có phải là ảnh không
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh!');
+            return;
+        }
+
+        // Kiểm tra kích thước file (ví dụ: tối đa 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB!');
+            return;
+        }
+        try {
+            //Luu vao formdata
+            const formData = new FormData();
+            formData.append("user_id", myAccount.user_id)
+            if (file) {formData.append("image_file", file)}
+            const res = await fetch("http://127.0.0.1:8000/api/user/update-avatar", {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                            Accept: "application/json",
+                            // Authorization: `Bearer ${token}` // nếu có login
+                            },
+                        })
+            const data=await res.json()
+            setMyAccount(prev => ({
+            ...prev,
+            avatar: data.user.avatar
+            }));
+            navigate(0)
+            if(!res.ok){
+                return
+            }
+            console.log(data)
+        } catch (error) {
+            
+        }
+        // Đọc file và chuyển thành base64 để hiển thị
+        // setNewCookbook(prev=>({...prev,imageFile:file}))
+        // setPreview(URL.createObjectURL(file))
+        }
+     }
     return (
         <>
             {/* Header Section */}
@@ -93,14 +138,25 @@ export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
                         <div className="relative group">
                             <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-4xl font-bold overflow-hidden">
                                 <img
-                                    src={user_info?.avatar_url}
+                                    src={"http://127.0.0.1:8000/"+user_info?.avatar}
                                     alt="Avatar"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <button className="absolute bottom-0 right-0 w-10 h-10 bg-green-400 rounded-full flex items-center justify-center text-white hover:bg-green-500 transition shadow-lg">
-                                <Camera size={20} />
-                            </button>
+                            {isMyAccount && 
+                            <>
+                                <label  className="absolute bottom-0 right-0 w-10 h-10 bg-green-400 rounded-full flex items-center justify-center text-white hover:bg-green-500 transition shadow-lg">
+                                    <Camera size={20} />
+                                                                    <input
+                                    id="avatar-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={handleChangeAvatar}
+                                />
+                                </label>
+                            </>  
+                            }
                         </div>
 
                         {/* Info & Actions */}
@@ -136,12 +192,12 @@ export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
                                         </div>
                                     }
                                     {isMyAccount &&
-                                        <button
-                                            onClick={() => setShowEditModal(true)}
-                                            className="p-2 rounded-full hover:bg-gray-100 transition"
+                                        <Link to="/my-info"
+                                            
+                                            className="p-2 rounded-full  bg-orange-50 hover:bg-orange-100 transition"
                                         >
-                                            <Edit2 size={20} className="text-gray-600" />
-                                        </button>
+                                            <p className="text-yellow-500 font-semibold">Thông tin cá nhân</p>{/*<Edit2 size={20} className="text-gray-600" />*/}
+                                        </Link>
                                     }
 
                                 </div>
@@ -170,7 +226,7 @@ export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
             </div>
 
             {/* Edit Modal */}
-            {showEditModal && (
+            {/* {showEditModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl max-w-md w-full p-6">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Chỉnh sửa caption</h2>
@@ -200,7 +256,7 @@ export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
         </>
     )
 }

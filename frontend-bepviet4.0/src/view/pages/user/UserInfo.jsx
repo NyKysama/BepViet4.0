@@ -4,7 +4,7 @@ import {
     User, Shield, MapPin, CheckCircle, Clock, BookOpen, Save,
 } from 'lucide-react';
 import { useMyAccount } from '../../../contexts/user/MyAccountContext';
-import { data } from 'react-router-dom';
+import { data,Link } from 'react-router-dom';
 
 export default function UserInfo() {
     //khai bao bien
@@ -52,9 +52,9 @@ export default function UserInfo() {
     return (
         <div className="p-8 bg-[#F8FAFC] min-h-screen">
             {/* Thanh điều hướng quay lại */}
-            <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all mb-6 font-medium">
-                <ArrowLeft size={20} /> Quay lại danh sách
-            </button>
+            <Link to="/user-profile/my-account" className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all mb-6 font-medium">
+                <ArrowLeft size={20} /> Quay lại trang cá nhân
+            </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
