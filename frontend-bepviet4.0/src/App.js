@@ -15,6 +15,7 @@ import UserProfile from "./view/pages/user/UserProfile"
 import UserInfo from './view/pages/user/UserInfo';
 import CookbookDetail from "./view/pages/user/CookbookDetail";
 //admin pages
+import LoginAdmin from './view/pages/shares_pages/LoginAdmin';
 import PostTable from './view/pages/admin/PostTable';
 import Dashboad from './view/pages/admin/Dashboad';
 import UserTable from './view/pages/admin/UserTable';
@@ -25,6 +26,7 @@ import UserDetail from './view/pages/admin/UserDetail';
 import PendingPosts from './view/pages/admin/PendingPosts';
 //import context 
 import { MyAccountProvider } from './contexts/user/MyAccountContext';
+import { AdminAccountProvider } from './contexts/user/adminAccountContex';
 
 function App() {
   return (
@@ -47,8 +49,9 @@ function App() {
             <Route path='/user-profile/:username/cookbook/:name' element={<CookbookDetail/>}></Route>
             <Route path='/update-blog/:id' element={<CreateBlog />}></Route>
           </Route>
-          <Route element={<LayoutAdmin />}>
+          <Route element={<AdminAccountProvider ><LayoutAdmin /></AdminAccountProvider >}>
             <Route path='/admin' element={<Dashboad/>}></Route>
+            <Route path='/login-admin' element={<LoginAdmin/>}></Route>
             <Route path='/admin/dashboard' element={<Dashboad/>}></Route>
             <Route path='/admin/post' element={<PostTable />}></Route>
             <Route path='/admin/pendingposts' element={<PendingPosts/>}></Route>
