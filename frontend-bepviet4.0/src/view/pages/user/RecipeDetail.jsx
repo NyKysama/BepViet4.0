@@ -2,7 +2,7 @@ import { Clock, BarChart, MapPin, ChevronLeft, CheckCircle2, UtensilsCrossed, St
 import { useEffect, useState } from 'react';
 import StarRating from '../../../components/users/StarRating';
 import CommentSection from '../../../components/users/CommentSection';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import { useMyAccount } from "../../../contexts/user/MyAccountContext";
 import LoadingPage from '../../../components/users/LoadingPage';
 export default function RecipeDetail() {
@@ -12,6 +12,7 @@ export default function RecipeDetail() {
   const {post_id} = useParams();
   const {myAccount}=useMyAccount()
   const [isLoading, setIsLoading] = useState(true)
+  const navigate=useNavigate()
   useEffect(()=>{
     fetch(`http://127.0.0.1:8000/api/recipe-detail/${post_id}`)
         .then(res => res.json())
@@ -74,7 +75,7 @@ export default function RecipeDetail() {
     setMyRating(prev=>({...prev,score:score}))
     alert("Đánh giá thành công!");
     console.log(result);
-
+    navigate(0)
   } catch (error) {
     console.error("Lỗi kết nối:", error);
   }
@@ -113,7 +114,9 @@ export default function RecipeDetail() {
             <div className="flex items-center gap-2 mb-6">
               <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
                 <Star size={16} className="fill-yellow-400 text-yellow-400 mr-1" />
-                <span className="text-sm font-black text-yellow-700">{averageRating}</span>
+                <span className="text-sm font-black text-yellow-700">{ totalReviews > 0
+    ? (ratings.reduce((sum, r) => sum + r.score, 0) / totalReviews).toFixed(1)
+    : "0.0"}</span>
               </div>
               <span className="text-slate-300">|</span>
               <span className="text-sm text-slate-500 font-medium">{totalReviews} lượt đánh giá</span>
@@ -197,7 +200,7 @@ export default function RecipeDetail() {
               <h3 className="font-black text-slate-800 mb-2 text-xl">Bạn thấy công thức này thế nào?</h3>
               <p className="text-slate-500 text-sm mb-6">Đánh giá của bạn giúp cộng đồng nấu ăn ngon hơn mỗi ngày</p>
               <div className="flex justify-center mb-4">
-                <StarRating star_value={myRating?.score} onSelect={handleSendRating} />
+                <StarRating star_value={myRating?.score} onSelect={handleSendRating} />{/* thêm 'star_value={myRating?.score}' 20/01/2026 */}
               </div>
               {userRating > 0 && (
                 <p className="text-emerald-600 font-black animate-bounce">

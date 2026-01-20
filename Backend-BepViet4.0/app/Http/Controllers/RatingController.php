@@ -7,7 +7,7 @@ use App\Models\Rating;
 
 class RatingController extends Controller
 {
-    public function postRating(Request $request)
+    public function postRating(Request $request)//20/01/2026
     {
        //kiểm tra dữ liệu gửi lên
         $request->validate([
@@ -22,12 +22,13 @@ class RatingController extends Controller
                         ->first();
 
         if ($rating) {
-            //nếu đã có → update
-            $rating->update([
+            Rating::where('user_id', $request->user_id)
+            ->where('post_id', $request->post_id)
+            ->update([
                 'score' => $request->score
             ]);
         } else {
-            //nếu chưa có → tạo mới
+            //nếu chưa có -> tạo mới
             Rating::create([
                 'user_id' => $request->user_id,
                 'post_id' => $request->post_id,
