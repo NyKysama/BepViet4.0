@@ -22,7 +22,7 @@ const PostCard = ({ post, index, onDelete ,user_info}) => {
   return (
     <div className="flex gap-4 p-3 hover:bg-gray-100 rounded-xl cursor-pointer transition-colors group relative">
       <div className="hidden md:flex items-center justify-center w-6 text-gray-500 font-medium">
-        1{/* {index + 1} */}
+        {index + 1}
       </div>
 
       <div className="relative w-32 md:w-40 h-20 md:h-24 flex-shrink-0 overflow-hidden rounded-lg">
@@ -319,7 +319,7 @@ export default function CookbookPage() {
               /* --- VIEW MODE --- */
               <>
                 <div className="aspect-square w-full rounded-lg md:rounded-xl overflow-hidden shadow-md mb-4 md:mb-6 relative group">
-                  <img src={"http://127.0.0.1:8000/"+cookbook.image} alt={cookbook.name} className="w-full h-full object-cover" />
+                  <img src={"http://127.0.0.1:8000/"+cookbook?.image} alt={cookbook?.name} className="w-full h-full object-cover" />
                 </div>
 
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 leading-tight">
@@ -355,7 +355,7 @@ export default function CookbookPage() {
                 </div>
 
                 <div className="flex items-center gap-3 mb-4 md:mb-6">
-                  <img src={"http://127.0.0.1:8000/images/"+user_info.avatar} alt={user_info.username+" avatar"} className="w-9 h-9 md:w-10 md:h-10 rounded-full" />
+                  <img src={"http://127.0.0.1:8000/"+user_info.avatar} alt={user_info.username+" avatar"} className="w-9 h-9 md:w-10 md:h-10 rounded-full" />
                   <div className="flex flex-col">
                     <span className="text-xs md:text-sm font-bold text-gray-800 hover:underline cursor-pointer">{user_info.username}</span>
                     <div className="text-xs text-gray-500 flex gap-2">
@@ -383,12 +383,13 @@ export default function CookbookPage() {
             <h2 className="font-bold text-base md:text-lg text-gray-800">Danh sách công thức</h2>
           </div>
           <div className="flex flex-col gap-1 bg-white rounded-xl md:rounded-2xl p-2 md:p-4 border border-gray-100">
-            {posts.map((post) => (
+            {posts.map((post,index) => (
               <PostCard
                 key={post.id}
                 post={post}
-                user_info={user_info}
+                user_info={post.user}
                 onDelete={handleDeletePost}
+                index={index}
               />
             ))}
           </div>
