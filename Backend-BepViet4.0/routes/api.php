@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookbookController;
+use App\Http\Controllers\RatingController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -22,13 +23,15 @@ Route::get("user/{username}",[UserController::class,"getUserByUsername"])->name(
 Route::post("/update-user",[UserController::class,"updateUserByUsername"])->name("user.update"); 
 Route::get("/admin/user/{id}",[UserController::class,"getUserByUser_id"])->name("user.user_id");   
 Route::post("/unfollow",[UserController::class,"unfollow"])->name("user.unfollow");
+Route::post("/follow",[UserController::class,"follow"])->name("user.follow");
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 //create_blog 18/01/2026
 Route::post('/user/blog', [PostController::class, 'createBlog']);
 //create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
 // Route::middleware('auth:sanctum')->post('/user/blog',[PostController::class, 'createBlog']);
-
+Route::post('/rating', [RatingController::class, 'postRating']);//rating 19/01/2026
+Route::get('/post/rating/{post_id}',[RatingController::class,'getPostRating']);//20/01/2026
 
 Route::prefix('admin')->group(function () {
     //post

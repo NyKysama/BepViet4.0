@@ -3,7 +3,7 @@ import { Camera, Edit2, UserPlus, Users } from 'lucide-react';
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useMyAccount } from "../../contexts/user/MyAccountContext";
 
-export default function ProfileSumary({ user, isMyAccount }) {
+export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
     const user_info = user
     const { myAccount, setMyAccount } = useMyAccount()
     const [newCap, setNewCap] = useState("chua co caption")
@@ -21,8 +21,8 @@ export default function ProfileSumary({ user, isMyAccount }) {
     };
     useEffect(() => {
         if (myAccount) {
-            following = myAccount.followings.filter(p => p.user_id == user_info?.user_id)// sai lam:following=myAccount.followings.filter(p=>{p.user_id==user_info.user_id}) co {} thi phai co return
-            if (following.length > 0) {
+            following = myAccount?.followings.find(p => p?.user_id == user_info?.user_id)// sai lam:following=myAccount.followings.filter(p=>{p.user_id==user_info.user_id}) co {} thi phai co return
+            if (following) {
                 setIsFollowing(true)
             } else (setIsFollowing(false))
             console.log(following)
@@ -31,7 +31,22 @@ export default function ProfileSumary({ user, isMyAccount }) {
     //Folow
     async function handleFollow(){
         try {
-            
+            const res=await fetch(`http://localhost:8000/api/follow`,{
+                        method:"POST",
+                        headers:{"Content-Type": "application/json",},
+                        body:JSON.stringify({follower_id:myAccount.user_id,
+                        following_id:user_info.user_id,
+                        })
+                     })
+            const data=await res.json()
+            if(!res.ok){
+                return
+            }
+            setMyAccount(prev=>({...prev,followings:[...prev.followings,data.following]}))
+            setUser_Info(prev=>({...prev,followings:[...prev.followers,myAccount]}))
+            setIsFollowing(true)
+            console.log(data)
+            navigate(0)
         }catch (error) {
             
         }

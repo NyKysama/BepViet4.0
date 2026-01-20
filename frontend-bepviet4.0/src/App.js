@@ -41,7 +41,7 @@ function App() {
             <Route path='/login' element={<Login/>}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
-            <Route path='/recipe-detail/:id' element={<RecipeDetail />}></Route>
+            <Route path='/recipe-detail/:post_id' element={<RecipeDetail />}></Route>
             <Route path='/blog-detail/:id' element={<BlogDetail />}></Route>
             <Route path='/user-profile/my-account' element={<UserProfile/>}></Route>
             <Route path='/user-profile/:username' element={<UserProfile/>}></Route>
