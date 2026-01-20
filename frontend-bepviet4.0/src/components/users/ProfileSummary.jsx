@@ -1,33 +1,64 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Camera, Edit2, UserPlus, Users } from 'lucide-react';
-import { Link,Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useMyAccount } from "../../contexts/user/MyAccountContext";
 
-export default function ProfileSumary({ user ,isMyAccount}) {
+export default function ProfileSumary({ user, isMyAccount }) {
     const user_info = user
-    const {myAccount,setMyAccount}=useMyAccount()
+    const { myAccount, setMyAccount } = useMyAccount()
     const [newCap, setNewCap] = useState("chua co caption")
     const [isFollowing, setIsFollowing] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     var following
 
     //dang xuat
     const handleLogout = () => {
-    localStorage.removeItem("user_data"); // hoặc access_token
-    setMyAccount(null)
-    navigate("/")
-    return
+        localStorage.removeItem("user_data"); // hoặc access_token
+        setMyAccount(null)
+        navigate("/")
+        return
     };
-    useEffect(()=>{
-        if(myAccount){
-           following=myAccount.followings.filter(p=>p.user_id==user_info?.user_id)// sai lam:following=myAccount.followings.filter(p=>{p.user_id==user_info.user_id}) co {} thi phai co return
-            if(following.length>0){
+    useEffect(() => {
+        if (myAccount) {
+            following = myAccount.followings.filter(p => p.user_id == user_info?.user_id)// sai lam:following=myAccount.followings.filter(p=>{p.user_id==user_info.user_id}) co {} thi phai co return
+            if (following.length > 0) {
                 setIsFollowing(true)
-            }else( setIsFollowing(true))
+            } else (setIsFollowing(false))
             console.log(following)
         }
-    },[user_info,myAccount])
+    }, [user_info, myAccount])
+    //Folow
+    async function handleFollow(){
+        try {
+            
+        }catch (error) {
+            
+        }
+        setIsFollowing(true)
+    }
+    async function handleUnfollow() {
+        try {
+            const res=await fetch(`http://localhost:8000/api/unfollow`,{
+                        method:"POST",
+                        headers:{"Content-Type": "application/json",},
+                        body:JSON.stringify({follower_id:myAccount.user_id,
+                        following_id:user_info.user_id,
+                        })
+                     })
+            const data=await res.json()
+            if(!res.ok){
+                return
+            }
+            setMyAccount(prev=>({...prev,followings:[prev.followings.filter(f=>f.user_id!=user_info.user_id)]}))
+            setIsFollowing(false)
+            console.log(data)
+            navigate(0)
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
     return (
         <>
             {/* Header Section */}
@@ -38,7 +69,7 @@ export default function ProfileSumary({ user ,isMyAccount}) {
                 >
                     Đăng xuất
                 </button>}
-               
+
 
                 <div className="max-w-5xl mx-auto px-4 py-6">
                     {/* Profile Info */}
@@ -62,34 +93,40 @@ export default function ProfileSumary({ user ,isMyAccount}) {
                             <div className="flex flex-col items-center md:items-start gap-4 mb-3">
                                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{user_info?.username}</h1>
                                 <div className="flex gap-2 justify-center md:justify-start">
-                                    {!isMyAccount && 
-                                    <button
-                                        onClick={() => setIsFollowing(!isFollowing)}
-                                        className={`px-6 py-2 rounded-full font-semibold transition ${isFollowing
-                                                ? 'bg-orange-50 text-yellow-400 hover:bg-orange-100'
-                                                : 'bg-green-400 text-white hover:bg-green-500'
-                                            }`}
-                                    >
-                                        {isFollowing ? (
-                                            <span className="flex items-center gap-2 ">
-                                                <Users size={18} />
-                                                Đang theo dõi
-                                            </span>
-                                        ) : (
-                                            <span className="flex items-center gap-2  ">
-                                                <UserPlus size={18} />
-                                                Theo dõi
-                                            </span>
-                                        )}
-                                    </button>
+                                    {!isMyAccount &&
+                                        <div>
+                                            {isFollowing ? (
+                                                <button
+                                                    onClick={handleUnfollow}
+                                                    className="px-6 py-2 rounded-full font-semibold transition
+                                                bg-orange-50 text-yellow-400 hover:bg-orange-100"
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        <Users size={18} />
+                                                        Đang theo dõi
+                                                    </span>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleFollow}
+                                                    className="px-6 py-2 rounded-full font-semibold transition
+                                                bg-green-400 text-white hover:bg-green-500"
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        <UserPlus size={18} />
+                                                        Theo dõi
+                                                    </span>
+                                                </button>
+                                            )}
+                                        </div>
                                     }
-                                    {isMyAccount && 
-                                                                        <button
-                                        onClick={() => setShowEditModal(true)}
-                                        className="p-2 rounded-full hover:bg-gray-100 transition"
-                                    >
-                                        <Edit2 size={20} className="text-gray-600" />
-                                    </button>
+                                    {isMyAccount &&
+                                        <button
+                                            onClick={() => setShowEditModal(true)}
+                                            className="p-2 rounded-full hover:bg-gray-100 transition"
+                                        >
+                                            <Edit2 size={20} className="text-gray-600" />
+                                        </button>
                                     }
 
                                 </div>
