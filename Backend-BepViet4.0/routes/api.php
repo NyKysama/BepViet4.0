@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookbookController;
+use App\Http\Controllers\RatingController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -26,7 +27,9 @@ Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 Route::post('/user/blog', [PostController::class, 'createBlog']);
 //create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
 // Route::middleware('auth:sanctum')->post('/user/blog',[PostController::class, 'createBlog']);
-
+//rating 19/01/2026
+Route::post('/rating', [RatingController::class, 'postRating']);
+Route::get('/post/rating/{post_id}',[RatingController::class,'getPostRating']);
 
 Route::prefix('admin')->group(function () {
     //post

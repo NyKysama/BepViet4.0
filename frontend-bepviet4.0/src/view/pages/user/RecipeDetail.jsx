@@ -3,29 +3,86 @@ import { useEffect, useState } from 'react';
 import StarRating from '../../../components/users/StarRating';
 import CommentSection from '../../../components/users/CommentSection';
 import { useParams } from 'react-router-dom';
+import { useMyAccount } from "../../../contexts/user/MyAccountContext";
+import LoadingPage from '../../../components/users/LoadingPage';
 export default function RecipeDetail() {
   const [recipe, setRecipe] = useState({});
-  const {id} = useParams();
+  const [ratings,setRatings] = useState();
+  const [myRating,setMyRating]=useState();
+  const {post_id} = useParams();
+  const {myAccount}=useMyAccount()
+  const [isLoading, setIsLoading] = useState(true)
   useEffect(()=>{
-    fetch(`http://127.0.0.1:8000/api/recipe-detail/${id}`)
+    fetch(`http://127.0.0.1:8000/api/recipe-detail/${post_id}`)
         .then(res => res.json())
-        .then(data => setRecipe(data));
-  },[id]);
+        .then(data => {setRecipe(data)
+          console.log(data)
+        });
+        fetch(`http://127.0.0.1:8000/api/post/rating/${post_id}`)
+        .then(res => res.json())
+        .then(data => {
+        setMyRating(data.ratings.find(p=>p.user_id==myAccount.user_id))//sai: setMyRating(data.ratings.filter(p=>p.user_id==myAccount.user_id)) filter tra ve mang
+        console.log(data.ratings,myAccount.user_id,data.ratings.filter(p=>p.user_id==myAccount.user_id));
+        setRatings(data.ratings)});
+    setIsLoading(false)
+  }
+  
+  ,[post_id]);
   const [userRating, setUserRating] = useState(0);
   // Hàm tính toán đơn giản
-  const ratings = [5, 4, 5, 3, 5, 1]; // Dữ liệu mẫu từ DB
+  // const ratings = [5, 4, 5, 3, 5, 1]; // Dữ liệu mẫu từ DB
 
-  const totalReviews = ratings.length; // Tổng số lượt: 5
+  const totalReviews = ratings?.length; // Tổng số lượt: 5
   const averageRating = totalReviews > 0
     ? (ratings.reduce((sum, r) => sum + r, 0) / totalReviews).toFixed(1)
     : 0; // Kết quả: 4.4
   // Hàm xử lý đơn giản
-  const handleSendRating = (star) => {
-    setUserRating(star); // Lưu vào state để hiển thị feedback
-    // Xử lý logic tại đây
-    console.log(`Đã nhận đánh giá ${star} sao cho bài viết: ${recipe.post?.title}`);
-    alert(`Cảm ơn bạn đã đánh giá ${star} sao!`);
-  };
+  // const handleSendRating = (star) => {
+  //   setUserRating(star); // Lưu vào state để hiển thị feedback
+  //   // Xử lý logic tại đây
+  //   console.log(`Đã nhận đánh giá ${star} sao cho bài viết: ${recipe.post?.title}`);
+  //   alert(`Cảm ơn bạn đã đánh giá ${star} sao!`);
+  // };
+  //<-19/01/2026
+  const handleSendRating = async (score) => {
+  setUserRating(score);
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/rating",
+      {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: myAccount.user_id,
+          post_id: post_id,
+          score: score
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error(result);
+      alert("Lỗi khi gửi đánh giá");
+      return;
+    }
+    setMyRating(prev=>({...prev,score:score}))
+    alert("Đánh giá thành công!");
+    console.log(result);
+
+  } catch (error) {
+    console.error("Lỗi kết nối:", error);
+  }
+};
+//->
+ if (isLoading) {
+    return (<LoadingPage></LoadingPage>)
+  }
   return (
     <div className="max-w-[1000px] mx-auto bg-gray-50 min-h-screen pb-20">
       <div className="relative h-[400px] w-full">
@@ -140,7 +197,7 @@ export default function RecipeDetail() {
               <h3 className="font-black text-slate-800 mb-2 text-xl">Bạn thấy công thức này thế nào?</h3>
               <p className="text-slate-500 text-sm mb-6">Đánh giá của bạn giúp cộng đồng nấu ăn ngon hơn mỗi ngày</p>
               <div className="flex justify-center mb-4">
-                <StarRating onSelect={handleSendRating} />
+                <StarRating star_value={myRating?.score} onSelect={handleSendRating} />
               </div>
               {userRating > 0 && (
                 <p className="text-emerald-600 font-black animate-bounce">

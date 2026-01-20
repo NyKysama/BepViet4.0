@@ -92,6 +92,7 @@ class PostController extends Controller
     {
         $post = Post::with('ingredients')->where('type', 'Công thức')->find($id);
         $steps = Step::getStepByPostID($id);
+        
         return response()->json([
             'post' => $post,
             'steps' => $steps
@@ -242,4 +243,5 @@ class PostController extends Controller
         ]);
         return response()->json(['message' => 'Tạo câu hỏi thành công']);
     }
+  
 }
