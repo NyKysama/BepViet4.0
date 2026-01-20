@@ -214,5 +214,35 @@ class UserController extends Controller
             'message' => 'Unfollow thành công'
         ], 200);
     }
+    public function follow(Request $request)
+    {
+        $data = $request->validate([
+            'follower_id'  => 'required|exists:users,user_id',
+            'following_id' => 'required|exists:users,user_id',
+        ]);
+
+        // Không cho tự follow chính mình
+        if ($data['follower_id'] == $data['following_id']) {
+            return response()->json([
+                'message' => 'Không thể theo dõi chính mình'
+            ], 400);
+        }
+
+        $user = User::find($data['follower_id']);
+
+        // Nếu đã follow rồi thì không tạo nữa
+        if ($user->followings()->where('following_id', $data['following_id'])->exists()) {
+            return response()->json([
+                'message' => 'Đã theo dõi rồi'
+            ], 200);
+        }
+
+        $user->followings()->attach($data['following_id']);
+
+        return response()->json([
+            'message' => 'Theo dõi thành công',
+            "following"=>User::find($request->following_id),
+        ], 200);
+    }
 
 }

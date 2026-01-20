@@ -165,7 +165,7 @@ export default function UserProfile() {
   return (
     <div className="min-h-screen bg-gray-100 mt-2">
       {/* Profile summary section oke */}
-      <ProfileSumary user={user_info} setMyAccount={setMyAccount} isMyAccount={username && myAccount?.username != username ? false : true}></ProfileSumary>
+      <ProfileSumary user={user_info} setUser_Info={setUser_Info} setMyAccount={setMyAccount} isMyAccount={username && myAccount?.username != username ? false : true}></ProfileSumary>
 
       {/* Cookbooks Section */}
       <div className="bg-white mt-4 py-6 rounded-xl">
