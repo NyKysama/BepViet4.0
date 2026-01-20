@@ -243,5 +243,28 @@ class PostController extends Controller
         ]);
         return response()->json(['message' => 'Tạo câu hỏi thành công']);
     }
-  
+    // hàm tìm kiếm
+    public function search(Request $request) {
+    // $query = Post::query(); // 
+
+    // // 1. Kiểm tra nếu có từ khóa tìm kiếm
+    // if ($request->has('search') && $request->search != '') {
+    //     $searchTerm = $request->search;
+    //     $query->where(function($q) use ($searchTerm) {
+    //         $q->where('title', 'LIKE', "%{$searchTerm}%")
+    //         ->orWhere('content', 'LIKE', "%{$searchTerm}%");
+    //     });
+    // }
+
+    // 2. Logic phân trang kết hợp seed (giữ nguyên logic cũ của bạn)
+    // $posts = $query->paginate(10); 
+
+    $posts = Post::when($request->searchQuery, function ($query) use ($request) {
+    $query->where('title', 'LIKE',  "%{$request->searchQuery}%" );
+        })->get();
+
+
+    return response()->json(["posts"=>$posts,
+    "searchQuery"=>$request->searchQuery,],200);
+    }
 }

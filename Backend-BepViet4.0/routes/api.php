@@ -26,6 +26,7 @@ Route::post("/unfollow",[UserController::class,"unfollow"])->name("user.unfollow
 Route::post("/follow",[UserController::class,"follow"])->name("user.follow");
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
+Route::post("/post/serch",[PostController::class,"search"])->name("post.search");
 //create_blog 18/01/2026
 Route::post('/user/blog', [PostController::class, 'createBlog']);
 //create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
