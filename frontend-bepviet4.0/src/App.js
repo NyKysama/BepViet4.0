@@ -39,7 +39,7 @@ function App() {
             <Route path='/login' element={<Login/>}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
-            <Route path='/recipe-detail/:id' element={<RecipeDetail />}></Route>
+            <Route path='/recipe-detail/:post_id' element={<RecipeDetail />}></Route>
             <Route path='/blog-detail/:id' element={<BlogDetail />}></Route>
             <Route path='/user-profile/my-account' element={<UserProfile/>}></Route>
             <Route path='/user-profile/:username' element={<UserProfile/>}></Route>
@@ -58,7 +58,7 @@ function App() {
             <Route path='/admin/category/:id' element={<CategoryTable />}></Route>
              <Route path='/admin/ingredient' element={<IngredientTable />}></Route>
             <Route path='/admin/ingredient/:id' element={<IngredientTable />}></Route>
-            <Route path='/admin/user-detail/:id' element={<UserDetail />}></Route>
+            <Route path='/admin/user/:user_id' element={<UserDetail />}></Route>
             <Route path='/admin/post/recipe-detail/:id' element={<RecipeDetail />}></Route>
             <Route path='/admin/post/blog-detail/:id' element={<BlogDetail />}></Route>
           </Route>

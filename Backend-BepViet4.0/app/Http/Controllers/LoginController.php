@@ -39,7 +39,7 @@ class LoginController extends Controller
         $user->followers;
         $user->followings;
         $url=$user->avatar;
-        $user->avatar_url="http://127.0.0.1:8000/storage/".$user->avatar;
+        $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
 
 
         //jwt

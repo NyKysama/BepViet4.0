@@ -133,7 +133,7 @@ class UserController extends Controller
             $user->cookbooks;
             $user->followers;
             $user->followings;
-            $user->avatar_url="http://127.0.0.1:8000/storage/".$user->avatar;
+            $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
             return response()->json([
                 "user"=>$user,
                 "message"=>`Lấy thông tin {$user->username} thành công!`,
@@ -170,4 +170,122 @@ class UserController extends Controller
         "user"=>$user,
         ],200);
     }
+       public function getUserByUser_id($user_id){
+        //cach 2
+            //        $user = User::with([
+            //     'posts',
+            //     'cookbooks',
+            //     'followers',
+            //     'followings'
+            // ])->where('username', $username)->first();
+
+        $user=User::where("user_id",$user_id)->first();
+    
+        if($user){
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+            // $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
+            return response()->json([
+                "user"=>$user,
+                "message"=>`Lấy thông tin {$user->username} thành công!`,
+                "success"=>true,
+            ],200);
+        }
+        return response()->json([
+                "message"=>"không tìm thấy thông tin!",
+                "success"=>false,
+        ],404);
+    }
+    //ham follow
+    //ham unfollow
+    public function unfollow(Request $request)
+    {   //validate
+        $data = $request->validate([
+            'follower_id'  => 'required|exists:users,user_id',
+            'following_id' => 'required|exists:users,user_id',
+        ]);
+
+        $follower = User::find($data['follower_id']);
+        $follower->followings()->detach($data['following_id']);
+
+        return response()->json([
+            'message' => 'Unfollow thành công'
+        ], 200);
+    }
+    public function follow(Request $request)
+    {
+        $data = $request->validate([
+            'follower_id'  => 'required|exists:users,user_id',
+            'following_id' => 'required|exists:users,user_id',
+        ]);
+
+        // Không cho tự follow chính mình
+        if ($data['follower_id'] == $data['following_id']) {
+            return response()->json([
+                'message' => 'Không thể theo dõi chính mình'
+            ], 400);
+        }
+
+        $user = User::find($data['follower_id']);
+
+        // Nếu đã follow rồi thì không tạo nữa
+        if ($user->followings()->where('following_id', $data['following_id'])->exists()) {
+            return response()->json([
+                'message' => 'Đã theo dõi rồi'
+            ], 200);
+        }
+
+        $user->followings()->attach($data['following_id']);
+
+        return response()->json([
+            'message' => 'Theo dõi thành công',
+            "following"=>User::find($request->following_id),
+        ], 200);
+    }
+
+    //ham update avatar
+    public function updateAvatar(Request $request)
+    {
+        //validate
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'image_file'  => 'required|image|max:5120', // 5MB
+        ]);
+        //lay user
+        $user = User::where('user_id', $request->user_id)->first();
+
+        // Xóa avatar cũ nếu có
+        // if ($user->avatar_url) {
+        //     $oldPath = str_replace('/storage/', '', $user->avatar_url);
+        //     Storage::disk('public')->delete($oldPath);
+        // }
+
+        if ($request->hasFile('image_file')) {
+           $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            // đường dẫn vật lý
+            $destinationPath = public_path('images');
+            // tạo folder nếu chưa có
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            // di chuyển file
+            $file->move($destinationPath, $filename);
+             // lưu path vào DB
+            $user->avatar ="images/".$filename;
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+        }
+        $user->save();
+
+        return response()->json([
+            "message"=>"Cập nhật avatar thành công!",
+            "user"=>$user,
+        ],200);
+    }
+
 }

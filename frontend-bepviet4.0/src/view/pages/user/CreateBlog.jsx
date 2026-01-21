@@ -87,7 +87,7 @@ export default function CreateBlog() {
 
       if (response.ok) {
         alert(id ? "Cập nhật thành công!" : "Đăng bài thành công!");
-        navigate('/admin/post'); // Chuyển hướng sau khi xong
+        navigate('/'); // Chuyển hướng sau khi xong
       }
     } catch (error) {
       console.error("Lỗi:", error);

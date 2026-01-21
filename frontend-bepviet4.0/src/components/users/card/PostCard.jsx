@@ -31,16 +31,20 @@ export default function PostCard({ post, card_data }) {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full border-2 border-emerald-500 p-0.5">
-            <img
-              src={post?.user?.avatar || "https://i.pravatar.cc/150"}
-              className="w-full h-full rounded-full object-cover"
-              alt="avatar"
-            />
+            <Link to={`/user-profile/${post?.user?.name}`}>
+              <img
+                src={`http://127.0.0.1:8000/${post?.user?.avatar}`}
+                className="w-full h-full rounded-full object-cover"
+                alt="avatar"
+              />
+            </Link>
           </div>
           <div>
-            <h4 className="font-bold text-slate-800 text-sm hover:underline cursor-pointer">
-              {post?.user?.name || "Người dùng"}
-            </h4>
+            <Link to={`/user-profile/${post?.user?.username}`}>
+              <h4 className="font-bold text-slate-800 text-sm hover:underline cursor-pointer">
+                {post?.user?.name || "Người dùng"}
+              </h4> 
+            </Link>
             <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium">
               <span>{post?.created_at ? new Date(post.created_at).toLocaleDateString() : "Vừa xong"}</span>
               <span>•</span>

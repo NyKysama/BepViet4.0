@@ -55,7 +55,15 @@ class CookbookController extends Controller
     //lay chi tieet cookbook gom ten ng so huu, thong tin cookbook, danh sach cong thuc cua cookbook
     public function getCookbookDetail($username,$name){//name la ten cua cookbook
         $user=User::where("username",$username)->first();
-        $cookbook=Cookbook::where([["name",$name],["user_id",$user->user_id],])->first();
+        // $cookbook=Cookbook::where([["name",$name],["user_id",$user->user_id],])->first();
+        // $posts=$cookbook->posts;
+        // $posts->user;
+        $cookbook = Cookbook::with([
+            'user',          // user của cookbook
+            'posts.user'     // 🔥 user của từng post
+        ])
+        ->where([["name",$name],["user_id",$user->user_id],])
+        ->firstOrFail();
         return response()->json(["message"=>"Lay chi tiet cookbook thanh cong",
         "cookbook"=>$cookbook,
         "user"=>$cookbook->user,

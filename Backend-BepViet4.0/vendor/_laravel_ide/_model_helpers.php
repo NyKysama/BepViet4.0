@@ -1630,8 +1630,8 @@ namespace App\Models {
   /**
    * App\Models\Rating
    *
-   * @property string|null $updated_at
-   * @property string|null $created_at
+   * @property \Illuminate\Support\Carbon|null $updated_at
+   * @property \Illuminate\Support\Carbon|null $created_at
    * @property bool|null $score
    * @property mixed $post_id
    * @property mixed $user_id
