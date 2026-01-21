@@ -13,8 +13,10 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookbookController;
 use App\Http\Controllers\RatingController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/users', function (Request $request) {
+    return response()->json(["message"=>"Lấy danh sách người dùng thành công",
+    "users"=>User::all(),
+    ],200);
 });//->middleware('auth:sanctum');
 Route::post('/register',[UserController::class,'register'])->name("register");
 Route::post('/login-user',[LoginController::class,'loginUser'])->name("login-user");
@@ -25,6 +27,7 @@ Route::get("/admin/user/{id}",[UserController::class,"getUserByUser_id"])->name(
 Route::post("/unfollow",[UserController::class,"unfollow"])->name("user.unfollow");
 Route::post("/follow",[UserController::class,"follow"])->name("user.follow");
 Route::post("user/update-avatar",[UserController::class,"updateAvatar"])->name("user.update-avatar");
+Route::post("/user/block",[UserController::class,"block"])->name("user.block");
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 Route::post("/post/serch",[PostController::class,"search"])->name("post.search");

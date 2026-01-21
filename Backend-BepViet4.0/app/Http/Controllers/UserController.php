@@ -288,4 +288,25 @@ class UserController extends Controller
         ],200);
     }
 
+    //Block user
+    public function block(Request $request){
+        // 1. Validate
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+        ]);
+
+        $user=User::find($request->user_id);
+
+        //block
+        if($user->status==1){
+            $user->status=0;
+        }else{
+            $user->status=1;
+        }
+        $user->save();
+        
+        return response()->json(["message"=>"Khóa thành công",
+        "user"=>$user,
+        ],200);
+    }
 }

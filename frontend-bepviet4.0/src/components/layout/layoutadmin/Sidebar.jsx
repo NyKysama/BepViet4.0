@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { LayoutDashboard, Users, FileText, List, Settings, LogOut, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+
 
 export default function Sidebar({ isOpen, onClose }) {
   const [activeItem, setActiveItem] = useState("Tổng quan");
@@ -33,30 +35,41 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         <nav className="p-4 space-y-1">
+          <Link to="/admin">
           <NavItem 
             icon={<LayoutDashboard size={20} />} 
             label="Tổng quan" 
             active={activeItem === "Tổng quan"} 
             onClick={() => handleItemClick("Tổng quan")} 
           />
+          </Link>
+
+          <Link to="/admin/user">
           <NavItem 
             icon={<Users size={20} />} 
             label="Người dùng" 
             active={activeItem === "Người dùng"} 
             onClick={() => handleItemClick("Người dùng")} 
           />
+          </Link>
+
+          <Link to="/admin/post">
           <NavItem 
             icon={<FileText size={20} />} 
             label="Bài viết" 
             active={activeItem === "Bài viết"} 
             onClick={() => handleItemClick("Bài viết")} 
           />
+          </Link>
+
+          <Link to="/admin/category">
           <NavItem 
             icon={<List size={20} />} 
             label="Danh mục" 
             active={activeItem === "Danh mục"} 
             onClick={() => handleItemClick("Danh mục")} 
           />
+          </Link>
 
           <div className="pt-4 pb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Hệ thống
@@ -74,7 +87,9 @@ export default function Sidebar({ isOpen, onClose }) {
             icon={<LogOut size={20} />} 
             label="Đăng xuất" 
             color="text-red-500 hover:bg-red-50" 
-            onClick={() => console.log("Logout logic...")}
+            // onClick={() => {  localStorage.removeItem("user_data"); // hoặc access_token
+            // setMyAccount(null)
+            // navigate("/")}}
           />
         </nav>
       </aside>
