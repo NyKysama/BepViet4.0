@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams,useNavigate, data} from 'react-router-dom';
+import { useParams,useNavigate, data,Link} from 'react-router-dom';
 import { useMyAccount } from '../../../contexts/user/MyAccountContext';
 import LoadingPage from '../../../components/users/LoadingPage';
 import { Camera } from 'lucide-react';
@@ -26,19 +26,23 @@ const PostCard = ({ post, index, onDelete ,user_info}) => {
       </div>
 
       <div className="relative w-32 md:w-40 h-20 md:h-24 flex-shrink-0 overflow-hidden rounded-lg">
+        <Link to={"/recipe-detail/"+post.post_id}>
         <img
           src={post.img}
           alt={post.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        </Link>
       </div>
 
       <div className="flex flex-col justify-center flex-1 pr-8">
+        <Link to={"/recipe-detail/"+post.post_id}>
         <h3 className="font-semibold text-gray-800 line-clamp-2 text-sm md:text-base">{post.title}</h3>
         <p className="text-xs md:text-sm text-gray-500 mt-1">{user_info.username} • soview views</p>
         <span className="inline-block mt-2 text-xs bg-gray-200 w-fit px-2 py-0.5 rounded text-gray-600">
           {post.cook_time}
         </span>
+        </Link>
       </div>
 
       <div className="absolute top-3 right-3" ref={menuRef}>
