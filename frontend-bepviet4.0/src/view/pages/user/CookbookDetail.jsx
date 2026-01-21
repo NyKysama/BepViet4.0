@@ -158,6 +158,9 @@ export default function CookbookPage() {
         alert(data.message || "Sua cookbook thất bại");
         return;
       }
+      setMyAccount(prev=>({...prev,cookbooks:prev.cookbooks.map(
+        c=>c.cookbook_id==cookbook.cookbook_id?data.newCookbook:c
+      )}))
       console.log("Sua cookbook thành công:", data);
 
       // reset form (optional)
