@@ -55,7 +55,7 @@ export default function CreateRecipe() {
       title: '',
       description: '',
       img: null,
-      category_ids: [],
+      category_ids: [0],
       type: 'Công thức',
       cook_time: 0,
       difficulty: '',
@@ -156,7 +156,7 @@ export default function CreateRecipe() {
 
   //thao tac voi cac buoc
   //luy anh hien thi buoc tren giao dien
-  const [previewImgSteps,setPreviewImgSteps] = useState([null])
+  const [previewImgSteps, setPreviewImgSteps] = useState([null])
   //Them mot buoc moi
   const handleAddStep = () => {
     const lastStep = recipe.steps.at(-1).step
@@ -164,39 +164,39 @@ export default function CreateRecipe() {
     setRecipe({ ...recipe, steps: [...recipe.steps, newStep] })
     setPreviewImgSteps([...previewImgSteps, null]);
   }
-  const handleStepImgChange= (e,index)=>{
-    const file=e.target.files[0];
+  const handleStepImgChange = (e, index) => {
+    const file = e.target.files[0];
 
-    if(!file) return;
+    if (!file) return;
     //luu file vao cong thuc
     const newSteps = [...recipe.steps];
-    newSteps[index]={...newSteps[index], img: file}
-    setRecipe({...recipe,steps: newSteps})
+    newSteps[index] = { ...newSteps[index], img: file }
+    setRecipe({ ...recipe, steps: newSteps })
 
     //luu dia chi hien thi
     const newPreImgSteps = [...previewImgSteps];
-    newPreImgSteps[index]= URL.createObjectURL(file);
+    newPreImgSteps[index] = URL.createObjectURL(file);
     setPreviewImgSteps(newPreImgSteps)
   }
   const handleRemoveStepImage = (index) => {
-  // revoke URL cũ để tránh leak memory
-  if (previewImgSteps[index]) {
-    URL.revokeObjectURL(previewImgSteps[index]);
-  }
+    // revoke URL cũ để tránh leak memory
+    if (previewImgSteps[index]) {
+      URL.revokeObjectURL(previewImgSteps[index]);
+    }
 
-  const newSteps = [...recipe.steps];
-  newSteps[index] = {
-    ...newSteps[index],
-    img: null
+    const newSteps = [...recipe.steps];
+    newSteps[index] = {
+      ...newSteps[index],
+      img: null
+    };
+
+    const newPreviews = [...previewImgSteps];
+    newPreviews[index] = null;
+
+    setRecipe({ ...recipe, steps: newSteps });
+    setPreviewImgSteps(newPreviews);
   };
-
-  const newPreviews = [...previewImgSteps];
-  newPreviews[index] = null;
-
-  setRecipe({ ...recipe, steps: newSteps });
-  setPreviewImgSteps(newPreviews);
-};
-  //ham cap nhat cong thuc 
+  //ham cap nhat danh sach cac buoc lam
   const handleUpdateStep = (index, field, value) => {
     //index: vi tri buoc trong danh sach
     //field: ten truong du lieu can sua
@@ -212,10 +212,6 @@ export default function CreateRecipe() {
     //cap nhat lai danh sach buoc moi
     setRecipe({ ...recipe, steps: newSteps })
   }
-  //thao tac voi anh cua tung buoc
-
-  //ham xu ly khi chon anh step
-  //xoa anh cua buoc
   //xoa buoc duoi cung
   const handleRemoveLastStep = () => {
     //chi xoa duoc khi co nhieu hon mot buoc
@@ -229,22 +225,83 @@ export default function CreateRecipe() {
   }
 
   //Them o chon danh muc tren giao dien
-  //danh sach cac danh muc tren giao dien
-  const [cat, setCat] = useState([
-    { cat_id: 0, name: '' }
-  ])
-  //Them o chon danh muc tren giao dien
   const handleAddCategory = () => {
-    const newCategory = { cat_id: 0, name: '' }
-    setCat([...cat, newCategory])
+    setRecipe({ ...recipe, category_ids: [...recipe.category_ids, 0] })
   }
+  const handleUpdateCategory = (index, value) => {
+    const newCats = [...recipe.category_ids];
+
+    // ép kiểu number
+    const categoryId = Number(value);
+
+    newCats[index] = categoryId;
+
+    setRecipe({
+      ...recipe,
+      category_ids: newCats
+    });
+  };
   //Huy o nhap danh muc
   const handleRemoveLastCategory = () => {
-    if (cat.length > 1) {
-      const newCategory = cat.slice(0, -1)
-      setCat(newCategory)
+    if (recipe.category_ids.length > 1) {
+      setRecipe({ ...recipe, category_ids: [...recipe.category_ids.slice(0, -1)] })
     }
   }
+  //ham gui du lieu ve backend
+  const handleSubmitRecipe = async () => {
+    const formData = new FormData();
+
+    // field don 
+    formData.append("title", recipe.title);
+    formData.append("description", recipe.description);
+    formData.append("type", recipe.type);
+    formData.append("cook_time", recipe.cook_time);
+    formData.append("difficulty", recipe.difficulty);
+    formData.append("region", recipe.region);
+    formData.append("status", recipe.status);
+
+    // anh cong thuc
+    if (recipe.img) {
+      formData.append("img", recipe.img);
+    }
+
+    // category_ids[]
+    recipe.category_ids
+      .filter(id => id !== 0)
+      .forEach((id, index) => {
+        formData.append(`category_ids[${index}]`, id);
+      });
+
+    //ingredients
+    recipe.ingredients.forEach((ing, index) => {
+      formData.append(`ingredients[${index}][ing_id]`, ing.ing_id);
+      formData.append(`ingredients[${index}][amount]`, ing.amount);
+      formData.append(`ingredients[${index}][unit]`, ing.unit);
+    });
+
+    //steps
+    recipe.steps.forEach((step, index) => {
+      formData.append(`steps[${index}][step]`, step.step);
+      formData.append(`steps[${index}][content]`, step.content);
+
+      if (step.img) {
+        formData.append(`steps[${index}][img]`, step.img);
+      }
+    });
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/create-recipe", {
+        method: "POST",
+        body: formData, 
+      });
+
+      const data = await res.json();
+      console.log("SUCCESS:", data);
+    } catch (err) {
+      console.error("ERROR:", err);
+    }
+  };
+
 
 
 
@@ -416,32 +473,32 @@ export default function CreateRecipe() {
                   <textarea
                     onChange={(e) => handleUpdateStep(index, "content", e.target.value)}
                     className="w-full p-3 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none" placeholder="Nhập bước tiến hành" />
-                    <label className="text-xs font-bold text-gray-400 uppercase">Ảnh mô tả bước 
-                  {
-                    (previewImgSteps[index]===null) ? (
-                      //khong co anh
-                      <div className="mt-2 w-32 h-24 bg-gray-100 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200">
-                        <ImagePlus size={20} />
-                        <span className="text-[10px] mt-1 text-center px-2">Thêm ảnh bước này</span>
-                      </div>) : (
+                  <label className="text-xs font-bold text-gray-400 uppercase">Ảnh mô tả bước
+                    {
+                      (previewImgSteps[index] === null) ? (
+                        //khong co anh
+                        <div className="mt-2 w-32 h-24 bg-gray-100 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200">
+                          <ImagePlus size={20} />
+                          <span className="text-[10px] mt-1 text-center px-2">Thêm ảnh bước này</span>
+                        </div>) : (
                         //co anh
-                      <div className="relative w-full h-64 rounded-lg overflow-hidden border border-gray-200">
-                        <img
-                          src={previewImgSteps[index]}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Nút X để xóa ảnh */}
-                        <button
-                          onClick={()=>handleRemoveStepImage(index)}
-                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
-                          type="button"
-                        >
-                          <X size={20} />
-                        </button>
-                      </div>)
-                  }
-                  <input onChange={(e)=>handleStepImgChange(e,index)}type="file" className="hidden"  accept="image/*" />
+                        <div className="relative w-full h-64 rounded-lg overflow-hidden border border-gray-200">
+                          <img
+                            src={previewImgSteps[index]}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Nút X để xóa ảnh */}
+                          <button
+                            onClick={() => handleRemoveStepImage(index)}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-sm"
+                            type="button"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>)
+                    }
+                    <input onChange={(e) => handleStepImgChange(e, index)} type="file" className="hidden" accept="image/*" />
                   </label>
                 </div>))}
 
@@ -498,8 +555,10 @@ export default function CreateRecipe() {
               </div>
               <div>
                 <label className="space-y-3 text-xs font-bold text-gray-400 uppercase">Danh mục</label>
-                {cat.map(() => (
-                  <select className="w-full mt-1 p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                {recipe.category_ids.map((categories_id, index) => (
+                  <select
+                    onChange={(e) => handleUpdateCategory(index, e.target.value)}
+                    className="w-full mt-1 p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
                     {
                       categories.map(
                         categories => (
@@ -511,7 +570,7 @@ export default function CreateRecipe() {
                 ))}
 
                 {/* Nut xoa danh muc */}
-                {cat.length > 1 ?
+                {recipe.category_ids.length > 1 ?
                   (<button
                     onClick={handleRemoveLastCategory}
                     className="col-span-1 text-red-400 hover:text-red-600 flex justify-center"
@@ -545,7 +604,7 @@ export default function CreateRecipe() {
 
             <div className="mt-8 space-y-3">
               <button
-                onClick={console.log(recipe,previewImgSteps)}
+                onClick={handleSubmitRecipe}
                 className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200">
                 <Send size={18} /> Đăng công thức
               </button>

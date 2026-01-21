@@ -30,6 +30,8 @@ Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 Route::post("/post/serch",[PostController::class,"search"])->name("post.search");
 //create_blog 18/01/2026
 Route::post('/user/blog', [PostController::class, 'createBlog']);
+//tao cong thuc moi nma ko biet de o dau
+Route::post('/create-recipe',[PostController::class,'createRecipe']);
 //create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
 // Route::middleware('auth:sanctum')->post('/user/blog',[PostController::class, 'createBlog']);
 Route::post('/rating', [RatingController::class, 'postRating']);//rating 19/01/2026
