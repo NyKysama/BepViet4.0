@@ -116,7 +116,7 @@ class UserController extends Controller
         ], 500);
         }
     }
-    //Lay thong tin user bang username
+    //Lay thong tin user ban username
       public function getUserByUsername($username){
         //cach 2
             //        $user = User::with([
