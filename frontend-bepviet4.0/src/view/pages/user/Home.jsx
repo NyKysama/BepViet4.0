@@ -8,6 +8,11 @@ export default function Home() {
     const [hasMore, setHasMore] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState(""); // State cho ô tìm kiếm
+    const [filters, setFilters] = useState({
+        region: "",
+        difficulty: "",
+        cook_time: "",
+    });
 
     const pageRef = useRef(1);
     const isFetchingRef = useRef(false);
@@ -39,6 +44,43 @@ export default function Home() {
         }
         console.log("Đang tìm kiếm công thức:", searchQuery);
     };
+    //hàm lọc kết hợp nhiều tiêu chí
+    const handleFilter = async () => {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/post/filter", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({
+                search: searchQuery,
+                region: filters.region,
+                difficulty: filters.difficulty,
+                cook_time: filters.cook_time,
+            }),
+        });
+
+        const data = await response.json();
+        setPosts(data.posts);
+        setHasMore(false); // Tắt infinite scroll khi đang filter
+    } catch (err) {
+        console.error("Lỗi filter:", err);
+    }};
+    // hàm reset section lọc theo...
+    const handleResetFilter = () => {
+        setFilters({
+            region: "",
+            difficulty: "",
+            cook_time: "",
+        });
+        setSearchQuery("");
+        setPosts([]);
+        setHasMore(true);
+        pageRef.current = 1;
+        fetchPosts(); // Load lại feed
+    };
+
 
     const fetchPosts = useCallback(async () => {
         if (isFetchingRef.current || !hasMore) return;
@@ -105,7 +147,7 @@ export default function Home() {
 
     return (
         <div className="max-w-2xl mx-auto py-6 space-y-6">
-            {/* THANH TÌM KIẾM MỚI THÊM */}
+            {/* THANH TÌM KIẾM*/}
             <div className="bg-white p-4 rounded-xl shadow-sm mx-4">
                 <form onSubmit={handleSearch} className="relative flex items-center gap-2">
                     <div className="relative flex-grow">
@@ -128,7 +170,62 @@ export default function Home() {
                     </button>
                 </form>
             </div>
+            {/* BỘ LỌC NÂNG CAO */}
+            <div className="bg-white p-4 rounded-xl shadow-sm mx-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 
+                    <select
+                        className="border rounded-lg px-4 py-2 text-sm"
+                        value={filters.region}
+                        onChange={e => setFilters({...filters, region: e.target.value})}
+                    >
+                        <option value="">Vùng miền</option>
+                        <option value="bac">Miền Bắc</option>
+                        <option value="trung">Miền Trung</option>
+                        <option value="nam">Miền Nam</option>
+                    </select>
+
+                    <select
+                        className="border rounded-lg px-4 py-2 text-sm"
+                        value={filters.difficulty}
+                        onChange={e => setFilters({...filters, difficulty: e.target.value})}
+                    >
+                        <option value="">Độ khó</option>
+                        <option value="de">Dễ</option>
+                        <option value="trungbinh">Trung bình</option>
+                        <option value="kho">Khó</option>
+                    </select>
+
+                    <select
+                        className="border rounded-lg px-4 py-2 text-sm"
+                        value={filters.cook_time}
+                        onChange={e => setFilters({...filters, cook_time: e.target.value})}
+                    >
+                        <option value="">Thời gian</option>
+                        <option value="15">Dưới 15 phút</option>
+                        <option value="30">Dưới 30 phút</option>
+                        <option value="60">Dưới 60 phút</option>
+                        <option value="61">Trên 60 phút</option>
+                    </select>
+
+                </div>
+                <div className="mt-4 flex gap-3">
+                    <button
+                        onClick={handleFilter}
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg font-medium"
+                    >
+                        Áp dụng
+                    </button>
+
+                    <button
+                        onClick={handleResetFilter}
+                        className="px-4 border rounded-lg text-slate-600"
+                    >
+                        Reset
+                    </button>
+                </div>
+            </div>
+            
             <h2 className="text-xl font-bold px-4">Bảng tin dành cho bạn</h2>
 
             {posts.map((post, index) => {

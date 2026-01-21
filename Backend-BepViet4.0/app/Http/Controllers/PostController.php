@@ -340,13 +340,50 @@ class PostController extends Controller
     // 2. Logic phân trang kết hợp seed (giữ nguyên logic cũ của bạn)
     // $posts = $query->paginate(10); 
 
-    $posts = Post::when($request->searchQuery, function ($query) use ($request) {
-    $query->where('title', 'LIKE',  "%{$request->searchQuery}%" );
-        })->get();
+        $posts = Post::when($request->searchQuery, function ($query) use ($request) {
+        $query->where('title', 'LIKE',  "%{$request->searchQuery}%" );
+            })->get();
 
 
-    return response()->json(["posts"=>$posts,
-    "searchQuery"=>$request->searchQuery,],200);
+        return response()->json(["posts"=>$posts,
+        "searchQuery"=>$request->searchQuery,],200);
+        }
+
+
+    // hàm lọc theo điều kiện kết hợp
+    public function filter(Request $request){
+        $query = Post::query();
+
+        //Search theo tiêu đề
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->searchQuery . '%');
+        }
+        //Vùng miền
+        if ($request->filled('region')) {
+            $query->where('region', $request->region);
+        }
+        //Độ khó
+        if ($request->filled('difficulty')) {
+            $query->where('difficulty', $request->difficulty);
+        }
+        //Thời gian nấu (<= phút)
+        if ($request->filled('cook_time')) {
+            $time = (int) $request->cook_time;
+
+            if ($time === 61) {
+                // Trên 60 phút
+                $query->where('cook_time', '>', 60);
+            } else {
+                // Dưới 15, 30, 60 phút
+                $query->where('cook_time', '<=', $time);
+            }
+        }
+        $posts = $query->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'posts' => $posts
+        ]);
     }
 
 }

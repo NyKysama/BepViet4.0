@@ -28,6 +28,7 @@ Route::post("user/update-avatar",[UserController::class,"updateAvatar"])->name("
 //posts
 Route::get("/posts",[PostController::class,"getPosts"])->name("posts");
 Route::post("/post/serch",[PostController::class,"search"])->name("post.search");
+Route::post('/post/filter', [PostController::class, 'filter']);
 //create_blog 18/01/2026
 Route::post('/user/blog', [PostController::class, 'createBlog']);
 //create_blog khi có token ko biết đúng ko để đây trước 18/01/2026
