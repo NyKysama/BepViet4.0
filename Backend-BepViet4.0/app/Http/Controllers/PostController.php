@@ -90,7 +90,7 @@ class PostController extends Controller
 
     public function recipeDetail($id)
     {
-        $post = Post::with('ingredients')->where('type', 'Công thức')->find($id);
+        $post = Post::with('user', 'ingredients')->where('type', 'Công thức')->find($id);
         $steps = Step::getStepByPostID($id);
         
         return response()->json([
