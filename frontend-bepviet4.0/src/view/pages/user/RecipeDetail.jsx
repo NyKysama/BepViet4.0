@@ -14,6 +14,7 @@ export default function RecipeDetail() {
   const [isLoading, setIsLoading] = useState(true)
   const navigate=useNavigate()
   useEffect(()=>{
+    setIsLoading(true);
     fetch(`http://127.0.0.1:8000/api/recipe-detail/${post_id}`)
         .then(res => res.json())
         .then(data => {setRecipe(data)
@@ -100,12 +101,12 @@ export default function RecipeDetail() {
           {/* 1. Thông tin chung & Stats */}
           <div className="flex items-center gap-3 mb-6">
             <img
-              src="..." // Thay "..." bằng đường dẫn đến ảnh avatar của người dùng
+              src= {`http://127.0.0.1:8000/${recipe.post?.user?.avatar}`}
               alt="avatar"
               className="w-10 h-10 rounded-full"
             />
             <span className="text-2xl font-semibold text-gray-800">
-              Nguyễn Văn A
+              {recipe.post?.user?.name}
             </span>
           </div>
           <div className="border-b border-slate-50 pb-8 mb-8">
@@ -211,7 +212,11 @@ export default function RecipeDetail() {
 
             <div className="bg-slate-50 rounded-[32px] p-6">
               <h3 className="font-black text-slate-800 mb-6 text-xl px-2">Bình luận từ cộng đồng</h3>
-              <CommentSection id={recipe.post?.post_id}/>
+                {recipe.post?.post_id ? (
+                  <CommentSection id={recipe.post.post_id} />
+                ) : (
+                  <p>Đang tải bình luận...</p>
+                )}
             </div>
           </div>
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Heart, Reply, MoreHorizontal, X } from 'lucide-react';
+import { useMyAccount } from '../../contexts/user/MyAccountContext';
 
-const CommentItem = ({ comment, onReply }) => {
+const CommentItem = ({ comment, onReply, level = 1 }) => {
   return (
     <div className="flex gap-3 mb-4">
       <img 
@@ -20,12 +21,14 @@ const CommentItem = ({ comment, onReply }) => {
             {new Date(comment.created_at).toLocaleDateString('vi-VN')}
           </span>
           {/* Khi bấm nút này, truyền comment lên cha để xử lý reply */}
+          {level < 3 && (
           <button 
             onClick={() => onReply(comment)}
             className="text-[12px] font-bold text-slate-500 hover:text-emerald-500"
           >
             Phản hồi
           </button>
+          )}
         </div>
 
         {/* Đệ quy hiển thị reply với đường kẻ dọc 
@@ -34,7 +37,7 @@ const CommentItem = ({ comment, onReply }) => {
         {comment.replies && comment.replies.length > 0 && ( 
           <div className="mt-3 ml-4 border-l-2 border-slate-100 pl-4">
             {comment.replies.map((reply) => (
-              <CommentItem key={reply.comment_id} comment={reply} onReply={onReply} />
+              <CommentItem key={reply.comment_id} comment={reply} onReply={onReply}  level={level + 1}/>
             ))}
           </div>
         )}
@@ -48,7 +51,7 @@ export default function CommentSection({ id }) {
   const [formData, setFormData] = useState({ content: '' });
   const [replyingTo, setReplyingTo] = useState(null); // Lưu comment đang được reply
   const [isLoading, setIsLoading] = useState(false);
-
+  const {myAccount}=useMyAccount()
   useEffect(() => {
     fetchComments();
   }, [id]);
@@ -75,9 +78,10 @@ export default function CommentSection({ id }) {
         headers: { 
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`//gọi token để lấy thông tin user
+          // 'Authorization': `Bearer ${localStorage.getItem('token')}`//gọi token để lấy thông tin user
         },
-        body: JSON.stringify({ content: formData.content })// truyền dl sang server
+        body: JSON.stringify({ content: formData.content,
+                               user_id: myAccount.user_id })// truyền dl sang server
       });
 
       // khi mà api đã có và hoạt động thì ms gửi dl đi
@@ -132,7 +136,7 @@ export default function CommentSection({ id }) {
           <CommentItem 
             key={c.comment_id} 
             comment={c} 
-            onReply={(cmt) => setReplyingTo(cmt)} // lấy id của bình luận đc chọn 
+            onReply={(cmt) => setReplyingTo(cmt)} // lấy id của bình luận đc chọn            
           />
         ))}
       </div>

@@ -62,7 +62,7 @@ export default function UserInfo() {
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 text-center">
                         <div className="relative inline-block">
-                            <img src={myAccount?.avatar_url} className="w-32 h-32 rounded-full border-4 border-emerald-50 mx-auto object-cover" alt="" />
+                            <img src={"http://127.0.0.1:8000/"+myAccount?.avatar} className="w-32 h-32 rounded-full border-4 border-emerald-50 mx-auto object-cover" alt="" />
                             <div className="absolute bottom-1 right-1 bg-emerald-500 border-4 border-white w-6 h-6 rounded-full"></div>
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800 mt-4">{myAccount?.name}</h2>
