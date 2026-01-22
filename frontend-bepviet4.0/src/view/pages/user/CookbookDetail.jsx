@@ -28,7 +28,7 @@ const PostCard = ({ post, index, onDelete ,user_info}) => {
       <div className="relative w-32 md:w-40 h-20 md:h-24 flex-shrink-0 overflow-hidden rounded-lg">
         <Link to={"/recipe-detail/"+post.post_id}>
         <img
-          src={post.img}
+          src={"http://127.0.0.1:8000/"+post.img}
           alt={post.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -362,9 +362,13 @@ export default function CookbookPage() {
                 </div>
 
                 <div className="flex items-center gap-3 mb-4 md:mb-6">
+                  <Link to={"/user-profile/"+user_info.username}>
                   <img src={"http://127.0.0.1:8000/"+user_info.avatar} alt={user_info.username+" avatar"} className="w-9 h-9 md:w-10 md:h-10 rounded-full" />
+                  </Link>
                   <div className="flex flex-col">
+                    <Link to={"/user-profile/"+user_info.username}>
                     <span className="text-xs md:text-sm font-bold text-gray-800 hover:underline cursor-pointer">{user_info.username}</span>
+                    </Link>
                     <div className="text-xs text-gray-500 flex gap-2">
                       <span>{posts.length} công thức</span>
                       <span>•</span>

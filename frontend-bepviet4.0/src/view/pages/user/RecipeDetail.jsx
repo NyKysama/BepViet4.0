@@ -2,7 +2,7 @@ import { Clock, BarChart, MapPin, ChevronLeft, CheckCircle2, UtensilsCrossed, St
 import { useEffect, useState } from 'react';
 import StarRating from '../../../components/users/StarRating';
 import CommentSection from '../../../components/users/CommentSection';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams,useNavigate,Link } from 'react-router-dom';
 import { useMyAccount } from "../../../contexts/user/MyAccountContext";
 import LoadingPage from '../../../components/users/LoadingPage';
 export default function RecipeDetail() {
@@ -88,7 +88,7 @@ export default function RecipeDetail() {
   return (
     <div className="max-w-[1000px] mx-auto bg-gray-50 min-h-screen pb-20">
       <div className="relative h-[400px] w-full">
-        <img src={recipe.post?.img} className="w-full h-full object-cover" alt={recipe.post?.title} />
+        <img src={"http://127.0.0.1:8000/"+recipe.post?.img} className="w-full h-full object-cover" alt={recipe.post?.title} />
         <div className="absolute inset-0 bg-black/20" />
         <button onClick={() => navigate(-1)} className="absolute top-6 left-6 bg-white/90 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
           <ChevronLeft size={24} />
@@ -100,14 +100,18 @@ export default function RecipeDetail() {
 
           {/* 1. Thông tin chung & Stats */}
           <div className="flex items-center gap-3 mb-6">
+            <Link to={"/user-profile/"+recipe.post?.user.username}>
             <img
               src= {`http://127.0.0.1:8000/${recipe.post?.user?.avatar}`}
               alt="avatar"
               className="w-10 h-10 rounded-full"
             />
+            </Link>
+            <Link to={"/user-profile/"+recipe.post?.user.username}>
             <span className="text-2xl font-semibold text-gray-800">
               {recipe.post?.user?.name}
             </span>
+            </Link>
           </div>
           <div className="border-b border-slate-50 pb-8 mb-8">
             <h1 className="text-3xl font-black text-slate-800 mb-4">{recipe.post?.title}</h1>
