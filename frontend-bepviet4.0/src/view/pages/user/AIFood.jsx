@@ -1,39 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, X, Sparkles, Copy, ChefHat, Lightbulb } from 'lucide-react';
+import LoadingPage from '../../../components/users/LoadingPage';
 
 export default function AIFood() {
   const [ingredients, setIngredients] = useState([
-    { id: 1, name: '', quantity: '', unit: 'kg' }
   ]);
   const [aiInput, setAiInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
+  const [ingredientList,setIngredientList]=useState()
 
-  const units = ['kg', 'g', 'ml', 'lít', 'gram', 'miếng', 'củ', 'trái', 'gói', 'thìa'];
 
-  const sampleData = [
-    "500g thịt bò, 2 củ hành tây, 3 cà chua, 200ml nước tương, 1kg gạo",
-    "1 lít sữa tươi, 200g bơ, 500g đường, 6 quả trứng, 300g bột mì",
-    "2kg cá hồi, 500g rau muống, 3 củ gừng, 100ml dầu ăn, 2 thìa muối"
-  ];
+  useEffect(()=>{
+    async function fetchIngredient(){
+      try {
+        const res=await fetch("http://127.0.0.1:8000/api/ingredient")
+        const data=await res.json()
+        if(!res.ok){
+          return
+        }
+        console.log(data)
+        setIngredientList(data)
+      } catch (error) {
+        console.log(error)
+      }finally{
+        setIsLoading(false)
+      }
+    }
+    fetchIngredient()
+  },[])
 
   const addIngredient = () => {
+    console.log(ingredients)
     setIngredients([
       ...ingredients,
-      { id: Date.now(), name: '', quantity: '', unit: 'kg' }
+      { ing_id: Date.now(), name: '',}
     ]);
   };
 
   const removeIngredient = (id) => {
     if (ingredients.length > 1) {
-      setIngredients(ingredients.filter(ing => ing.id !== id));
+      setIngredients(ingredients.filter(ing => ing.ing_id !== id));
     }
   };
 
   const updateIngredient = (id, field, value) => {
     setIngredients(ingredients.map(ing => 
-      ing.id === id ? { ...ing, [field]: value } : ing
+      ing.ing_id === id ? { ...ing, [field]: value,} : ing
     ));
   };
 
@@ -85,9 +100,9 @@ Ví dụ: [{"name": "thịt bò", "quantity": "500", "unit": "g"}]`
   };
 
   const getSuggestions = async () => {
-    const validIngredients = ingredients.filter(ing => ing.name && ing.quantity);
+    // const validIngredients = ingredients.filter(ing => ing.name && ing.quantity);
     
-    if (validIngredients.length === 0) {
+    if (ingredients.length === 0) {
       alert('Vui lòng nhập ít nhất 1 nguyên liệu!');
       return;
     }
@@ -96,55 +111,29 @@ Ví dụ: [{"name": "thịt bò", "quantity": "500", "unit": "g"}]`
     setSuggestions([]);
     
     try {
-      const ingredientList = validIngredients
-        .map(ing => `${ing.quantity}${ing.unit} ${ing.name}`)
-        .join(', ');
-
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("http://127.0.0.1:8000/api/test-ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            { 
-              role: "user", 
-              content: `Dựa trên các nguyên liệu sau: ${ingredientList}
-
-Hãy gợi ý 5 món ăn có thể nấu được và trả về CHỈ JSON array không có markdown:
-
-Format: [
-  {
-    "name": "Tên món ăn",
-    "description": "Mô tả ngắn gọn",
-    "difficulty": "Dễ/Trung bình/Khó",
-    "time": "thời gian nấu",
-    "missing": ["nguyên liệu cần thêm nếu có"]
-  }
-]`
-            }
-          ],
+         ingredients:ingredients,
         })
       });
 
       const data = await response.json();
-      const text = data.content[0].text.trim();
+      console.log(data)
+      const text = data.choices[0].message.content;
       const cleaned = text.replace(/```json|```/g, '').trim();
       const parsed = JSON.parse(cleaned);
-      
-      setSuggestions(parsed);
+      console.log(parsed)
+      setSuggestions(parsed.posts);//set cong thuc goi y
     } catch (err) {
       console.error('Lỗi gợi ý:', err);
       alert('Không thể tạo gợi ý. Vui lòng thử lại!');
     } finally {
       setLoadingSuggestions(false);
     }
-  };
-
-  const loadSampleData = (sample) => {
-    setAiInput(sample);
   };
 
   const exportData = () => {
@@ -166,6 +155,10 @@ Format: [
     }
   };
 
+  if (isLoading) {
+    return (<LoadingPage></LoadingPage>)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -183,7 +176,7 @@ Format: [
               Phân Tích Nhanh Bằng AI
             </h2>
             
-            <div className="mb-3">
+            {/* <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Dữ liệu mẫu để test:
               </label>
@@ -198,7 +191,7 @@ Format: [
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             <textarea
               value={aiInput}
@@ -233,20 +226,30 @@ Format: [
             
             <div className="space-y-3">
               {ingredients.map((ingredient, index) => (
-                <div key={ingredient.id} className="flex gap-2 items-start">
+                <div key={ingredient.ing_id} className="flex gap-2 items-start">
                   <span className="w-8 h-10 flex items-center justify-center bg-gray-100 rounded-lg text-sm font-medium text-gray-600">
                     {index + 1}
                   </span>
                   
-                  <input
+                  {/* <input
                     type="text"
                     value={ingredient.name}
                     onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
                     placeholder="Tên nguyên liệu"
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
+                  /> */}
+                  <select
+                    value={ingredient.name}
+                    onChange={(e) => updateIngredient(ingredient.ing_id, 'name', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  >
+                    <option value="">-- Chọn nguyên liệu --</option>
+                    {ingredientList.map(item => (
+                      <option key={item.ing_id} value={item.name}>{item.name}</option>
+                    ))}
+                  </select>
                   
-                  <input
+                  {/* <input
                     type="number"
                     value={ingredient.quantity}
                     onChange={(e) => updateIngredient(ingredient.id, 'quantity', e.target.value)}
@@ -254,18 +257,14 @@ Format: [
                     className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                   
-                  <select
-                    value={ingredient.unit}
-                    onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
-                    className="w-28 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  >
-                    {units.map(unit => (
-                      <option key={unit} value={unit}>{unit}</option>
-                    ))}
-                  </select>
+                  <p
+
+                    className="w-28 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                      unit
+                  </p> */}
                   
                   <button
-                    onClick={() => removeIngredient(ingredient.id)}
+                    onClick={() => removeIngredient(ingredient.ing_id)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     disabled={ingredients.length === 1}
                   >
@@ -324,9 +323,9 @@ Format: [
             
             <div className="grid md:grid-cols-2 gap-4">
               {suggestions.map((dish, index) => (
-                <div key={index} className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-orange-50">
+                <div  className="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-orange-50">
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-xl font-bold text-gray-800">{dish.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-800">{dish.title}</h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(dish.difficulty)}`}>
                       {dish.difficulty}
                     </span>
@@ -336,16 +335,16 @@ Format: [
                   
                   <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                     <span className="flex items-center gap-1">
-                      ⏱️ {dish.time}
+                      ⏱️ {dish.cook_time}
                     </span>
                   </div>
                   
-                  {dish.missing && dish.missing.length > 0 && (
+                  {dish.needIngredients && dish.needIngredients.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       <p className="text-sm font-medium text-gray-700 mb-1">Cần thêm:</p>
                       <div className="flex flex-wrap gap-1">
-                        {dish.missing.map((item, i) => (
-                          <span key={i} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
+                        {dish.needIngredients.map((item, i) => (
+                          <span  className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
                             {item}
                           </span>
                         ))}

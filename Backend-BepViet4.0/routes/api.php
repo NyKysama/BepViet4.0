@@ -82,5 +82,6 @@ Route::post("/coobook/update/{cookbook_id}",[CookbookController::class,"updateCo
 Route::post('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds']);
 //AI
 Route::get('/test-ai',[AIController::class,"chatBot"]);
+Route::post('/test-ai',[AIController::class,"chatBot1"]);
 
 
