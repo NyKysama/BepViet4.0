@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Trash2, Plus, ImagePlus, Send, FileText, X } from "lucide-react";
+import { useMyAccount } from "../../../contexts/user/MyAccountContext";
 
 // cau truc du lieu du gui di 
 // {
@@ -24,6 +25,7 @@ import { Trash2, Plus, ImagePlus, Send, FileText, X } from "lucide-react";
 // }
 
 export default function CreateRecipe() {
+  const {myAccount}=useMyAccount()
   //Lay danh sach nguyen lieu tu backend
   const [ingredients, setIngredients] = useState([])
   useEffect(() => {
@@ -313,6 +315,7 @@ export default function CreateRecipe() {
     formData.append("difficulty", recipe.difficulty);
     formData.append("region", recipe.region);
     formData.append("status", recipe.status);
+    formData.append("user_id", myAccount.user_id);
 
     // anh cong thuc
     if (recipe.img) {
