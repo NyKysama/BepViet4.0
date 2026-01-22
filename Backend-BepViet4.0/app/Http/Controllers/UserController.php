@@ -1,0 +1,312 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
+class UserController extends Controller
+{
+
+    public function checkValidation(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|unique:users,username|max:50',
+                'password' => 'required|string|min:6',
+                'gmail' => 'required|email|unique:users,gmail',
+                'phone' => 'nullable|string|max:15',
+                'birthday' => 'nullable|date',
+                'sex' => 'nullable|in:Nam,Nữ,Khác',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'password_confirmation' => 'required|same:password',
+            ],
+            [
+                'name.required' => 'Tên không được để trống.',
+                'username.required' => 'Tên đăng nhập không được để trống.',
+                'username.unique' => 'Tên đăng nhập đã tồn tại.',
+                'password.required' => 'Mật khẩu không được để trống.',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+                'gmail.required' => 'Email không được để trống.',
+                'gmail.email' => 'Email không đúng định dạng.',
+                'gmail.unique' => 'Email đã tồn tại.',
+                'avatar.image' => 'File tải lên phải là ảnh.',
+                'avatar.mimes' => 'Ảnh phải có định dạng: jpeg, png, jpg, gif.',
+                'avatar.max' => 'Kích thước ảnh không được vượt quá 2MB.',
+                'password_confirmation.required' => 'Xác nhận mật khẩu không được để trống.',
+                'password_confirmation.same' => 'Xác nhận mật khẩu không khớp với mật khẩu.',
+            ]
+        );
+        return $validator;
+    }
+
+    // hàm xử lý upload ảnh
+    public function uploadAvatar(Request $request)
+    {
+        //nếu có file ảnh đc gửi lên
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $destinationPath = public_path('images'); // đi đến thư mục lưu trữ ảnh
+            $originalName = $file->getClientOriginalName(); // Lấy tên gốc của file
+            $pathForDB = $destinationPath . '/' . $originalName;
+            // 2. KIỂM TRA: Nếu file CHƯA TỒN TẠI thì mới tạo/di chuyển vào
+            if (file_exists($pathForDB)) {
+                file($pathForDB);
+            }
+            // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
+            $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+            // 2. Di chuyển file thẳng vào thư mục public/images của dự án
+            $file->move(public_path('images'), $avatarName);                
+            return 'images/' . $avatarName;                       
+        }
+        // Ngược lại nếu KHÔNG CÓ file ảnh đc gửi lên
+        return 'images/default-avatar.png';
+    }
+
+    public function CreateUser(Request $request, $avatarName)
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => Hash::make($request->password), // Mã hóa mật khẩu
+            'gmail' => $request->gmail,
+            'phone' => $request->phone,
+            'birthday' => $request->birthday,
+            'sex' => $request->sex,
+            'avatar' => $avatarName,
+            'slug' => Str::slug($request->name) . '-' . Str::random(5), // Tạo slug duy nhất
+            'role' => 'user',    // Mặc định là user
+            'status' => 1,         // Mặc định là đang hoạt động
+        ]);
+        return $user;
+    }
+
+    public function register(Request $request)
+    {
+        try {
+        // 1. Validate dữ liệu đầu vào
+        $validator = $this->checkValidation($request);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }       
+
+        // 2. Xử lý Upload Ảnh
+        $avatarName = $this->uploadAvatar($request);
+
+        // 3. Tạo tài khoản User mới
+        $user = $this->CreateUser($request, $avatarName);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Tạo tài khoản thành công rồi bro!',
+            'user' => $user
+        ], 201);
+        } catch (\Exception $e) {
+        // Trả về JSON lỗi để React không bị crash Unexpected token <
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+        }
+    }
+    //Lay thong tin user ban username
+      public function getUserByUsername($username){
+        //cach 2
+            //        $user = User::with([
+            //     'posts',
+            //     'cookbooks',
+            //     'followers',
+            //     'followings'
+            // ])->where('username', $username)->first();
+
+        $user=User::where("username",$username)->first();
+    
+        if($user){
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+            $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
+            return response()->json([
+                "user"=>$user,
+                "message"=>`Lấy thông tin {$user->username} thành công!`,
+                "success"=>true,
+            ],200);
+        }
+        return response()->json([
+                "message"=>"không tìm thấy thông tin!",
+                "success"=>false,
+        ],404);
+    }
+    public function updateUserByUsername(Request $request){
+        //validate
+        $data = $request->validate([
+        'name'     => 'required',
+        'phone'    => 'required',
+        'birthday' => 'required',
+        'sex'      => 'required',
+        ]);
+        $username=$request->username;
+        $user=User::where("username",$username)->first();
+        if(!$user){
+            // $user->name=$data->name;
+            // $user->phone=$request->phone;
+            // $user->birthday=$request->birthday;
+            // $user->sex=$request->sex;
+            // $user->save();
+           
+            return response()->json(["message"=>"Cập nhật thông tin thất bại"],404);
+        }
+
+        $user->update($data);
+        return response()->json(["message"=>"Cập nhật thông tin thành công",
+        "user"=>$user,
+        ],200);
+    }
+       public function getUserByUser_id($user_id){
+        //cach 2
+            //        $user = User::with([
+            //     'posts',
+            //     'cookbooks',
+            //     'followers',
+            //     'followings'
+            // ])->where('username', $username)->first();
+
+        $user=User::where("user_id",$user_id)->first();
+    
+        if($user){
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+            // $user->avatar_url="http://127.0.0.1:8000/images/".$user->avatar;
+            return response()->json([
+                "user"=>$user,
+                "message"=>`Lấy thông tin {$user->username} thành công!`,
+                "success"=>true,
+            ],200);
+        }
+        return response()->json([
+                "message"=>"không tìm thấy thông tin!",
+                "success"=>false,
+        ],404);
+    }
+    //ham follow
+    //ham unfollow
+    public function unfollow(Request $request)
+    {   //validate
+        $data = $request->validate([
+            'follower_id'  => 'required|exists:users,user_id',
+            'following_id' => 'required|exists:users,user_id',
+        ]);
+
+        $follower = User::find($data['follower_id']);
+        $follower->followings()->detach($data['following_id']);
+
+        return response()->json([
+            'message' => 'Unfollow thành công'
+        ], 200);
+    }
+    public function follow(Request $request)
+    {
+        $data = $request->validate([
+            'follower_id'  => 'required|exists:users,user_id',
+            'following_id' => 'required|exists:users,user_id',
+        ]);
+
+        // Không cho tự follow chính mình
+        if ($data['follower_id'] == $data['following_id']) {
+            return response()->json([
+                'message' => 'Không thể theo dõi chính mình'
+            ], 400);
+        }
+
+        $user = User::find($data['follower_id']);
+
+        // Nếu đã follow rồi thì không tạo nữa
+        if ($user->followings()->where('following_id', $data['following_id'])->exists()) {
+            return response()->json([
+                'message' => 'Đã theo dõi rồi'
+            ], 200);
+        }
+
+        $user->followings()->attach($data['following_id']);
+
+        return response()->json([
+            'message' => 'Theo dõi thành công',
+            "following"=>User::find($request->following_id),
+        ], 200);
+    }
+
+    //ham update avatar
+    public function updateAvatar(Request $request)
+    {
+        //validate
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'image_file'  => 'required|image|max:5120', // 5MB
+        ]);
+        //lay user
+        $user = User::where('user_id', $request->user_id)->first();
+
+        // Xóa avatar cũ nếu có
+        // if ($user->avatar_url) {
+        //     $oldPath = str_replace('/storage/', '', $user->avatar_url);
+        //     Storage::disk('public')->delete($oldPath);
+        // }
+
+        if ($request->hasFile('image_file')) {
+           $file = $request->file('image_file');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            // đường dẫn vật lý
+            $destinationPath = public_path('images');
+            // tạo folder nếu chưa có
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            // di chuyển file
+            $file->move($destinationPath, $filename);
+             // lưu path vào DB
+            $user->avatar ="images/".$filename;
+            $user->posts;
+            $user->cookbooks;
+            $user->followers;
+            $user->followings;
+        }
+        $user->save();
+
+        return response()->json([
+            "message"=>"Cập nhật avatar thành công!",
+            "user"=>$user,
+        ],200);
+    }
+
+    //Block user
+    public function block(Request $request){
+        // 1. Validate
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+        ]);
+
+        $user=User::find($request->user_id);
+
+        //block
+        if($user->status==1){
+            $user->status=0;
+        }else{
+            $user->status=1;
+        }
+        $user->save();
+        
+        return response()->json(["message"=>"Khóa thành công",
+        "user"=>$user,
+        ],200);
+    }
+}
