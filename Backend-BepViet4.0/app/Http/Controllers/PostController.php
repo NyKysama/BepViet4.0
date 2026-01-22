@@ -99,7 +99,7 @@ class PostController extends Controller
         // lấy công thức cùng id, kết hợp kết bảng user và nguyên liệu để hiển thị 
         $post = Post::with('user', 'ingredients')->where('type', 'Công thức')->find($id);
         $steps = Step::getStepByPostID($id); // lấy ds các bước cùng id 
-        
+
         return response()->json([
             'post' => $post,
             'steps' => $steps
@@ -171,7 +171,7 @@ class PostController extends Controller
             'description' => 'required',
             'category_id' => 'nullable|string',
             'img' => 'nullable|image|max:2048',
-            
+
         ], [
             'title.required' => 'Tiêu đề không được để trống',
             'description.required' => 'Nội dung không được để trống',
@@ -179,7 +179,8 @@ class PostController extends Controller
         // Upload ảnh
         if ($request->hasFile('img'))
             $imgPath = $this->uploadImg($request);
-        else $imgPath=null;
+        else
+            $imgPath = null;
         // Tạo blog
         $post = Post::create([
             'title' => $request->title,
@@ -217,6 +218,13 @@ class PostController extends Controller
         $seed = $request->seed ?? rand(1, 999999);// dùng để cố định bài post trong trang page 
         $sevenDaysAgo = now()->subDays(7)->toDateTimeString();// điều kiện trong 3 ngày 
 
+        if ($userId == null) {
+            $posts = Post::with('user')->where('status', 1)
+                ->inRandomOrder($seed)
+                ->simplePaginate(10);
+            return response()->json($posts);
+        }
+
         // 1. Lấy danh sách ID người đang follow
         $followingIds = DB::table('follows')
             ->where('follower_id', $userId)
@@ -224,21 +232,16 @@ class PostController extends Controller
             ->toArray();
         $followingIdsString = !empty($followingIds) ? implode(',', $followingIds) : '0';
 
-        // 2. Truy vấn nếu id user có trong mảng sẻ lấy hết bài post cảu user đó sau đó lại lấy số bài post của ng ch follow 
-        $posts = Post::with('user')
-            ->where('status', 1)
-            ->orderByRaw("
+        // 2. Truy vấn nếu id user có trong mảng sẻ lấy hết bài post của user đó sau đó lại lấy số bài post của ng ch follow 
+        $posts = Post::with('user')->where('status', 1)->orderByRaw("
             CASE 
-                WHEN user_id IN ($followingIdsString) AND created_at >= '$sevenDaysAgo' THEN 1 
-                WHEN user_id NOT IN ($followingIdsString) AND created_at >= '$sevenDaysAgo' THEN 2               
+                WHEN user_id IN ($followingIdsString) AND created_at >= ? THEN 1 
+                WHEN user_id NOT IN ($followingIdsString) AND created_at >= ? THEN 2 
                 ELSE 3 
-            END ASC,
-            RAND($seed)
-        ")
-            /* Xáo trộn ngẫu nhiên trong từng nhóm để mỗi lần vào là một trải nghiệm khác */
-            //->inRandomOrder($seed)
-            ->simplePaginate(10); // số post trong 1 page 
-        
+            END ASC", [$sevenDaysAgo, $sevenDaysAgo])
+            ->orderByRaw("RAND(?)", [$seed]) // Giữ nguyên Seed để cố định vị trí khi phân trang
+            ->simplePaginate(10);
+
         return response()->json($posts);
     }
 
@@ -260,105 +263,110 @@ class PostController extends Controller
 
 
     //hàm tạo công thức
-    public function createRecipe(Request $request){
-       return response()->json([
-        'success' => true,
-        'message' => 'Backend đã nhận được dữ liệu',
-        'data' => $request->all(),
-        'files' => $request->file()
-    ], 200);
+    public function createRecipe(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Backend đã nhận được dữ liệu',
+            'data' => $request->all(),
+            'files' => $request->file()
+        ], 200);
 
-    //     $validate = $request->validate([
-    //         'title' => 'required|max:150',
-    //         'description' => 'required',
-    //         'category_ids' => 'nullable|array',
-    //         'img' => 'nullable|image|max:2048',
-    //         'steps' => 'required|array',
-    //         'ingredients' => 'required|array',
-    //         'cook_time' => 'nullable|integer',
-    //         'difficulty'=> 'nullable|string',
-    //         'region'=> 'nullable|string',
-    //     ]);
-    //     // 2. Dùng Transaction để đảm bảo an toàn dữ liệu
-    // return DB::transaction(function () use ($request) {
-    //     $img = $this->uploadImg($request);
-    //     // A. Tạo bài viết gốc (Post)
-    //     $recipe = Post::create([
-    //         'title'       => $request->title,
-    //         'description' => $request->description,
-    //         'type'        => 'Recipe',
-    //         'cook_time'   => $request->cook_time,
-    //         'difficulty'  => $request->difficulty,
-    //         'region'      => $request->region,
-    //         'user_id'     => auth()->id(),
-    //         'slug'        => Str::slug($request->title) . '-' . uniqid(),
-    //         'img'         => $img,
-    //         'status'      => 0,
-    //     ]);
+        //     $validate = $request->validate([
+        //         'title' => 'required|max:150',
+        //         'description' => 'required',
+        //         'category_ids' => 'nullable|array',
+        //         'img' => 'nullable|image|max:2048',
+        //         'steps' => 'required|array',
+        //         'ingredients' => 'required|array',
+        //         'cook_time' => 'nullable|integer',
+        //         'difficulty'=> 'nullable|string',
+        //         'region'=> 'nullable|string',
+        //     ]);
+        //     // 2. Dùng Transaction để đảm bảo an toàn dữ liệu
+        // return DB::transaction(function () use ($request) {
+        //     $img = $this->uploadImg($request);
+        //     // A. Tạo bài viết gốc (Post)
+        //     $recipe = Post::create([
+        //         'title'       => $request->title,
+        //         'description' => $request->description,
+        //         'type'        => 'Recipe',
+        //         'cook_time'   => $request->cook_time,
+        //         'difficulty'  => $request->difficulty,
+        //         'region'      => $request->region,
+        //         'user_id'     => auth()->id(),
+        //         'slug'        => Str::slug($request->title) . '-' . uniqid(),
+        //         'img'         => $img,
+        //         'status'      => 0,
+        //     ]);
 
-    //     // B. Lưu các bước (Steps)
-    //     foreach ($request->steps as $index => $item) {
-    //         $stepImgPath = null;
+        //     // B. Lưu các bước (Steps)
+        //     foreach ($request->steps as $index => $item) {
+        //         $stepImgPath = null;
 
-    //         // Kiểm tra xem tại vị trí index này có file ảnh được upload lên không
-    //         if ($request->hasFile("steps.$index.img")) {
-    //             $file = $request->file("steps.$index.img");
-    //             $destinationPath = public_path('images'); // đi đến thư mục lưu trữ ảnh
-    //             $originalName = $file->getClientOriginalName(); // Lấy tên gốc của file
-    //             $pathForDB = $destinationPath . '/' . $originalName;
-    //             // 2. KIỂM TRA: Nếu file CHƯA TỒN TẠI thì mới tạo/di chuyển vào
-    //             if (file_exists($pathForDB)) {
-    //                 file($pathForDB);
-    //             }
-    //             // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
-    //             $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-    //             // 2. Di chuyển file thẳng vào thư mục public/images của dự án
-    //             $file->move(public_path('images'), $avatarName);
-    //             $stepImgPath = 'images/' . $avatarName;
-    //         }
-    //         $recipe->steps()->create([
-    //             'steps' => $item['step'],
-    //             'content'     => $item['content'],
-    //             'img' => $stepImgPath,                
-    //         ]);
-    //     }
+        //         // Kiểm tra xem tại vị trí index này có file ảnh được upload lên không
+        //         if ($request->hasFile("steps.$index.img")) {
+        //             $file = $request->file("steps.$index.img");
+        //             $destinationPath = public_path('images'); // đi đến thư mục lưu trữ ảnh
+        //             $originalName = $file->getClientOriginalName(); // Lấy tên gốc của file
+        //             $pathForDB = $destinationPath . '/' . $originalName;
+        //             // 2. KIỂM TRA: Nếu file CHƯA TỒN TẠI thì mới tạo/di chuyển vào
+        //             if (file_exists($pathForDB)) {
+        //                 file($pathForDB);
+        //             }
+        //             // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
+        //             $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        //             // 2. Di chuyển file thẳng vào thư mục public/images của dự án
+        //             $file->move(public_path('images'), $avatarName);
+        //             $stepImgPath = 'images/' . $avatarName;
+        //         }
+        //         $recipe->steps()->create([
+        //             'steps' => $item['step'],
+        //             'content'     => $item['content'],
+        //             'img' => $stepImgPath,                
+        //         ]);
+        //     }
 
-    //     // C. Lưu nguyên liệu (Ingredients)
-    //     foreach ($request->ingredients as $item) {
-    //         // Giả sử quan hệ là $recipe->ingredients()
-    //         $recipe->ingredients()->create([
-    //             'name'   => $item['name'],
-    //             'amount' => $item['amount']
-    //         ]);
-    //     }
+        //     // C. Lưu nguyên liệu (Ingredients)
+        //     foreach ($request->ingredients as $item) {
+        //         // Giả sử quan hệ là $recipe->ingredients()
+        //         $recipe->ingredients()->create([
+        //             'name'   => $item['name'],
+        //             'amount' => $item['amount']
+        //         ]);
+        //     }
 
-    //     // D. Gắn danh mục (Categories) - Quan hệ N-N
-    //     $recipe->categories()->sync($request->category_ids);
+        //     // D. Gắn danh mục (Categories) - Quan hệ N-N
+        //     $recipe->categories()->sync($request->category_ids);
 
-    //     return response()->json([
-    //         'message' => 'Đã đăng công thức thành công!',
-    //         'id'      => $recipe->id
-    //     ], 201);
-    // });
+        //     return response()->json([
+        //         'message' => 'Đã đăng công thức thành công!',
+        //         'id'      => $recipe->id
+        //     ], 201);
+        // });
 
     }
 
 
     // hàm tìm kiếm
-    public function search(Request $request) {
-        
+    public function search(Request $request)
+    {
+
         $posts = Post::when($request->searchQuery, function ($query) use ($request) {
-        $query->where('title', 'LIKE',  "%{$request->searchQuery}%" );
-            })->get();
+            $query->where('title', 'LIKE', "%{$request->searchQuery}%");
+        })->get();
 
 
-        return response()->json(["posts"=>$posts,
-        "searchQuery"=>$request->searchQuery,],200);
-        }
+        return response()->json([
+            "posts" => $posts,
+            "searchQuery" => $request->searchQuery,
+        ], 200);
+    }
 
 
     // hàm lọc theo điều kiện kết hợp
-    public function filter(Request $request){
+    public function filter(Request $request)
+    {
         $query = Post::query();
 
         //Search theo tiêu đề
