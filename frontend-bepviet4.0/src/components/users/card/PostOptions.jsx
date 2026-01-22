@@ -1,9 +1,11 @@
-import { MoreHorizontal, Heart, Bookmark, EyeOff, Edit3, Trash2, Pin, Info } from 'lucide-react';
+import { MoreHorizontal, Heart, Bookmark, EyeOff, Edit3, Trash2, Pin, Info, } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import {  useNavigate } from "react-router-dom";
 
 export default function PostOptions({ post, isOwner, onAction }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null); // Dùng để bắt sự kiện click ra ngoài thì đóng menu
+  const navigate = useNavigate();
 
   // Xử lý khi click ra ngoài menu thì tự đóng
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function PostOptions({ post, isOwner, onAction }) {
                 <button onClick={() => { onAction('pin'); setIsOpen(false); }} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-slate-700 font-semibold hover:bg-slate-50">
                   <Pin className="mr-3 h-4 w-4 text-slate-500" /> Ghim bài viết
                 </button>
-                <button onClick={() => { onAction('edit'); setIsOpen(false); }} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-slate-700 font-semibold hover:bg-slate-50">
+                <button onClick={() => {navigate(`/update-blog/${post.post_id}`)}} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-slate-700 font-semibold hover:bg-slate-50">
                   <Edit3 className="mr-3 h-4 w-4 text-blue-500" /> Chỉnh sửa bài viết
                 </button>
               </>

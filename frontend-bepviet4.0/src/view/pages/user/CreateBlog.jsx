@@ -1,10 +1,13 @@
 import { ImagePlus, Send, FileText, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useMyAccount } from '../../../contexts/user/MyAccountContext';
 
 export default function CreateBlog() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {myAccount} = useMyAccount();
+  // const user_id = myAccount?.id;
 
   // State này dùng để lưu dl của form để sau nì đưa dl qua server = hàm FormData cảu react
   const [formData, setFormData] = useState({
@@ -57,11 +60,14 @@ export default function CreateBlog() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // ko bx này là j nhưng đại khái có nó ms gửi dl đi đc
     setIsLoading(true);
+    console.log(myAccount);
 
     const data = new FormData();// đây dl sẽ đc đưa vào hàm nì để đc đưa lên server 
     data.append('title', formData.title);
     data.append('description', formData.description);
     data.append('category_id', formData.category_id);
+    data.append('user_id', myAccount.user_id);
+
     if (imgFile) data.append('img', imgFile);
 
     // Trick: Laravel kén PUT với FormData, dùng POST + _method PUT
