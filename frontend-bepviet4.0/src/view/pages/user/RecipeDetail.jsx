@@ -35,9 +35,8 @@ export default function RecipeDetail() {
   // const ratings = [5, 4, 5, 3, 5, 1]; // Dữ liệu mẫu từ DB
 
   const totalReviews = ratings?.length; // Tổng số lượt: 5
-  const averageRating = totalReviews > 0
-    ? (ratings.reduce((sum, r) => sum + r, 0) / totalReviews).toFixed(1)
-    : 0; // Kết quả: 4.4
+  const averageRating = totalReviews > 0 ? (ratings.reduce((sum, r) => sum + r, 0) / totalReviews).toFixed(1): 0; 
+    // Kết quả: 4.4
   // Hàm xử lý đơn giản
   // const handleSendRating = (star) => {
   //   setUserRating(star); // Lưu vào state để hiển thị feedback
@@ -115,9 +114,7 @@ export default function RecipeDetail() {
             <div className="flex items-center gap-2 mb-6">
               <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
                 <Star size={16} className="fill-yellow-400 text-yellow-400 mr-1" />
-                <span className="text-sm font-black text-yellow-700">{ totalReviews > 0
-    ? (ratings.reduce((sum, r) => sum + r.score, 0) / totalReviews).toFixed(1)
-    : "0.0"}</span>
+                <span className="text-sm font-black text-yellow-700">{ totalReviews > 0 ? (ratings.reduce((sum, r) => sum + r.score, 0) / totalReviews).toFixed(1): "0.0"}</span>{/*tính và hiển thị số sao tb*/}
               </div>
               <span className="text-slate-300">|</span>
               <span className="text-sm text-slate-500 font-medium">{totalReviews} lượt đánh giá</span>

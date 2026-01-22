@@ -6,7 +6,7 @@ use App\Models\Post;
 class Step extends Model {
     protected $table = 'steps';
     protected $primaryKey = 'step_id';
-    protected $fillable = ['post_id', 'steps', 'content', 'img'];
+    protected $fillable = ['post_id', 'step', 'content', 'img'];
 
     public static function getStepByPostID($id){
         return self::where('post_id', $id)->get();
