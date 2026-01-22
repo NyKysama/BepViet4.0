@@ -3,7 +3,7 @@ import {
   ArrowLeft, Edit, Lock, Trash2, Mail, Phone, Calendar,
   User, Shield, MapPin, CheckCircle, Clock, BookOpen, Save, Unlock
 } from 'lucide-react';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams,useNavigate, Link } from 'react-router-dom';
 import LoadingPage from '../../../components/users/LoadingPage';
 
 export default function UserDetail() {
@@ -100,9 +100,9 @@ export default function UserDetail() {
   return (
     <div className="p-8 bg-[#F8FAFC] min-h-screen">
       {/* Thanh điều hướng quay lại */}
-      <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all mb-6 font-medium">
+      <Link to="/admin/user" className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all mb-6 font-medium">
         <ArrowLeft size={20} /> Quay lại danh sách
-      </button>
+      </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
