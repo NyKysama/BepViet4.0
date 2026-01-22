@@ -26,9 +26,15 @@ import CategoryTable from './view/pages/admin/CategoryTable';
 import IngredientTable from './view/pages/admin/IngredientTable';
 import UserDetail from './view/pages/admin/UserDetail';
 import PendingPosts from './view/pages/admin/PendingPosts';
+import ReportTable from './view/pages/admin/ReportTable';
+
 //import context 
 import { MyAccountProvider } from './contexts/user/MyAccountContext';
+
 import { AdminAccountProvider } from './contexts/user/adminAccountContex';
+
+
+import {ProtectedRoute} from './contexts/user/ProtectedRoute';
 
 function App() {
   return (
@@ -38,8 +44,8 @@ function App() {
         <Routes>
           <Route element={<MyAccountProvider><Layout /></MyAccountProvider>}>
             <Route path='/' element={<Home />}></Route>
-            <Route path='/create-blog' element={<CreateBlog />}></Route>
-            <Route path='/create-recipe' element={<CreateRecipe />}></Route>
+            <Route path='/create-blog' element={<ProtectedRoute><CreateBlog /></ProtectedRoute>}></Route>
+            <Route path='/create-recipe' element={<ProtectedRoute><CreateRecipe /></ProtectedRoute>}></Route>
             <Route path='/login' element={<Login/>}></Route>
             <Route path='/register' element={<Register />}></Route>
             <Route path='/not-found' element={<NotFound />}></Route>
@@ -49,8 +55,9 @@ function App() {
             <Route path='/user-profile/:username' element={<UserProfile/>}></Route>
             <Route path='/my-info' element={<UserInfo/>}></Route>
             <Route path='/user-profile/:username/cookbook/:name' element={<CookbookDetail/>}></Route>
-            <Route path='/update-blog/:id' element={<CreateBlog />}></Route>
+            <Route path='/update-blog/:id' element={<ProtectedRoute><CreateBlog /></ProtectedRoute>}></Route>
             <Route path='/food-suggestion' element={<AIFood/>}></Route>
+
           </Route>
           <Route element={<AdminAccountProvider ><LayoutAdmin /></AdminAccountProvider >}>
             <Route path='/admin' element={<Dashboad/>}></Route>
@@ -62,11 +69,12 @@ function App() {
             <Route path='/admin/comment' element={<CommentTable />}></Route>
             <Route path='/admin/category' element={<CategoryTable />}></Route>
             <Route path='/admin/category/:id' element={<CategoryTable />}></Route>
-             <Route path='/admin/ingredient' element={<IngredientTable />}></Route>
+            <Route path='/admin/ingredient' element={<IngredientTable />}></Route>
             <Route path='/admin/ingredient/:id' element={<IngredientTable />}></Route>
             <Route path='/admin/user/:user_id' element={<UserDetail />}></Route>
             <Route path='/admin/post/recipe-detail/:post_id' element={<MyAccountProvider><RecipeDetail /></MyAccountProvider>}></Route>
             <Route path='/admin/post/blog-detail/:id' element={<MyAccountProvider><BlogDetail /></MyAccountProvider>}></Route>
+            <Route path='/admin/report' element={<ReportTable/>}></Route>
           </Route>
           
          

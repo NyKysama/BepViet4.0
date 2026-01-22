@@ -58,7 +58,7 @@ export default function PostCard({ post, card_data }) {
         
         <PostOptions
           post={post}
-          isOwner={post?.user_id === myAccount.user_id}
+          isOwner={post?.user_id === myAccount?.user_id}
           onAction={(type) => console.log("Hành động:", type)}
         />
       </div>

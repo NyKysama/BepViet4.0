@@ -90,12 +90,13 @@ export default function Home() {
             const response = await fetch(
                 `http://127.0.0.1:8000/api/news-feeds?page=${pageRef.current}&seed=${seed}`,
                 {
-                    method: "POST",
+                    method: "POST",                   
                     body:JSON.stringify({
-                        user_id: myAccount.user_id,
+                        user_id: myAccount?.user_id || null,
                     }),
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     }
                 }
             );
@@ -122,7 +123,7 @@ export default function Home() {
             setIsLoading(false);
             isFetchingRef.current = false;
         }
-    }, [seed, hasMore]);
+    }, [seed, hasMore, myAccount]);
 
     const observer = useRef();
     const lastPostElementRef = useCallback(node => {

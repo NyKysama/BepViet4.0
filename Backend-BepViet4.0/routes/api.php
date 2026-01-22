@@ -12,7 +12,9 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookbookController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AIController;
+
 
 Route::get('/users', function (Request $request) {
     return response()->json(["message"=>"Lấy danh sách người dùng thành công",
@@ -51,8 +53,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/update-blog/{id}', [PostController::class, 'editBlog']);
     Route::put('/update-blog/{id}', [PostController::class, 'update'])->name("update-blog");
     Route::delete('/delete-post/{id}', [PostController::class, 'destroy']);
-    Route::delete('/forcedestroy-post/{id}', [PostController::class, 'forceDestroy']);
-    
+    Route::delete('/forcedestroy-post/{id}', [PostController::class, 'forceDestroy']);   
     //category
     Route::post('create-category', [CategoryController::class, 'createCategory']);
     Route::get('update-category/{id}', [CategoryController::class, 'edit']);
@@ -63,6 +64,9 @@ Route::prefix('admin')->group(function () {
     Route::get('update-ingredient/{id}', [IngredientController::class, 'edit']);
     Route::put('update-ingredient/{id}', [IngredientController::class, 'update'])->name('update-ingredient');
     Route::delete('delete-ingredient/{id}', [IngredientController::class, 'destroy']);
+    // report
+    Route::delete('/delete-report/{id}', [ReportController::class, 'destroy']);
+
 });
 Route::get('/category', [CategoryController::class, 'getCategory']);
 Route::get('/ingredient', [IngredientController::class, 'getIng']);
