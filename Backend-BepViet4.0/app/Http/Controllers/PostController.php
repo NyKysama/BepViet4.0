@@ -188,7 +188,7 @@ class PostController extends Controller
             'description' => $request->description,
             'img' => $imgPath,
             'type' => 'Blog',
-            'user_id' => 6, // USER ĐANG ĐĂNG NHẬP
+            'user_id' => $request->user_id, // USER ĐANG ĐĂNG NHẬP
             'slug' => Str::slug($request->title),
             'status' => 0,
         ]);
@@ -283,7 +283,7 @@ class PostController extends Controller
             'difficulty'  => $request->difficulty,
             'region'      => $request->region,
             'status'      => (int) $request->status,
-            'user_id'     => 1, // tạm
+            'user_id'     => $request->user_id, // tạm
             'slug'        => Str::slug($request->title),
         ]);
         //3. luu steps
