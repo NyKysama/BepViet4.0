@@ -66,10 +66,10 @@ export default function UserTable() {
   return (
     <div className="p-6 bg-white rounded-[32px] border border-slate-100 shadow-2xl">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">Quản lý User 4.0</h2>
-        <button className="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all">
+        <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">Quản lý Người</h2>
+        {/* <button className="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all">
           <UserPlus size={18} /> Tạo mới
-        </button>
+        </button> */}
       </div>
 
       
@@ -122,7 +122,11 @@ export default function UserTable() {
                   <div className="flex items-center gap-3">
                     <span className="text-[10px] font-mono text-slate-400 bg-slate-100 p-1 rounded">{u.user_id}</span>
                     <Link to={`/admin/user/${u.user_id}`}>
-                      <img src={"http://127.0.0.1:8000/"+u.avatar} className="w-10 h-10 rounded-full border-2 border-emerald-500/20" alt="" />
+                      <img src={
+                    u.avatar
+                    ? `http://127.0.0.1:8000/${u.avatar}`
+                    : 'http://127.0.0.1:8000/images/avatar.png'}
+      className="w-10 h-10 rounded-full border-2 border-emerald-500/20" alt="" />
                     </Link>
                   </div>
                 </td>
