@@ -14,6 +14,7 @@ use App\Http\Controllers\CookbookController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AIController;
+use App\Http\Controllers\AdminController;
 
 
 Route::get('/users', function (Request $request) {
@@ -44,6 +45,7 @@ Route::post('/create-recipe',[PostController::class,'createRecipe']);
 Route::post('/rating', [RatingController::class, 'postRating']);//rating 19/01/2026
 Route::get('/post/rating/{post_id}',[RatingController::class,'getPostRating']);//20/01/2026
 
+Route::post('/login-admin',[AdminController::class,'loginAdmin']);
 Route::prefix('admin')->group(function () {
     //post
     Route::get('/posts', [PostController::class, 'getAllPosts']);

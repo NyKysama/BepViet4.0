@@ -4,6 +4,7 @@
     import { Mail, Lock, LogIn ,Eye, EyeOff } from 'lucide-react';
     import LoginSuccessPopup from '../../../components/users/LoginSuccessPopup';
     import { useAdminAccount } from '../../../contexts/user/adminAccountContex'; 
+import { useMyAccount } from '../../../contexts/user/MyAccountContext';
 
     export default function LoginAdmin() {
     const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +31,7 @@
 
     async function handleLogin(e) {
     e.preventDefault();
+    console.log(adminAccount);
     // // Reset lại trạng thái trước khi bắt đầu
     // setIsLogin(false); 
 

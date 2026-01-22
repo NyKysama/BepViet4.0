@@ -23,8 +23,8 @@ export default function RecipeDetail() {
         fetch(`http://127.0.0.1:8000/api/post/rating/${post_id}`)
         .then(res => res.json())
         .then(data => {
-        setMyRating(data.ratings.find(p=>p.user_id==myAccount.user_id))//sai: setMyRating(data.ratings.filter(p=>p.user_id==myAccount.user_id)) filter tra ve mang
-        console.log(data.ratings,myAccount.user_id,data.ratings.filter(p=>p.user_id==myAccount.user_id));
+        setMyRating(data.ratings.find(p=>p.user_id==myAccount?.user_id))//sai: setMyRating(data.ratings.filter(p=>p.user_id==myAccount.user_id)) filter tra ve mang
+        console.log(data.ratings,myAccount?.user_id,data.ratings.filter(p=>p.user_id==myAccount?.user_id));
         setRatings(data.ratings)});
     setIsLoading(false)
   }
@@ -45,6 +45,7 @@ export default function RecipeDetail() {
   //   alert(`Cảm ơn bạn đã đánh giá ${star} sao!`);
   // };
   //<-19/01/2026
+  
   const handleSendRating = async (score) => {
   setUserRating(score);
 
@@ -58,7 +59,7 @@ export default function RecipeDetail() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: myAccount.user_id,
+          user_id: myAccount?.user_id,
           post_id: post_id,
           score: score
         })
@@ -197,7 +198,7 @@ export default function RecipeDetail() {
             <div className="bg-orange-50/50 rounded-[32px] p-8 text-center border border-orange-100">
               <h3 className="font-black text-slate-800 mb-2 text-xl">Bạn thấy công thức này thế nào?</h3>
               <p className="text-slate-500 text-sm mb-6">Đánh giá của bạn giúp cộng đồng nấu ăn ngon hơn mỗi ngày</p>
-              <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-4">                
                 <StarRating star_value={myRating?.score} onSelect={handleSendRating} />{/* thêm 'star_value={myRating?.score}' 20/01/2026 */}
               </div>
               {userRating > 0 && (

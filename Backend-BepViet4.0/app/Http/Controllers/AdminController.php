@@ -27,7 +27,7 @@ class AdminController extends Controller
         $user=User::Where('username',$data["username"])->where('role', 'admin')->first();
 
         //Check Login
-        if(! $user || ! Hash::check($data["password"], $user->password)){
+        if(!$user || !Hash::check($data["password"], $user->password)){
             return response()->json(['message' => 'Sai ten tai khoan, mat khau hoac bạn không có quyền này',"success"=>false,], 401);
         }
     

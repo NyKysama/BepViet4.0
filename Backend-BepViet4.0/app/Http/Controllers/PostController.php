@@ -338,7 +338,7 @@ class PostController extends Controller
     public function search(Request $request)
     {
 
-        $posts = Post::when($request->searchQuery, function ($query) use ($request) {
+        $posts = Post::with('user')->when($request->searchQuery, function ($query) use ($request) {
             $query->where('title', 'LIKE', "%{$request->searchQuery}%");
         })->get();
 

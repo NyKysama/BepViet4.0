@@ -1,15 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LayoutDashboard, Users, FileText, List, Settings, LogOut, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAdminAccount } from '../../../contexts/user/adminAccountContex'; 
 
 export default function Sidebar({ isOpen, onClose }) {
-  const [activeItem, setActiveItem] = useState("Tổng quan");
+  const { adminAccount, setAdminAccount } = useAdminAccount();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Tự động xác định menu active dựa trên URL hiện tại
+  const getActiveLabel = () => {
+    if (location.pathname.includes("/admin/user")) return "Người dùng";
+    if (location.pathname.includes("/admin/post")) return "Bài viết";
+    if (location.pathname.includes("/admin/category")) return "Danh mục";
+    if (location.pathname.includes("/admin/ingredient")) return "Nguyên liệu";
+    return "Tổng quan";
+  };
 
   const handleItemClick = (label) => {
-    setActiveItem(label);
-    // Trên mobile, chọn xong thì tự đóng menu cho thoáng
-    if (window.innerWidth < 1024) onClose(); 
+    if (window.innerWidth < 1024) onClose();
+  };
+
+  // Hàm xử lý Đăng xuất
+  const handleLogout = () => {
+    if (window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+      localStorage.removeItem("admin_data"); // Xóa token/data tùy vào cách bạn lưu
+      setAdminAccount(null); // Reset context về null -> ProtectedRoute sẽ tự đẩy về /login
+      navigate("/login-admin");
+    }
   };
 
   return (
@@ -28,7 +46,7 @@ export default function Sidebar({ isOpen, onClose }) {
         lg:relative lg:translate-x-0 lg:z-40 lg:border-r
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
-        {/* Mobile Header Inside Sidebar */}
+        {/* Mobile Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b lg:hidden">
           <span className="text-xl text-green-600 font-bold">Menu Quản Lý</span>
           <button onClick={onClose} className="p-2 text-gray-400">✕</button>
@@ -36,48 +54,48 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <nav className="p-4 space-y-1">
           <Link to="/admin">
-          <NavItem 
-            icon={<LayoutDashboard size={20} />} 
-            label="Tổng quan" 
-            active={activeItem === "Tổng quan"} 
-            onClick={() => handleItemClick("Tổng quan")} 
-          />
+            <NavItem 
+              icon={<LayoutDashboard size={20} />} 
+              label="Tổng quan" 
+              active={getActiveLabel() === "Tổng quan"} 
+              onClick={() => handleItemClick("Tổng quan")} 
+            />
           </Link>
 
           <Link to="/admin/user">
-          <NavItem 
-            icon={<Users size={20} />} 
-            label="Người dùng" 
-            active={activeItem === "Người dùng"} 
-            onClick={() => handleItemClick("Người dùng")} 
-          />
+            <NavItem 
+              icon={<Users size={20} />} 
+              label="Người dùng" 
+              active={getActiveLabel() === "Người dùng"} 
+              onClick={() => handleItemClick("Người dùng")} 
+            />
           </Link>
 
           <Link to="/admin/post">
-          <NavItem 
-            icon={<FileText size={20} />} 
-            label="Bài viết" 
-            active={activeItem === "Bài viết"} 
-            onClick={() => handleItemClick("Bài viết")} 
-          />
+            <NavItem 
+              icon={<FileText size={20} />} 
+              label="Bài viết" 
+              active={getActiveLabel() === "Bài viết"} 
+              onClick={() => handleItemClick("Bài viết")} 
+            />
           </Link>
 
           <Link to="/admin/category">
-          <NavItem 
-            icon={<List size={20} />} 
-            label="Danh mục" 
-            active={activeItem === "Danh mục"} 
-            onClick={() => handleItemClick("Danh mục")} 
-          />
+            <NavItem 
+              icon={<List size={20} />} 
+              label="Danh mục" 
+              active={getActiveLabel() === "Danh mục"} 
+              onClick={() => handleItemClick("Danh mục")} 
+            />
           </Link>
 
           <Link to="/admin/ingredient">
-          <NavItem 
-            icon={<List size={20} />} 
-            label="Nguyên liệu" 
-            active={activeItem === "Nguyên liệu"} 
-            onClick={() => handleItemClick("Nguyên liệu")} 
-          />
+            <NavItem 
+              icon={<List size={20} />} 
+              label="Nguyên liệu" 
+              active={getActiveLabel() === "Nguyên liệu"} 
+              onClick={() => handleItemClick("Nguyên liệu")} 
+            />
           </Link>
 
           <div className="pt-4 pb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -87,18 +105,15 @@ export default function Sidebar({ isOpen, onClose }) {
           <NavItem 
             icon={<Settings size={20} />} 
             label="Cài đặt" 
-            active={activeItem === "Cài đặt"} 
+            active={getActiveLabel() === "Cài đặt"} 
             onClick={() => handleItemClick("Cài đặt")} 
           />
           
-          {/* Cần thêm onClick cho Đăng xuất hoặc dùng thẻ <a> / <Link> */}
           <NavItem 
             icon={<LogOut size={20} />} 
             label="Đăng xuất" 
             color="text-red-500 hover:bg-red-50" 
-            // onClick={() => {  localStorage.removeItem("user_data"); // hoặc access_token
-            // setMyAccount(null)
-            // navigate("/")}}
+            onClick={handleLogout}
           />
         </nav>
       </aside>
@@ -106,14 +121,13 @@ export default function Sidebar({ isOpen, onClose }) {
   );
 }
 
-// Đừng quên cập nhật Component NavItem để nhận prop onClick
 function NavItem({ icon, label, active, onClick, color = "text-gray-700" }) {
   return (
     <button
       onClick={onClick}
       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200
         ${active 
-          ? "bg-yellow-400 text-white shadow-md shadow-yellow-200" 
+          ? "bg-emerald-500 text-white shadow-md shadow-emerald-200" 
           : `hover:bg-gray-100 ${color}`}
       `}
     >

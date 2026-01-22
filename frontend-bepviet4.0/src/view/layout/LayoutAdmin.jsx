@@ -1,11 +1,21 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate} from "react-router-dom";
 import { useState } from "react";
 import Header from "../../components/layout/layoutadmin/Header";
 import Sidebar from "../../components/layout/layoutadmin/Sidebar"; 
 import Footer from "../../components/layout/layoutadmin/Footer";
+import { useAdminAccount } from "../../contexts/user/adminAccountContex";
 
 export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { adminAccount } = useAdminAccount();
+  const localAdmin = JSON.parse(localStorage.getItem('admin_data'));
+    const currentAdmin = adminAccount || localAdmin;
+
+    // Nếu không có tài khoản HOẶC tài khoản đó không phải là admin
+    if (!currentAdmin || currentAdmin.role !== 'admin') {
+        alert("Bạn không có quyền truy cập vào trang quản trị!");
+        return <Navigate to="/login-admin" replace />;
+    }
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 overflow-hidden font-sans text-gray-900">

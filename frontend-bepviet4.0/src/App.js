@@ -30,11 +30,9 @@ import ReportTable from './view/pages/admin/ReportTable';
 
 //import context 
 import { MyAccountProvider } from './contexts/user/MyAccountContext';
-
 import { AdminAccountProvider } from './contexts/user/adminAccountContex';
-
-
 import {ProtectedRoute} from './contexts/user/ProtectedRoute';
+import {ProtectedRouteAdmin} from './contexts/user/ProtectedRouteAdmin';
 
 function App() {
   return (
@@ -57,11 +55,10 @@ function App() {
             <Route path='/user-profile/:username/cookbook/:name' element={<CookbookDetail/>}></Route>
             <Route path='/update-blog/:id' element={<ProtectedRoute><CreateBlog /></ProtectedRoute>}></Route>
             <Route path='/food-suggestion' element={<AIFood/>}></Route>
-
           </Route>
+          <Route path='/login-admin' element={<AdminAccountProvider ><LoginAdmin/></AdminAccountProvider>}></Route>
           <Route element={<AdminAccountProvider ><LayoutAdmin /></AdminAccountProvider >}>
-            <Route path='/admin' element={<Dashboad/>}></Route>
-            <Route path='/login-admin' element={<LoginAdmin/>}></Route>
+            <Route path='/admin' element={<Dashboad/>}></Route>            
             <Route path='/admin/dashboard' element={<Dashboad/>}></Route>
             <Route path='/admin/post' element={<PostTable />}></Route>
             <Route path='/admin/pendingposts' element={<PendingPosts/>}></Route>
