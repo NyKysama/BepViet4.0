@@ -59,7 +59,6 @@ function App() {
           <Route path='/login-admin' element={<AdminAccountProvider ><LoginAdmin/></AdminAccountProvider>}></Route>
           <Route element={<AdminAccountProvider ><LayoutAdmin /></AdminAccountProvider >}>
             <Route path='/admin' element={<Dashboad/>}></Route>            
-            <Route path='/admin/dashboard' element={<Dashboad/>}></Route>
             <Route path='/admin/post' element={<PostTable />}></Route>
             <Route path='/admin/pendingposts' element={<PendingPosts/>}></Route>
             <Route path='/admin/user' element={<UserTable />}></Route>

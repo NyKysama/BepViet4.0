@@ -12,10 +12,14 @@ export default function IngredientTable() {
   const {id} = useParams();
 
   useEffect(()=>{
+    fetchIng();
+  },[]);
+
+  const fetchIng = ()=>{
     fetch('http://127.0.0.1:8000/api/ingredient')
       .then(res=>res.json())
       .then(data=>setIng(data))
-  },[])
+  };
 
   useEffect(()=>{
     if(id){
@@ -55,7 +59,8 @@ export default function IngredientTable() {
       });
 
       if (response.ok) {
-        alert(id ? "Cập nhật thành công!" : "Tạo nguyên liệu thành công!");        
+        alert(id ? "Cập nhật thành công!" : "Tạo nguyên liệu thành công!");     
+        fetchIng();   
       }
     } catch (error) {
       console.error("Lỗi:", error);
@@ -169,10 +174,7 @@ export default function IngredientTable() {
                   <div className="flex justify-end gap-2">
                     <Link to={`/admin/ingredient/${ing.ing_id}`} title="Sửa" className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                       <Edit size={16} />
-                    </Link>                    
-                    <button onClick={()=>handleDelete(ing.ing_id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
-                      <Trash2 size={16} />
-                    </button>
+                    </Link>                                    
                   </div>
                 </td>
               </tr>

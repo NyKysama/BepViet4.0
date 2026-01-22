@@ -12,10 +12,14 @@ export default function CategoryTable() {
   const {id} = useParams();
 
   useEffect(()=>{
+    fetchCate();
+  },[])
+
+  const fetchCate = ()=>{
     fetch('http://127.0.0.1:8000/api/category')
       .then(res=>res.json())
       .then(data=>setCategory(data))
-  },[])
+  };
 
   useEffect(()=>{
     if(id){
@@ -56,7 +60,7 @@ export default function CategoryTable() {
 
       if (response.ok) {
         alert(id ? "Cập nhật thành công!" : "Tạo danh mục thành công!");
-        navigate('/admin/category'); // Chuyển hướng sau khi xong
+        fetchCate();
       }
     } catch (error) {
       console.error("Lỗi:", error);
@@ -177,10 +181,7 @@ export default function CategoryTable() {
                     {/* Quyền Sửa */}
                     <Link to={`/admin/category/${cat.category_id}`} title="Sửa tên" className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                       <Edit size={16} />
-                    </Link>                  
-                    <button onClick={()=>handleDelete(cat.category_id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
-                      <Trash2 size={16} />
-                    </button>
+                    </Link>
                   </div>
                 </td>
               </tr>

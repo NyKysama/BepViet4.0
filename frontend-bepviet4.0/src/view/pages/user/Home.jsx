@@ -15,9 +15,9 @@ export default function Home() {
         cook_time: "",
     });
     const {myAccount} = useMyAccount();
-    const pageRef = useRef(1);
-    const isFetchingRef = useRef(false);
-    const [seed] = useState(Math.floor(Math.random() * 1000000));
+    const pageRef = useRef(1); //cố định page để tránh load lại trang 
+    const isFetchingRef = useRef(false); // dùng để khóa trang tránh bị nhảy page
+    const [seed] = useState(Math.floor(Math.random() * 1000000)); // số ngẫu nhiên đc tạo để gán bài post
 
     // Hàm xử lý tìm kiếm
     const handleSearch = async(e) => {
@@ -104,8 +104,8 @@ export default function Home() {
 
             if (data.data && data.data.length > 0) {
                 setPosts(prev => {
-                    const existingIds = new Set(prev.map(p => p.post_id));
-                    const uniqueNewPosts = data.data.filter(p => !existingIds.has(p.post_id));
+                    const existingIds = new Set(prev.map(p => p.post_id)); // lấy ds đã có trong state 
+                    const uniqueNewPosts = data.data.filter(p => !existingIds.has(p.post_id)); // lọc ra dựa trên các post ms 
                     return [...prev, ...uniqueNewPosts];
                 });
 
@@ -125,21 +125,21 @@ export default function Home() {
         }
     }, [seed, hasMore, myAccount]);
 
-    const observer = useRef();
-    const lastPostElementRef = useCallback(node => {
+    const observer = useRef(); // tránh việc load lại trang khi xem
+    const lastPostElementRef = useCallback(node => { // đánh dấu post cuối cùng để hệ thống bx 
         if (isLoading) return;
         if (observer.current) observer.current.disconnect();
 
-        observer.current = new IntersectionObserver(entries => {
+        observer.current = new IntersectionObserver(entries => { //xem người đùng đã tới post đc đánh dấu hay ch
             if (entries[0].isIntersecting && hasMore) {
-                fetchPosts();
+                fetchPosts(); // lấy thêm dl 
             }
         }, {
             threshold: 0.5,
             rootMargin: '200px'
         });
 
-        if (node) observer.current.observe(node);
+        if (node) observer.current.observe(node); 
     }, [isLoading, hasMore, fetchPosts]);
 
     useEffect(() => {

@@ -89,5 +89,7 @@ Route::post('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds'
 //AI
 Route::get('/test-ai',[AIController::class,"chatBot"]);
 Route::post('/test-ai',[AIController::class,"chatBot1"]);
+// report
+Route::post('/report', [ReportController::class, 'create']);
 
 

@@ -63,7 +63,7 @@ class DashboardController extends Controller
         //Trả về câu SQL tương ứng với filter
         return match ($filter) {
             'day'   => "DATE_FORMAT(created_at, '%d-%m-%Y') as label",
-            'week'  => "YEARWEEK(created_at, '%d-%m) as label",
+            'week' => "DATE_FORMAT(DATE_SUB(created_at, INTERVAL WEEKDAY(created_at) DAY), '%d-%m') as label",
             default => "DATE_FORMAT(created_at, '%m-%Y') as label", // month
         };
     }

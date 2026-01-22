@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, Users, FileText, List, Settings, LogOut, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, FileText, List, Settings, LogOut, ChevronRight, ChefHat } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAdminAccount } from '../../../contexts/user/adminAccountContex'; 
 
@@ -91,7 +91,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
           <Link to="/admin/ingredient">
             <NavItem 
-              icon={<List size={20} />} 
+              icon={<ChefHat size={20} />} 
               label="Nguyên liệu" 
               active={getActiveLabel() === "Nguyên liệu"} 
               onClick={() => handleItemClick("Nguyên liệu")} 

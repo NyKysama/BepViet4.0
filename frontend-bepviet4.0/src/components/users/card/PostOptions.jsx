@@ -1,9 +1,12 @@
-import { MoreHorizontal, Heart, Bookmark, EyeOff, Edit3, Trash2, Pin, Info, } from 'lucide-react';
+import { MoreHorizontal, Bookmark, Flag, Edit3, Trash2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import {  useNavigate } from "react-router-dom";
+import { useMyAccount} from '../../../contexts/user/MyAccountContext';
 
 export default function PostOptions({ post, isOwner, onAction }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [report, setReport] = useState({});
+  const {myAccount} = useMyAccount();
   const menuRef = useRef(null); // Dùng để bắt sự kiện click ra ngoài thì đóng menu
   const navigate = useNavigate();
 
@@ -17,6 +20,35 @@ export default function PostOptions({ post, isOwner, onAction }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuRef]);
+
+    const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+  
+    if (!myAccount) {
+      alert("Vui lòng đăng nhập để báo cáo!");
+      return;
+    }
+
+    try {
+      // Nếu có replyingTo thì dùng ID của nó làm parent_id
+      const response = await fetch(`http://127.0.0.1:8000/api/report`, {
+        method: 'POST',
+        headers: { 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ post_id: post.post_id,
+                               user_id: myAccount.user_id })// truyền dl sang server
+      });
+      const result = await response.json();
+      // khi mà api đã có và hoạt động thì ms gửi dl đi
+      if (response.ok) {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+    }
+  };
 
   return (
     <div className="relative" ref={menuRef}>
@@ -36,28 +68,18 @@ export default function PostOptions({ post, isOwner, onAction }) {
           <div className="p-1 border-b border-slate-50">
             {/* kiểm tra chủ bài viết */}
             {isOwner ? (
-              <>
-                <button onClick={() => { onAction('pin'); setIsOpen(false); }} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-slate-700 font-semibold hover:bg-slate-50">
-                  <Pin className="mr-3 h-4 w-4 text-slate-500" /> Ghim bài viết
-                </button>
+              <>                
                 <button onClick={() => {navigate(`/update-blog/${post.post_id}`)}} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-slate-700 font-semibold hover:bg-slate-50">
                   <Edit3 className="mr-3 h-4 w-4 text-blue-500" /> Chỉnh sửa bài viết
                 </button>
               </>
             ) : (
-              <>
-                <button onClick={() => { onAction('interest'); setIsOpen(false); }} className="flex w-full items-start rounded-xl px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 text-left">
-                  <Heart className="mr-3 h-5 w-5 text-rose-500 mt-0.5" /> 
+              <>                
+                <button onClick={(e) => { handleSubmit(e); setIsOpen(false); }} className="flex w-full items-start rounded-xl px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 text-left">
+                  <Flag className="mr-3 h-5 w-5 text-slate-500 mt-0.5" /> 
                   <div>
-                    <p className="font-bold">Quan tâm</p>
-                    <p className="text-[11px] text-slate-400 font-normal leading-tight">Gợi ý nhiều bài viết tương tự hơn.</p>
-                  </div>
-                </button>
-                <button onClick={() => { onAction('not-interest'); setIsOpen(false); }} className="flex w-full items-start rounded-xl px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 text-left">
-                  <EyeOff className="mr-3 h-5 w-5 text-slate-500 mt-0.5" /> 
-                  <div>
-                    <p className="font-bold">Không quan tâm</p>
-                    <p className="text-[11px] text-slate-400 font-normal leading-tight">Ẩn bài viết này khỏi Newsfeed.</p>
+                    <p className="font-bold">Báo cáo</p>
+                    <p className="text-[11px] text-slate-400 font-normal leading-tight">Báo cáo bài viết này.</p>
                   </div>
                 </button>
               </>

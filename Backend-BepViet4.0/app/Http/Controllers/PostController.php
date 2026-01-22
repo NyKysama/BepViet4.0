@@ -216,9 +216,10 @@ class PostController extends Controller
     public function getNewsFeeds(Request $request)
     {
         $userId = $request->user_id; // lấy id người đang dn
-        $seed = $request->seed ?? rand(1, 999999);// dùng để cố định bài post trong trang page 
-        $sevenDaysAgo = now()->subDays(7)->toDateTimeString();// điều kiện trong 3 ngày 
+        $seed = $request->seed ?? rand(1, 999999);// dùng để cố định bài post trong trang page tránh bị lập 
+        $sevenDaysAgo = now()->subDays(3)->toDateTimeString();// điều kiện trong 3 ngày 
 
+        // nếu user ch đăng nhập => id = null thì chỉ random các bài post 
         if ($userId == null) {
             $posts = Post::with('user')->where('status', 1)
                 ->inRandomOrder($seed)
@@ -228,20 +229,22 @@ class PostController extends Controller
 
         // 1. Lấy danh sách ID người đang follow
         $followingIds = DB::table('follows')
-            ->where('follower_id', $userId)
-            ->pluck('following_id')
-            ->toArray();
+            ->where('follower_id', $userId)// vs đk id = người fl
+            ->pluck('following_id') // lấy hết những người đang fl
+            ->toArray(); // tạo thành 1 mảng 
+        // kiểm tra xem có ai hay ko
         $followingIdsString = !empty($followingIds) ? implode(',', $followingIds) : '0';
 
         // 2. Truy vấn nếu id user có trong mảng sẻ lấy hết bài post của user đó sau đó lại lấy số bài post của ng ch follow 
         $posts = Post::with('user')->where('status', 1)->orderByRaw("
             CASE 
-                WHEN user_id IN ($followingIdsString) AND created_at >= ? THEN 1 
+                WHEN user_id IN ($followingIdsString) AND created_at >= ? THEN 1  
                 WHEN user_id NOT IN ($followingIdsString) AND created_at >= ? THEN 2 
                 ELSE 3 
             END ASC", [$sevenDaysAgo, $sevenDaysAgo])
+            // phân tách độ ưu tiên: loại 1 lấy những bài của người đang fl và trong vào 7 ngày; loại 2 lấy post trong vào 7 ngày 
             ->orderByRaw("RAND(?)", [$seed]) // Giữ nguyên Seed để cố định vị trí khi phân trang
-            ->simplePaginate(10);
+            ->simplePaginate(10);// số post trong 1 page
 
         return response()->json($posts);
     }
