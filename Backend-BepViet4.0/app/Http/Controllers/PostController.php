@@ -24,6 +24,7 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    //lấy ds post ch đc duyệt 
     public static function pendingPost()
     {
         $posts = Post::pendingPosts();
@@ -40,6 +41,7 @@ class PostController extends Controller
         ]);
     }
 
+    // hàm tải ảnh 
     public function uploadImg(Request $request)
     {
         //nếu có file ảnh đc gửi lên
@@ -77,22 +79,27 @@ class PostController extends Controller
         ]);
     }
 
+    // hàm lấy dl của id blog đưa lên form 
     public function editBlog($id)
     {
+        // lấy blog cùng id, kết vs bảng 
         $post = Post::with('categories')->where('type', 'Blog')->find($id);
         return response()->json($post);
     }
 
+    // lấy blog cùng id, kết hợp kết bảng user và nguyên liệu để hiển thị 
     public function blogDetail($id)
     {
         $post = Post::with('categories', 'user')->where('type', 'Blog')->find($id);
         return response()->json($post);
     }
 
+    // hàm chi tiết công thức  
     public function recipeDetail($id)
     {
+        // lấy công thức cùng id, kết hợp kết bảng user và nguyên liệu để hiển thị 
         $post = Post::with('user', 'ingredients')->where('type', 'Công thức')->find($id);
-        $steps = Step::getStepByPostID($id);
+        $steps = Step::getStepByPostID($id); // lấy ds các bước cùng id 
         
         return response()->json([
             'post' => $post,
@@ -127,6 +134,7 @@ class PostController extends Controller
         return response()->json(['message' => 'Cập nhật thành công']);
     }
 
+    // hàm xóa dl có id = id (chỉ xóa mềm)
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
@@ -134,6 +142,7 @@ class PostController extends Controller
         return response()->json(['message' => 'Đã ẩn thành công']);
     }
 
+    // lấy dl dl bị xóa 
     public function getTrash()
     {
         // CHỈ lấy những bài đã bị xóa mềm
@@ -141,6 +150,7 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    // khôi phục dl bị xóa
     public function restore($id)
     {
         // Tìm bài viết TRONG CẢ những bài đã xóa mềm
@@ -162,12 +172,15 @@ class PostController extends Controller
             'description' => 'required',
             'category_id' => 'nullable|string',
             'img' => 'nullable|image|max:2048',
+            
         ], [
             'title.required' => 'Tiêu đề không được để trống',
             'description.required' => 'Nội dung không được để trống',
         ]);
         // Upload ảnh
-        $imgPath = $this->uploadImg($request);
+        if ($request->hasFile('img'))
+            $imgPath = $this->uploadImg($request);
+        else $imgPath=null;
         // Tạo blog
         $post = Post::create([
             'title' => $request->title,
@@ -201,7 +214,7 @@ class PostController extends Controller
     //hiện ds post trên trang chủ
     public function getNewsFeeds(Request $request)
     {
-        $userId = Auth::id(); // lấy id người đang dn
+        $userId = $request->user_id; // lấy id người đang dn
         $seed = $request->seed ?? rand(1, 999999);// dùng để cố định bài post trong trang page 
         $sevenDaysAgo = now()->subDays(7)->toDateTimeString();// điều kiện trong 3 ngày 
 

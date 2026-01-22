@@ -12,6 +12,7 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CookbookController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\AIController;
 
 Route::get('/users', function (Request $request) {
     return response()->json(["message"=>"Lấy danh sách người dùng thành công",
@@ -78,6 +79,8 @@ Route::get("/cookbook/{username}/{name}",[CookbookController::class,"getCookbook
 Route::post("/cookbook/{cookbook_id}/detatch/{post_id}",[CookbookController::class,"detachCoobook_Post"])->name("cookbook.detatch.post");
 Route::post("/coobook/update/{cookbook_id}",[CookbookController::class,"updateCookbook"])->name("cookbook.update");
 //post
-Route::get('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds']);
+Route::post('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds']);
+//AI
+Route::get('/test-ai',[AIController::class,"chatBot"]);
 
 
