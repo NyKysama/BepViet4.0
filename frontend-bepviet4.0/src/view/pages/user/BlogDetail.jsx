@@ -1,10 +1,11 @@
 import { ChevronLeft } from 'lucide-react';
 import CommentSection from '../../../components/users/CommentSection';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 export default function BlogDetail() {
     const [blog, setBlog] = useState({});
     const {id} = useParams();
+    const navigate=useNavigate()
     useEffect(() =>{ 
       fetch(`http://127.0.0.1:8000/api/blog-detail/${id}`)
         .then(res => res.json())
@@ -15,7 +16,7 @@ export default function BlogDetail() {
             <div className="relative h-[400px] w-full">
                 <img src={`http://127.0.0.1:8000/${blog.img}`} className="w-full h-full object-cover" alt={blog.title} />
                 <div className="absolute inset-0 bg-black/20" />
-                <button className="absolute top-6 left-6 bg-white/90 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
+                <button onClick={() => navigate(-1)} className="absolute top-6 left-6 bg-white/90 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
                     <ChevronLeft size={24} />
                 </button>
             </div>

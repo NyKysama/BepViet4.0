@@ -89,7 +89,7 @@ export default function RecipeDetail() {
       <div className="relative h-[400px] w-full">
         <img src={recipe.post?.img} className="w-full h-full object-cover" alt={recipe.post?.title} />
         <div className="absolute inset-0 bg-black/20" />
-        <button className="absolute top-6 left-6 bg-white/90 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
+        <button onClick={() => navigate(-1)} className="absolute top-6 left-6 bg-white/90 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
           <ChevronLeft size={24} />
         </button>
       </div>
