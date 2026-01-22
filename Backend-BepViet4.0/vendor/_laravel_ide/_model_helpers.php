@@ -1952,13 +1952,13 @@ namespace App\Models {
    * @property \Illuminate\Support\Carbon|null $created_at
    * @property string|null $img
    * @property string|null $content
-   * @property mixed $steps
+   * @property mixed $step
    * @property mixed $post_id
    * @property int $step_id
    * @property-read \App\Models\Post $post
    * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step whereStepId($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step wherePostId($value)
-   * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step whereSteps($value)
+   * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step whereStep($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step whereContent($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step whereImg($value)
    * @method static \Illuminate\Database\Eloquent\Builder<Step>|Step whereCreatedAt($value)
