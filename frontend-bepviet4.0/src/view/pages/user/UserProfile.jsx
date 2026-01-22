@@ -36,7 +36,7 @@ export default function UserProfile() {
       }
       setUser_Info(myAccount)
       setCookbooks(myAccount.cookbooks)
-      setRecipes(myAccount.posts.filter(p => p.type == "Công thức"))
+      setRecipes(myAccount.posts.filter(p => p.type == "Công thức"))  
       setBlogs(myAccount.posts.filter(p => p.type == "Blog"))
       setIsLoading(false)
       return
@@ -165,7 +165,7 @@ export default function UserProfile() {
   return (
     <div className="min-h-screen bg-gray-100 mt-2">
       {/* Profile summary section oke */}
-      <ProfileSumary user={user_info} setMyAccount={setMyAccount} isMyAccount={username && myAccount?.username != username ? false : true}></ProfileSumary>
+      <ProfileSumary user={user_info} setUser_Info={setUser_Info} setMyAccount={setMyAccount} isMyAccount={username && myAccount?.username != username ? false : true}></ProfileSumary>
 
       {/* Cookbooks Section */}
       <div className="bg-white mt-4 py-6 rounded-xl">
@@ -407,7 +407,7 @@ export default function UserProfile() {
                 {recipes.map((recipe) => (
                   <>
                   <div key={recipe.post_id}>
-                    <PostCard post={recipe} card_data={recipe}></PostCard>
+                    <PostCard post={{...recipe,user:user_info}} card_data={recipe}></PostCard>
                   </div>
                   </>
                 ))}
@@ -419,7 +419,7 @@ export default function UserProfile() {
                 {blogs.map((blog) => (
                   <>
                   <div key={blog.post_id}>
-                    <PostCard post={blog} card_data={blog}></PostCard>
+                    <PostCard post={{...blog,user:user_info}} card_data={blog}></PostCard>
                   </div>
                   </>
                 ))}

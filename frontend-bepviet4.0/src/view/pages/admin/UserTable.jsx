@@ -1,45 +1,68 @@
-import {React,useState} from 'react';
-import { X,Search, UserPlus, Edit, Lock, Trash2, Shield, Calendar, Phone, Mail } from 'lucide-react';
-import { Link} from 'react-router-dom';
+import {React,useEffect,useState} from 'react';
+import { X,Search, UserPlus, Edit, Lock, Trash2, Shield, Calendar, Phone, Mail, Unlock } from 'lucide-react';
+import { data, Link} from 'react-router-dom';
+import LoadingPage from '../../../components/users/LoadingPage';
 
 export default function UserTable() {
-    const mockUsers = [
-  {
-    user_id: "U001",
-    name: "Nguyễn Văn A", //
-    avatar: "https://i.pravatar.cc/150?u=u001",
-    username: "van_a_chef",
-    password: "hashed_password_123",
-    birthday: "1998-05-20",
-    sex: "Nam",
-    phone: "0901234567",
-    gmail: "vana@bepviet.vn",
-    role: "Admin",
-    slug: "nguyen-van-a",
-    status: "Active"
-  },
-  {
-    user_id: "U002",
-    name: "Trần Van A", //
-    avatar: "https://i.pravatar.cc/150?u=u002",
-    username: "tran_a",
-    password: "hashed_password_456",
-    birthday: "2002-11-15",
-    sex: "Nam",
-    phone: "0987654321",
-    gmail: "tran@gmail.com",
-    role: "User",
-    slug: "tran-van-a",
-    status: "Active"
-  }
-];
-
+  const [users,setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredUsers =  mockUsers.filter(cat =>
-    cat.user_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cat.name.toLowerCase().includes(searchTerm.toLowerCase())||
-    cat.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers =  users.filter(u => {
+      if (!searchTerm.trim()) return true;
+
+      const key = searchTerm.toLowerCase();
+
+      return (
+        String(u.user_id) === key || // tìm chính xác ID
+        u.name?.toLowerCase().includes(key) ||
+        u.username?.toLowerCase().includes(key)||
+        u.slug?.toLowerCase().includes(key)
+      )
+    }
+  )
+  useEffect(()=>{
+    async function fetchUser(){
+      try {
+        const res=await fetch("http://127.0.0.1:8000/api/users")
+        const data=await res.json()
+        if(!res.ok){
+          return
+        }
+        setUsers(data.users)
+        console.log(data)
+        setIsLoading(false)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchUser()
+  },[])
+
+  async function handleBlock(user_id){
+    try {
+      const res=await fetch("http://127.0.0.1:8000/api/user/block",{
+        method:"POST",
+        headers:{
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body:JSON.stringify({
+          user_id:user_id
+        })
+      })
+      const data=await res.json()
+      if(!res.ok){
+        return
+      }
+      setUsers(prev=>(prev.map(u=>u.user_id==user_id?{...u,status:data.user.status}:u)))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  if (isLoading) {
+    return (<LoadingPage></LoadingPage>)
+  }
   return (
     <div className="p-6 bg-white rounded-[32px] border border-slate-100 shadow-2xl">
       <div className="flex justify-between items-center mb-6">
@@ -98,8 +121,8 @@ export default function UserTable() {
                 <td className="py-4 px-2">
                   <div className="flex items-center gap-3">
                     <span className="text-[10px] font-mono text-slate-400 bg-slate-100 p-1 rounded">{u.user_id}</span>
-                    <Link to={`/admin/user-detail/${u.user_id}`}>
-                      <img src={u.avatar} className="w-10 h-10 rounded-full border-2 border-emerald-500/20" alt="" />
+                    <Link to={`/admin/user/${u.user_id}`}>
+                      <img src={"http://127.0.0.1:8000/"+u.avatar} className="w-10 h-10 rounded-full border-2 border-emerald-500/20" alt="" />
                     </Link>
                   </div>
                 </td>
@@ -139,7 +162,7 @@ export default function UserTable() {
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded border ${
                     u.status === 'Active' ? 'border-emerald-500 text-emerald-600' : 'border-red-500 text-red-600'
                   }`}>
-                    {u.status.toUpperCase()}
+                    {u.status}
                   </span>
                 </td>
 
@@ -147,7 +170,10 @@ export default function UserTable() {
                 <td className="py-4 px-2">
                   <div className="flex justify-end gap-1.5">
                     <button className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg"><Edit size={16}/></button>
-                    <button className="p-2 hover:bg-amber-50 text-amber-500 rounded-lg"><Lock size={16}/></button>
+                    <button className="p-2 hover:bg-amber-50 text-amber-500 rounded-lg"
+                    onClick={()=>handleBlock(u.user_id)}
+                    >
+                      {u.status==1 ? <Lock size={16}/>:<Unlock size={16}/>}</button>
                     <button className="p-2 hover:bg-red-50 text-red-500 rounded-lg"><Trash2 size={16}/></button>
                   </div>
                 </td>

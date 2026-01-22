@@ -10,7 +10,7 @@ class CommentController extends Controller
 {
     public function getCommentByPost($id)
     {
-        $comment = Comment::with(['user', 'replies.user', 'replies.replies'])->where('post_id', $id)->where('parent_id', null)->get();
+        $comment = Comment::with(['user', 'replies.user', 'replies.replies.user'])->where('post_id', $id)->where('parent_id', null)->get();
         return response()->json($comment);
     }
 
@@ -19,13 +19,9 @@ class CommentController extends Controller
         $validate = $request->validate([
             'content' => 'required|string',
         ]);
-        // 1. Kiểm tra Token/Đăng nhập
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Bạn chưa đăng nhập!'], 401);
-        }
         Comment::create([
             'content' => $request->input('content'),
-            'user_id' => Auth::id(),
+            'user_id' => $request->user_id,
             'post_id' => $post,
             'parent_id' => $id
         ]);

@@ -4,7 +4,7 @@ import {
     User, Shield, MapPin, CheckCircle, Clock, BookOpen, Save,
 } from 'lucide-react';
 import { useMyAccount } from '../../../contexts/user/MyAccountContext';
-import { data } from 'react-router-dom';
+import { data,Link } from 'react-router-dom';
 
 export default function UserInfo() {
     //khai bao bien
@@ -52,9 +52,9 @@ export default function UserInfo() {
     return (
         <div className="p-8 bg-[#F8FAFC] min-h-screen">
             {/* Thanh điều hướng quay lại */}
-            <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all mb-6 font-medium">
-                <ArrowLeft size={20} /> Quay lại danh sách
-            </button>
+            <Link to="/user-profile/my-account" className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all mb-6 font-medium">
+                <ArrowLeft size={20} /> Quay lại trang cá nhân
+            </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -62,7 +62,7 @@ export default function UserInfo() {
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 text-center">
                         <div className="relative inline-block">
-                            <img src={myAccount?.avatar_url} className="w-32 h-32 rounded-full border-4 border-emerald-50 mx-auto object-cover" alt="" />
+                            <img src={"http://127.0.0.1:8000/"+myAccount?.avatar} className="w-32 h-32 rounded-full border-4 border-emerald-50 mx-auto object-cover" alt="" />
                             <div className="absolute bottom-1 right-1 bg-emerald-500 border-4 border-white w-6 h-6 rounded-full"></div>
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800 mt-4">{myAccount?.name}</h2>
