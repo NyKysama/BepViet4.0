@@ -76,7 +76,11 @@ class Post extends Model
     // Quan hệ N-N với Ingredient
     public function ingredients()
     {
-        return $this->belongsToMany(Ingredient::class, 'recipe_ingredient', 'post_id', 'ing_id')
+        return $this->belongsToMany(
+          Ingredient::class, 
+          'recipe_ingredient', 
+          'post_id', 
+          'ing_id')
             ->withPivot('amount', 'unit');
     }
 

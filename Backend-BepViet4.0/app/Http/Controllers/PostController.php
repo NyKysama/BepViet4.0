@@ -10,7 +10,8 @@ use App\Models\Post;
 use App\Models\Step;
 use App\Models\User;
 use Laravel\Pail\ValueObjects\Origin\Console;
-use DB;
+
+use Illuminate\Support\Facades\DB;
 
 
 class PostController extends Controller
@@ -186,7 +187,7 @@ class PostController extends Controller
             'description' => $request->description,
             'img' => $imgPath,
             'type' => 'Blog',
-            'user_id' => $request->user_id,
+            'user_id' => 6, // USER ĐANG ĐĂNG NHẬP
             'slug' => Str::slug($request->title),
             'status' => 0,
         ]);
@@ -261,86 +262,73 @@ class PostController extends Controller
 
     //hàm tạo công thức
     public function createRecipe(Request $request){
-       return response()->json([
-        'success' => true,
-        'message' => 'Backend đã nhận được dữ liệu',
-        'data' => $request->all(),
-        'files' => $request->file()
-    ], 200);
+      //1. Luu anh cua cong thuc
+      $postImg = null;
+        if ($request->hasFile('img')) {
+            $file = $request->file('img');
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $file->move(public_path('images'), $fileName);
+            $postImg = 'images/'.$fileName;
+        }
+      //2. tao cong thuc
+       $post = Post::create([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'img'         => $postImg,
+            'type'        => $request->type,
+            'cook_time'   => (int) $request->cook_time,
+            'difficulty'  => $request->difficulty,
+            'region'      => $request->region,
+            'status'      => (int) $request->status,
+            'user_id'     => 1, // tạm
+            'slug'        => Str::slug($request->title),
+        ]);
+        //3. luu steps
+        $steps = json_decode($request->input('steps'), true);
+        foreach ($steps as $index => $step) {
 
-    //     $validate = $request->validate([
-    //         'title' => 'required|max:150',
-    //         'description' => 'required',
-    //         'category_ids' => 'nullable|array',
-    //         'img' => 'nullable|image|max:2048',
-    //         'steps' => 'required|array',
-    //         'ingredients' => 'required|array',
-    //         'cook_time' => 'nullable|integer',
-    //         'difficulty'=> 'nullable|string',
-    //         'region'=> 'nullable|string',
-    //     ]);
-    //     // 2. Dùng Transaction để đảm bảo an toàn dữ liệu
-    // return DB::transaction(function () use ($request) {
-    //     $img = $this->uploadImg($request);
-    //     // A. Tạo bài viết gốc (Post)
-    //     $recipe = Post::create([
-    //         'title'       => $request->title,
-    //         'description' => $request->description,
-    //         'type'        => 'Recipe',
-    //         'cook_time'   => $request->cook_time,
-    //         'difficulty'  => $request->difficulty,
-    //         'region'      => $request->region,
-    //         'user_id'     => auth()->id(),
-    //         'slug'        => Str::slug($request->title) . '-' . uniqid(),
-    //         'img'         => $img,
-    //         'status'      => 0,
-    //     ]);
+            $stepImgPath = null;
+            //luu anh tung buoc
+            if ($request->hasFile("step_imgs.$index")) {
+                $file = $request->file("step_imgs.$index");
+                $fileName = time().'_'.$file->getClientOriginalName();
+                $file->move(public_path('images'), $fileName);
+                $stepImgPath = 'images/'.$fileName;
+            }
 
-    //     // B. Lưu các bước (Steps)
-    //     foreach ($request->steps as $index => $item) {
-    //         $stepImgPath = null;
-
-    //         // Kiểm tra xem tại vị trí index này có file ảnh được upload lên không
-    //         if ($request->hasFile("steps.$index.img")) {
-    //             $file = $request->file("steps.$index.img");
-    //             $destinationPath = public_path('images'); // đi đến thư mục lưu trữ ảnh
-    //             $originalName = $file->getClientOriginalName(); // Lấy tên gốc của file
-    //             $pathForDB = $destinationPath . '/' . $originalName;
-    //             // 2. KIỂM TRA: Nếu file CHƯA TỒN TẠI thì mới tạo/di chuyển vào
-    //             if (file_exists($pathForDB)) {
-    //                 file($pathForDB);
-    //             }
-    //             // Tạo tên file duy nhất: 2024_01_14_65a3b_slug.png
-    //             $avatarName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-    //             // 2. Di chuyển file thẳng vào thư mục public/images của dự án
-    //             $file->move(public_path('images'), $avatarName);
-    //             $stepImgPath = 'images/' . $avatarName;
-    //         }
-    //         $recipe->steps()->create([
-    //             'steps' => $item['step'],
-    //             'content'     => $item['content'],
-    //             'img' => $stepImgPath,                
-    //         ]);
-    //     }
-
-    //     // C. Lưu nguyên liệu (Ingredients)
-    //     foreach ($request->ingredients as $item) {
-    //         // Giả sử quan hệ là $recipe->ingredients()
-    //         $recipe->ingredients()->create([
-    //             'name'   => $item['name'],
-    //             'amount' => $item['amount']
-    //         ]);
-    //     }
-
-    //     // D. Gắn danh mục (Categories) - Quan hệ N-N
-    //     $recipe->categories()->sync($request->category_ids);
-
-    //     return response()->json([
-    //         'message' => 'Đã đăng công thức thành công!',
-    //         'id'      => $recipe->id
-    //     ], 201);
-    // });
-
+            Step::create([
+                'post_id' => $post->post_id,
+                'step'    => (int)$step['step'],
+                'content' => $step['content'],
+                'img'     => $stepImgPath,
+            ]);
+        }
+        //4. luu category
+        $categoryIdsStr = $request->input('category_ids');
+        $categoryIds =array_map('intval',explode(",",$categoryIdsStr));
+        $post->categories()->sync($categoryIds);
+        //5. luu ingredient
+        // $ingredients= $request->input('ingredients');
+        $rawIngredients = json_decode($request->input('ingredients'), true);
+        $syncData =[];
+        foreach ($rawIngredients as $item) {
+           
+                $syncData[(int)$item['ing_id']] = [
+                    'amount' => (float) ($item['amount'] ?? 0),
+                    'unit'   => $item['unit'] ?? null,
+                ];
+            }
+        $post->ingredients()->sync($syncData);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Tạo công thức thành công, công thức của bạn sẽ sớm được duyệt',
+            'post' => $post,
+            "steps"=>$steps,
+            "all"=>$request->all(),
+            "categories"=>$categoryIds,
+            "ingredient"=>$rawIngredients,
+        ], 200);
     }
 
 
