@@ -161,19 +161,22 @@ class PostController extends Controller
             'description' => 'required',
             'category_id' => 'nullable|string',
             'img' => 'nullable|image|max:2048',
+            
         ], [
             'title.required' => 'Tiêu đề không được để trống',
             'description.required' => 'Nội dung không được để trống',
         ]);
         // Upload ảnh
-        $imgPath = $this->uploadImg($request);
+        if ($request->hasFile('img'))
+            $imgPath = $this->uploadImg($request);
+        else $imgPath=null;
         // Tạo blog
         $post = Post::create([
             'title' => $request->title,
             'description' => $request->description,
             'img' => $imgPath,
             'type' => 'Blog',
-            'user_id' => auth()->id(), // USER ĐANG ĐĂNG NHẬP
+            'user_id' => $request->user_id,
             'slug' => Str::slug($request->title),
             'status' => 0,
         ]);
