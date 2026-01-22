@@ -42,7 +42,7 @@ class AIController extends Controller
         }
         ';
         $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . "bo key vao de test ko commit key",
+        'Authorization' => 'Bearer ' . "bo key vao de test ko commit key",//test xong Ctrl z lai
         'Content-Type' => 'application/json',
     ])->post('https://api.openai.com/v1/chat/completions', [
         'model' => 'gpt-4o-mini',

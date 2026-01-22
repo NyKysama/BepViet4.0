@@ -14,6 +14,8 @@ import BlogDetail from './view/pages/user/BlogDetail';
 import UserProfile from "./view/pages/user/UserProfile"
 import UserInfo from './view/pages/user/UserInfo';
 import CookbookDetail from "./view/pages/user/CookbookDetail";
+import AISuggestions from './components/layout/layoutuser/AISuggestions';
+import AIFood from './view/pages/user/AIFood';
 //admin pages
 import PostTable from './view/pages/admin/PostTable';
 import Dashboad from './view/pages/admin/Dashboad';
@@ -46,6 +48,7 @@ function App() {
             <Route path='/my-info' element={<UserInfo/>}></Route>
             <Route path='/user-profile/:username/cookbook/:name' element={<CookbookDetail/>}></Route>
             <Route path='/update-blog/:id' element={<CreateBlog />}></Route>
+            <Route path='/food-suggestion' element={<AIFood/>}></Route>
           </Route>
           <Route element={<LayoutAdmin />}>
             <Route path='/admin' element={<Dashboad/>}></Route>
