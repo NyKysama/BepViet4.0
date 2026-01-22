@@ -182,7 +182,7 @@ export default function Home() {
                         value={filters.region}
                         onChange={e => setFilters({...filters, region: e.target.value})}
                     >
-                        <option value="">Vùng miền</option>
+                        <option hidden selected value="">Vùng miền</option>
                         <option value="bac">Miền Bắc</option>
                         <option value="trung">Miền Trung</option>
                         <option value="nam">Miền Nam</option>
@@ -193,7 +193,7 @@ export default function Home() {
                         value={filters.difficulty}
                         onChange={e => setFilters({...filters, difficulty: e.target.value})}
                     >
-                        <option value="">Độ khó</option>
+                        <option hidden selected value="">Độ khó</option>
                         <option value="de">Dễ</option>
                         <option value="trungbinh">Trung bình</option>
                         <option value="kho">Khó</option>
@@ -204,7 +204,7 @@ export default function Home() {
                         value={filters.cook_time}
                         onChange={e => setFilters({...filters, cook_time: e.target.value})}
                     >
-                        <option value="">Thời gian</option>
+                        <option hidden selected value="">Thời gian</option>
                         <option value="15">Dưới 15 phút</option>
                         <option value="30">Dưới 30 phút</option>
                         <option value="60">Dưới 60 phút</option>

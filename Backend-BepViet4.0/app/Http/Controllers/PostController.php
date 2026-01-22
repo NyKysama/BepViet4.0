@@ -351,15 +351,15 @@ class PostController extends Controller
 
         //Search theo tiêu đề
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->searchQuery . '%');
+            $query->with('user')->where('title', 'like', '%' . $request->searchQuery . '%');
         }
         //Vùng miền
         if ($request->filled('region')) {
-            $query->where('region', $request->region);
+            $query->with('user')->where('region', $request->region);
         }
         //Độ khó
         if ($request->filled('difficulty')) {
-            $query->where('difficulty', $request->difficulty);
+            $query->with('user')->where('difficulty', $request->difficulty);
         }
         //Thời gian nấu (<= phút)
         if ($request->filled('cook_time')) {
@@ -367,10 +367,10 @@ class PostController extends Controller
 
             if ($time === 61) {
                 // Trên 60 phút
-                $query->where('cook_time', '>', 60);
+                $query->with('user')->where('cook_time', '>', 60);
             } else {
                 // Dưới 15, 30, 60 phút
-                $query->where('cook_time', '<=', $time);
+                $query->with('user')->where('cook_time', '<=', $time);
             }
         }
         $posts = $query->orderBy('created_at', 'desc')->get();
