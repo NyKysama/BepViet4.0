@@ -160,10 +160,7 @@ export default function PostTable() {
                 </td>
                 <td className="py-4">
                   <div className="flex justify-end gap-2">
-                    {post.status === 1 ? (<>
-                      <Link to={`/${post.type === "Công thức" ? 'update-recipe' : 'update-blog'}/${post.post_id}`} className="p-2 hover:bg-emerald-100 text-emerald-600 rounded-lg transition-colors">
-                        <Edit size={18} />
-                      </Link>
+                    {post.status === 1 ? (<>                      
                       <button onClick={() => handleDelete(post.post_id)} className="p-2 hover:bg-red-100 text-red-600 rounded-lg transition-colors">
                         <Trash2 size={18} />
                       </button>

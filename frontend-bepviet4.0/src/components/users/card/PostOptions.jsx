@@ -50,6 +50,30 @@ export default function PostOptions({ post, isOwner, onAction }) {
     }
   };
 
+  // hàm dùng để xóa
+  const handleDelete = async (postId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài này không?")) return;
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/admin/delete-post/${postId}`, {
+        method: 'DELETE', // Khai báo phương thức DELETE ở đây
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(result.message);        
+      } else {
+        alert("Lỗi: " + result.message);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API xóa:", error);
+    }
+  };
+
   return (
     <div className="relative" ref={menuRef}>
       {/* Nút 3 chấm */}
@@ -68,10 +92,12 @@ export default function PostOptions({ post, isOwner, onAction }) {
           <div className="p-1 border-b border-slate-50">
             {/* kiểm tra chủ bài viết */}
             {isOwner ? (
-              <>                
+              <> 
+                {post.type === 'Blog' && (          
                 <button onClick={() => {navigate(`/update-blog/${post.post_id}`)}} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-slate-700 font-semibold hover:bg-slate-50">
                   <Edit3 className="mr-3 h-4 w-4 text-blue-500" /> Chỉnh sửa bài viết
                 </button>
+                )}     
               </>
             ) : (
               <>                
@@ -100,7 +126,7 @@ export default function PostOptions({ post, isOwner, onAction }) {
           {/* NHÓM 3: XÓA (Chỉ cho chủ bài) */}
           {isOwner && (
             <div className="p-1">
-              <button onClick={() => { onAction('delete'); setIsOpen(false); }} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-red-600 font-bold hover:bg-red-50">
+              <button onClick={() => { handleDelete(post.post_id); setIsOpen(false); }} className="flex w-full items-center rounded-xl px-3 py-2.5 text-sm text-red-600 font-bold hover:bg-red-50">
                 <Trash2 className="mr-3 h-4 w-4" /> Xóa bài viết
               </button>
             </div>
