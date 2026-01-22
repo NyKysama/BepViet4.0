@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Heart, Reply, MoreHorizontal, X } from 'lucide-react';
 import { useMyAccount } from '../../contexts/user/MyAccountContext';
+import {Link} from 'react-router-dom'
 
 const CommentItem = ({ comment, onReply, level = 1 }) => {
   return (
     <div className="flex gap-3 mb-4">
-      <img 
-        src={`http://127.0.0.1:8000/${comment.user?.avatar}`}
-        alt={comment.user?.name} 
-        className="w-10 h-10 rounded-full object-cover shrink-0"
-      />
+      <Link to={`/user-profile/${comment?.user?.username}`}>
+        <img 
+          src={`http://127.0.0.1:8000/${comment.user?.avatar}`}
+          alt={comment.user?.name} 
+          className="w-10 h-10 rounded-full object-cover shrink-0"
+        />
+      </Link>
       <div className="flex-1">
         <div className="bg-slate-50 px-4 py-2.5 rounded-[20px] inline-block max-w-full">
-          <h5 className="text-[13px] font-bold text-slate-800">{comment.user?.name}</h5>
+          <Link to={`/user-profile/${comment?.user?.username}`}>
+            <h5 className="text-[13px] font-bold text-slate-800">{comment.user?.name}</h5>
+          </Link>
           <p className="text-[14px] text-slate-700 leading-snug">{comment.content}</p>
         </div>
 
