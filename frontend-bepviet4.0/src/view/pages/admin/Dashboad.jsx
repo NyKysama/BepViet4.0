@@ -73,22 +73,6 @@ export default function AdminMainContent() {
     category: post.type || "Công thức"
   })) || [];
 
-
-  // Các phần Mock Data giữ nguyên như code cũ của bro
-  const trendingRecipes = [
-    { name: "Cơm Tấm Sài Gòn", views: 95, color: "bg-orange-500" },
-    { name: "Bún Bò Huế", views: 82, color: "bg-orange-400" },
-    { name: "Bánh Mì Chảo", views: 65, color: "bg-orange-300" },
-    { name: "Nem Nướng", views: 45, color: "bg-orange-200" },
-  ];
-
-  const mongoLogs = [
-    { id: 1, action: "SEARCH: 'thịt heo kho'", user: "User #882", time: "Just now" },
-    { id: 2, action: "AI: Generated Menu Plan", user: "User #99", time: "15s ago" },
-    { id: 3, action: "SYSTEM: Backup Shopping List", user: "System", time: "1m ago" },
-    { id: 4, action: "LOGIN: New device detected", user: "User #102", time: "5m ago" },
-  ];
-
   return (
     <main className="flex-1 bg-gray-50 p-8 overflow-y-auto h-screen">
 
@@ -132,8 +116,6 @@ export default function AdminMainContent() {
         ))}
       </div>
 
-
-
       {/* 3. Middle Section: Duyệt bài & Xu hướng */}
       <div className="grid grid-cols-12 gap-8 mb-8">
 
@@ -142,7 +124,7 @@ export default function AdminMainContent() {
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-gray-800 flex items-center gap-2">
               <AlertTriangle className="text-orange-500 w-5 h-5" />
-              Công thức chờ duyệt
+              Bài đăng chờ duyệt
             </h3>
             {/* khi click vào xem tất cả thì hiện ra danh sách công thức chờ duyệt */}
             <button onClick={() => setListstatus(!liststatus)}
@@ -251,73 +233,6 @@ export default function AdminMainContent() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* 4. Bottom Section (Logs & Health) */}
-      {/* ... (Giữ nguyên phần render MongoDB Logs và Server Health) ... */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8">
-
-        {/* MongoDB Logs (Giao diện Terminal) */}
-        <div className="lg:col-span-2 bg-gray-900 rounded-2xl p-6 shadow-xl text-gray-300">
-          <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-800">
-            <h3 className="font-bold text-white flex items-center gap-2">
-              <Database className="text-emerald-500 w-5 h-5" />
-              MongoDB Live Logs
-            </h3>
-            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-mono border border-emerald-500/30">CONNECTED</span>
-          </div>
-          <div className="font-mono text-sm space-y-3">
-            {mongoLogs.map((log) => (
-              <div key={log.id} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 hover:bg-gray-800 p-2 rounded transition border-l-2 border-transparent hover:border-emerald-500">
-                <span className="text-gray-500 text-xs min-w-[60px]">{log.time}</span>
-                <span className="text-emerald-400 font-bold min-w-[80px]">[{log.user}]</span>
-                <span className="text-gray-300 flex-1 break-all"> {log.action}</span>
-              </div>
-            ))}
-            <div className="text-xs text-emerald-500/50 pt-2 animate-pulse pl-2">_ Waiting for data stream...</div>
-          </div>
-        </div>
-
-        {/* Server Health */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <Server className="text-gray-600 w-5 h-5" />
-            Trạng thái Server
-          </h3>
-
-          <div className="space-y-6">
-            <div>
-              <div className="flex justify-between text-xs mb-2">
-                <span className="text-gray-500 font-medium">CPU Usage</span>
-                <span className="text-gray-800 font-bold">45%</span>
-              </div>
-              <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                <div className="bg-emerald-500 h-full w-[45%]"></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs mb-2">
-                <span className="text-gray-500 font-medium">Memory (RAM)</span>
-                <span className="text-gray-800 font-bold">72%</span>
-              </div>
-              <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                <div className="bg-orange-500 h-full w-[72%]"></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs mb-2">
-                <span className="text-gray-500 font-medium">Storage</span>
-                <span className="text-gray-800 font-bold">28%</span>
-              </div>
-              <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                <div className="bg-blue-500 h-full w-[28%]"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </main>
   );

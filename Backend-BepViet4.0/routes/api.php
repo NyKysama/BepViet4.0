@@ -79,7 +79,8 @@ Route::get("/cookbook/{username}/{name}",[CookbookController::class,"getCookbook
 Route::post("/cookbook/{cookbook_id}/detatch/{post_id}",[CookbookController::class,"detachCoobook_Post"])->name("cookbook.detatch.post");
 Route::post("/coobook/update/{cookbook_id}",[CookbookController::class,"updateCookbook"])->name("cookbook.update");
 //post
-Route::get('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds']);
+Route::post('news-feeds/{page?}/{seed?}', [PostController::class, 'getNewsFeeds']);
 //AI
 Route::get('/test-ai',[AIController::class,"chatBot"]);
+
 

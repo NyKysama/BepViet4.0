@@ -3,19 +3,22 @@ import CommentSection from '../CommentSection';
 import { useState,useEffect } from 'react';
 import { data, Link } from 'react-router-dom';
 import PostOptions from './PostOptions';
+import { useMyAccount } from '../../../contexts/user/MyAccountContext';
+
 
 export default function PostCard({ post, card_data }) {
   const [showComments, setShowComments] = useState(false);  
   const [cmtCount, setCmtCount] = useState(0);
-
+  const {myAccount} = useMyAccount();
   useEffect(()=>{
     fetch(`http://127.0.0.1:8000/api/cmt-count/${post.post_id}`)
       .then(res=>res.json())
       .then(data=>setCmtCount(data))
+      //console.log(myAccount)
   }, [post.post_id]);
 
   // Người dùng hiện tại token cố định
-  const authUser = { id: 1 }; 
+  //const authUser = myAccount; 
 
   // Bảo vệ Component: Nếu dữ liệu chưa tới thì hiện skeleton đơn giản
   if (!post && !card_data) {
@@ -31,7 +34,7 @@ export default function PostCard({ post, card_data }) {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full border-2 border-emerald-500 p-0.5">
-            <Link to={`/user-profile/${post?.user?.name}`}>
+            <Link to={`/user-profile/${post?.user?.username}`}>
               <img
                 src={`http://127.0.0.1:8000/${post?.user?.avatar}`}
                 className="w-full h-full rounded-full object-cover"
@@ -55,7 +58,7 @@ export default function PostCard({ post, card_data }) {
         
         <PostOptions
           post={post}
-          isOwner={post?.user_id === authUser.id}
+          isOwner={post?.user_id === myAccount.user_id}
           onAction={(type) => console.log("Hành động:", type)}
         />
       </div>
@@ -64,14 +67,18 @@ export default function PostCard({ post, card_data }) {
       <div className="px-4 pb-3 space-y-2">
         <div className="flex">
           {currentType === "Công thức" ? (
-            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-100 uppercase tracking-tighter">
-              <UtensilsCrossed size={10} /> Công thức
-            </span>
+            <Link to={currentType === "Công thức" ? `/recipe-detail/${post?.post_id}` : `/blog-detail/${post?.post_id}`}>
+              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-100 uppercase tracking-tighter">
+                <UtensilsCrossed size={10} /> Công thức
+              </span>
+            </Link>
           ) : currentType === "Blog" ? (
-            <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-100 uppercase tracking-tighter">
-              <BookOpenText size={10} /> Blog Review
-            </span>
-          ) : (
+            <Link to={currentType === "Công thức" ? `/recipe-detail/${post?.post_id}` : `/blog-detail/${post?.post_id}`}>
+              <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-100 uppercase tracking-tighter">
+                <BookOpenText size={10} /> Blog Review
+              </span>
+            </Link>
+          ) : (            
             <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-100 uppercase tracking-tighter">
               <HelpCircle size={10} /> Hỏi đáp
             </span>
@@ -88,7 +95,7 @@ export default function PostCard({ post, card_data }) {
         <div className="relative bg-slate-100 w-full overflow-hidden group">
           <Link to={currentType === "Công thức" ? `/recipe-detail/${post?.post_id}` : `/blog-detail/${post?.post_id}`}>
             <img
-              src={card_data?.img || post?.img}
+              src={`http://127.0.0.1:8000/${card_data?.img || post?.img}`}
               className="w-full h-auto max-h-[350px] object-cover transition-transform duration-700 group-hover:scale-105"
               alt="post-media"
             />
