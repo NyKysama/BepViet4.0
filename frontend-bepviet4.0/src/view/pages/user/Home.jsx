@@ -76,10 +76,7 @@ export default function Home() {
             cook_time: "",
         });
         setSearchQuery("");
-        setPosts([]);
-        setHasMore(true);
         pageRef.current = 1;
-        fetchPosts(); // Load lại feed
     };
 
 
@@ -93,12 +90,13 @@ export default function Home() {
             const response = await fetch(
                 `http://127.0.0.1:8000/api/news-feeds?page=${pageRef.current}&seed=${seed}`,
                 {
-                    method: "POST",
+                    method: "POST",                   
                     body:JSON.stringify({
-                        user_id: myAccount.user_id,
+                        user_id: myAccount?.user_id || null,
                     }),
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     }
                 }
             );
@@ -125,7 +123,7 @@ export default function Home() {
             setIsLoading(false);
             isFetchingRef.current = false;
         }
-    }, [seed, hasMore]);
+    }, [seed, hasMore, myAccount]);
 
     const observer = useRef();
     const lastPostElementRef = useCallback(node => {
@@ -182,7 +180,7 @@ export default function Home() {
                         value={filters.region}
                         onChange={e => setFilters({...filters, region: e.target.value})}
                     >
-                        <option value="">Vùng miền</option>
+                        <option hidden  value="">Vùng miền</option>
                         <option value="bac">Miền Bắc</option>
                         <option value="trung">Miền Trung</option>
                         <option value="nam">Miền Nam</option>
@@ -193,7 +191,7 @@ export default function Home() {
                         value={filters.difficulty}
                         onChange={e => setFilters({...filters, difficulty: e.target.value})}
                     >
-                        <option value="">Độ khó</option>
+                        <option hidden  value="">Độ khó</option>
                         <option value="de">Dễ</option>
                         <option value="trungbinh">Trung bình</option>
                         <option value="kho">Khó</option>
@@ -204,7 +202,7 @@ export default function Home() {
                         value={filters.cook_time}
                         onChange={e => setFilters({...filters, cook_time: e.target.value})}
                     >
-                        <option value="">Thời gian</option>
+                        <option hidden value="">Thời gian</option>
                         <option value="15">Dưới 15 phút</option>
                         <option value="30">Dưới 30 phút</option>
                         <option value="60">Dưới 60 phút</option>

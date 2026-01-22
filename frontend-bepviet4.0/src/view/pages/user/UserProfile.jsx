@@ -36,8 +36,8 @@ export default function UserProfile() {
       }
       setUser_Info(myAccount)
       setCookbooks(myAccount.cookbooks)
-      setRecipes(myAccount.posts.filter(p => p.type == "Công thức"))  
-      setBlogs(myAccount.posts.filter(p => p.type == "Blog"))
+      setRecipes(myAccount.posts?.filter(p => p.type == "Công thức"))  
+      setBlogs(myAccount.posts?.filter(p => p.type == "Blog"))
       setIsLoading(false)
       return
     };

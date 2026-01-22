@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Post;
-//use App\Models\Report;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,18 +26,16 @@ class DashboardController extends Controller
         // 4. Bài viết chờ duyệt (Trạng thái status = 0 hoặc 'pending')
         $pendingPost = Post::pending();
 
-        // // 5. Danh sách báo cáo/report mới nhất
-        // $reports = Report::with(['user', 'post'])
-        //     ->orderBy('created_at', 'desc')
-        //     ->take(10)
-        //     ->get();
+        // 5. Danh sách báo cáo/report mới nhất
+        $reports = Report::getPendingRepost();
 
         return response()->json([
             'summary' => [
                 'total_users' => $totalUsers,
                 'total_recipes' => $totalRecipes,
-                'total_blogs' => $totalBlogs,
+                'total_blogs' => $totalBlogs,                
             ],
+            'reports' => $reports,
             'chart' => $growthData,
             'pending_posts' => $pendingPost,
             //'reports' => $reports
