@@ -173,12 +173,12 @@ export default function UserTable() {
                 {/* 7. Action: Sửa, Khóa, Xóa */}
                 <td className="py-4 px-2">
                   <div className="flex justify-end gap-1.5">
-                    <button className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg"><Edit size={16}/></button>
+                    {/* <button className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg"><Edit size={16}/></button> */}
                     <button className="p-2 hover:bg-amber-50 text-amber-500 rounded-lg"
                     onClick={()=>handleBlock(u.user_id)}
                     >
                       {u.status==1 ? <Lock size={16}/>:<Unlock size={16}/>}</button>
-                    <button className="p-2 hover:bg-red-50 text-red-500 rounded-lg"><Trash2 size={16}/></button>
+                    {/* <button className="p-2 hover:bg-red-50 text-red-500 rounded-lg"><Trash2 size={16}/></button> */}
                   </div>
                 </td>
               </tr>

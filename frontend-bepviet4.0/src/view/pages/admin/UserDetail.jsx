@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import {
   ArrowLeft, Edit, Lock, Trash2, Mail, Phone, Calendar,
-  User, Shield, MapPin, CheckCircle, Clock, BookOpen, Save
+  User, Shield, MapPin, CheckCircle, Clock, BookOpen, Save, Unlock
 } from 'lucide-react';
 import { useParams,useNavigate } from 'react-router-dom';
 import LoadingPage from '../../../components/users/LoadingPage';
@@ -71,6 +71,27 @@ export default function UserDetail() {
 
       }
     }
+  async function handleBlock(user_id){
+    try {
+      const res=await fetch("http://127.0.0.1:8000/api/user/block",{
+        method:"POST",
+        headers:{
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body:JSON.stringify({
+          user_id:user_id
+        })
+      })
+      const data=await res.json()
+      if(!res.ok){
+        return
+      }
+      setUser_Info(prev=>({...prev,status:data.user.status}))
+    } catch (error) {
+      console.log(error)
+    }
+  }
   //load trang trc khi tai het du lieu
   if (isLoading) {
     return (<LoadingPage></LoadingPage>)
@@ -106,12 +127,14 @@ export default function UserDetail() {
 
             {/* Các nút hành động Admin */}
             <div className="grid grid-cols-2 gap-3 mt-8">
-              <button className="flex items-center justify-center gap-2 bg-slate-800 text-white py-3 rounded-2xl font-bold hover:bg-slate-700 transition-all">
-                <Lock size={18} /> Khóa
+              <button className="flex items-center justify-center gap-2 bg-slate-800 text-white py-3 rounded-2xl font-bold hover:bg-slate-700 transition-all"
+              onClick={()=>handleBlock(user_info.user_id)}
+              >
+                 {user_info.status==1 ? <><Lock size={16}/>Khóa</>:<><Unlock size={16}/>Mở Khóa</>}
               </button>
-              <button className="flex items-center justify-center gap-2 bg-red-50 text-red-600 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition-all text-sm">
+              {/* <button className="flex items-center justify-center gap-2 bg-red-50 text-red-600 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition-all text-sm">
                 <Trash2 size={18} /> Xóa
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

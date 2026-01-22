@@ -227,8 +227,8 @@ export default function UserProfile() {
       </div>
       {/* Add Cookbook Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 relative max-h-[90vh] overflow-y-auto mx-auto mt-10">
             {/* Close Button */}
             <button
               onClick={() => setShowAddModal(false)}
