@@ -71,6 +71,15 @@ export default function Sidebar({ isOpen, onClose }) {
           />
           </Link>
 
+          <Link to="/admin/ingredient">
+          <NavItem 
+            icon={<List size={20} />} 
+            label="Nguyên liệu" 
+            active={activeItem === "Nguyên liệu"} 
+            onClick={() => handleItemClick("Nguyên liệu")} 
+          />
+          </Link>
+
           <div className="pt-4 pb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Hệ thống
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PostCard from '../../../components/users/card/PostCard';
 import { Search } from 'lucide-react'; // Nếu bạn dùng lucide-react, nếu không có hãy thay bằng icon khác hoặc chữ
+import { useMyAccount } from '../../../contexts/user/MyAccountContext';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
@@ -13,7 +14,7 @@ export default function Home() {
         difficulty: "",
         cook_time: "",
     });
-
+    const {myAccount} = useMyAccount();
     const pageRef = useRef(1);
     const isFetchingRef = useRef(false);
     const [seed] = useState(Math.floor(Math.random() * 1000000));
@@ -89,12 +90,14 @@ export default function Home() {
         setIsLoading(true);
 
         try {
-            const token = localStorage.getItem('token');
             const response = await fetch(
                 `http://127.0.0.1:8000/api/news-feeds?page=${pageRef.current}&seed=${seed}`,
                 {
+                    method: "POST",
+                    body:JSON.stringify({
+                        user_id: myAccount.user_id,
+                    }),
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
                     }
                 }
