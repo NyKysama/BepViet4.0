@@ -8,7 +8,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const menuItems = [
     { icon: <Newspaper />, label: "Trang chủ", path: "/" }, 
     { icon: <UserCircle />, label: "Trang cá nhân", path: "/user-profile/my-account" },
-    { icon: <Soup />, label: "Hôm nay ăn gì?", path: "/not-found" },
+    { icon: <Soup />, label: "Hôm nay ăn gì?", path: "/food-suggestion" },
   ];
 
   const shareItems = [
