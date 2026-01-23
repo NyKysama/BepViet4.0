@@ -16,7 +16,7 @@ export default function ProfileSumary({setUser_Info,user, isMyAccount }) {
     const handleLogout = () => {
         localStorage.removeItem("user_data"); // hoặc access_token
         setMyAccount(null)
-        navigate("/")
+        navigate("/login")
         return
     };
     useEffect(() => {

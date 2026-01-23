@@ -14,6 +14,7 @@ export default function Sidebar({ isOpen, onClose }) {
     if (location.pathname.includes("/admin/post")) return "Bài viết";
     if (location.pathname.includes("/admin/category")) return "Danh mục";
     if (location.pathname.includes("/admin/ingredient")) return "Nguyên liệu";
+    if (location.pathname.includes("/admin/report")) return "Báo cáo";
     return "Tổng quan";
   };
 
@@ -95,6 +96,15 @@ export default function Sidebar({ isOpen, onClose }) {
               label="Nguyên liệu" 
               active={getActiveLabel() === "Nguyên liệu"} 
               onClick={() => handleItemClick("Nguyên liệu")} 
+            />
+          </Link>
+
+          <Link to="/admin/report">
+            <NavItem 
+              icon={<List size={20} />} 
+              label="Báo cáo" 
+              active={getActiveLabel() === "Báo cáo"} 
+              onClick={() => handleItemClick("Báo cáo")} 
             />
           </Link>
 
